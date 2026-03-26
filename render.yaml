@@ -42,7 +42,6 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://semko-backend.onrender.com/api
-    envVars:
       - key: VITE_APP_NAME
         value: SEMKO IMS
 
