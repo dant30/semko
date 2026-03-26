@@ -81,6 +81,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'semko.wsgi.application'
 
+from urllib.parse import urlparse
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -91,6 +93,19 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    parsed = urlparse(DATABASE_URL)
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': parsed.path.lstrip('/'),
+        'USER': parsed.username or os.environ.get('DB_USER', 'semko'),
+        'PASSWORD': parsed.password or os.environ.get('DB_PASSWORD', 'semko'),
+        'HOST': parsed.hostname or os.environ.get('DB_HOST', 'localhost'),
+        'PORT': parsed.port or int(os.environ.get('DB_PORT', 5432)),
+        'CONN_MAX_AGE': 600,
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
