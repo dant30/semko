@@ -84,7 +84,7 @@ describe('useUsersWorkspace', () => {
       password_confirm: 'password123',
     }
 
-    const createdUser = { id: 3, ...newUser, is_active: true }
+    const createdUser = createMockUser({ id: 3, username: 'newuser', email: 'newuser@example.com', first_name: 'New' })
     const mockCreateUser = vi.fn().mockResolvedValue(createdUser)
     vi.mocked(usersApi.createUser).mockImplementation(mockCreateUser)
 
@@ -99,8 +99,8 @@ describe('useUsersWorkspace', () => {
   })
 
   it('should handle user editing', async () => {
-    const existingUser = { id: 1, username: 'user1', email: 'user1@example.com', is_active: true }
-    const updatedUser = { ...existingUser, email: 'updated@example.com' }
+    const existingUser = createMockUser({ id: 1, username: 'user1', email: 'user1@example.com', is_active: true })
+    const updatedUser = createMockUser({ ...existingUser, email: 'updated@example.com' })
 
     const mockUpdateUser = vi.fn().mockResolvedValue(updatedUser)
     vi.mocked(usersApi.updateUser).mockImplementation(mockUpdateUser)
@@ -108,7 +108,7 @@ describe('useUsersWorkspace', () => {
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 
     // Start editing
-    result.current.startEditUser(1)
+    result.current.startEditUser(existingUser)
 
     expect(result.current.editingUserId).toBe(1)
 
@@ -122,15 +122,15 @@ describe('useUsersWorkspace', () => {
   })
 
   it('should handle user deactivation', async () => {
-    const userToDeactivate = { id: 1, username: 'user1', email: 'user1@example.com', is_active: true }
-    const deactivatedUser = { ...userToDeactivate, is_active: false }
+    const userToDeactivate = createMockUser({ id: 1, username: 'user1', email: 'user1@example.com', is_active: true })
+    const deactivatedUser = createMockUser({ ...userToDeactivate, is_active: false })
 
     const mockDeactivateUser = vi.fn().mockResolvedValue(deactivatedUser)
     vi.mocked(usersApi.deactivateUser).mockImplementation(mockDeactivateUser)
 
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 
-    await result.current.deactivateUser(1)
+    await result.current.deactivateUser(userToDeactivate)
 
     await waitFor(() => {
       expect(mockDeactivateUser).toHaveBeenCalledWith(1)
@@ -143,8 +143,8 @@ describe('useUsersWorkspace', () => {
   })
 
   it('should handle undo last action', async () => {
-    const user = { id: 1, username: 'user1', email: 'user1@example.com', is_active: true }
-    const deactivatedUser = { ...user, is_active: false }
+    const user = createMockUser({ id: 1, username: 'user1', email: 'user1@example.com', is_active: true })
+    const deactivatedUser = createMockUser({ ...user, is_active: false })
 
     const mockDeactivateUser = vi.fn().mockResolvedValue(deactivatedUser)
     const mockUpdateUser = vi.fn().mockResolvedValue(user)
@@ -154,7 +154,7 @@ describe('useUsersWorkspace', () => {
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 
     // Deactivate user
-    await result.current.deactivateUser(1)
+    await result.current.deactivateUser(user)
 
     await waitFor(() => {
       expect(result.current.lastAction?.type).toBe('deactivate')
@@ -183,7 +183,7 @@ describe('useUsersWorkspace', () => {
       password_confirm: 'password123',
     }
 
-    vi.mocked(usersApi.createUser).mockResolvedValue({ id: 3, ...newUser, is_active: true })
+    vi.mocked(usersApi.createUser).mockResolvedValue(createMockUser({ id: 3, username: 'newuser', email: 'newuser@example.com', first_name: 'New' }))
 
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 

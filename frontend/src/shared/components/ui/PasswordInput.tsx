@@ -1,9 +1,9 @@
-import { useState, type InputHTMLAttributes } from "react";
+import { useState } from "react";
 
-import { Input } from "./Input";
+import { Input, type InputProps } from "./Input";
 import { Button } from "./Button";
 
-export function PasswordInput(props: InputHTMLAttributes<HTMLInputElement>) {
+export function PasswordInput(props: InputProps) {
   const [visible, setVisible] = useState(false);
 
   return (

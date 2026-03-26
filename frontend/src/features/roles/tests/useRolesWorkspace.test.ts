@@ -71,7 +71,7 @@ describe('useRolesWorkspace', () => {
       permissions: 'viewUsers,manageUsers',
     }
 
-    const createdRole = { id: 3, ...newRole, permissions: ['viewUsers', 'manageUsers'] }
+    const createdRole = createMockRole({ id: 3, name: 'Manager', code: 'MGR', description: 'Management access' })
     const mockCreateRole = vi.fn().mockResolvedValue(createdRole)
     vi.mocked(rolesApi.createRole).mockImplementation(mockCreateRole)
 
@@ -86,8 +86,8 @@ describe('useRolesWorkspace', () => {
   })
 
   it('should handle role editing', async () => {
-    const existingRole = { id: 1, name: 'Administrator', code: 'ADMIN', description: 'Full access', permissions: ['viewUsers'] }
-    const updatedRole = { ...existingRole, description: 'Updated description' }
+    const existingRole = createMockRole({ id: 1, name: 'Administrator', code: 'ADMIN', permissions: ['viewUsers'] })
+    const updatedRole = createMockRole({ ...existingRole, description: 'Updated description' })
 
     const mockUpdateRole = vi.fn().mockResolvedValue(updatedRole)
     vi.mocked(rolesApi.updateRole).mockImplementation(mockUpdateRole)
@@ -95,7 +95,7 @@ describe('useRolesWorkspace', () => {
     const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
 
     // Start editing
-    result.current.startEditRole(1)
+    result.current.startEditRole(existingRole)
 
     expect(result.current.editingRoleId).toBe(1)
 
@@ -109,14 +109,14 @@ describe('useRolesWorkspace', () => {
   })
 
   it('should handle role deletion', async () => {
-    const roleToDelete = { id: 1, name: 'Test Role', code: 'TEST', description: 'Test', permissions: [] }
+    const roleToDelete = createMockRole({ id: 1, name: 'Test Role', code: 'TEST' })
 
     const mockDeleteRole = vi.fn().mockResolvedValue(undefined)
     vi.mocked(rolesApi.deleteRole).mockImplementation(mockDeleteRole)
 
     const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
 
-    await result.current.deleteRole(1)
+    await result.current.deleteRole(roleToDelete)
 
     await waitFor(() => {
       expect(mockDeleteRole).toHaveBeenCalledWith(1)
@@ -135,7 +135,7 @@ describe('useRolesWorkspace', () => {
       permissions: 'viewUsers',
     }
 
-    vi.mocked(rolesApi.createRole).mockResolvedValue({ id: 3, ...newRole, permissions: ['viewUsers'] })
+    vi.mocked(rolesApi.createRole).mockResolvedValue(createMockRole({ id: 3, name: 'Manager', code: 'MGR', description: 'Management access' }))
 
     const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
 

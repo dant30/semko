@@ -1,7 +1,5 @@
-import type { InputHTMLAttributes } from "react";
+import { Input, type InputProps } from "./Input";
 
-import { Input } from "./Input";
-
-export function SearchInput(props: InputHTMLAttributes<HTMLInputElement>) {
+export function SearchInput(props: InputProps) {
   return <Input type="search" {...props} />;
 }

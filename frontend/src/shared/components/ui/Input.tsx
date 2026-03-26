@@ -30,8 +30,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={classNames(
             "form-input ui-focus",
             sizeClasses[size],
-            leftIcon && "pl-11",
-            rightIcon && "pr-11",
+            leftIcon ? "pl-11" : false,
+            rightIcon ? "pr-11" : false,
             error && "border-rose-300 focus:border-rose-500 focus:ring-rose-100 dark:border-rose-600 dark:focus:border-rose-500 dark:focus:ring-rose-900",
             className
           )}

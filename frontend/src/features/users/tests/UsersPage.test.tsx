@@ -185,20 +185,10 @@ describe('UsersPage', () => {
 
   it('should allow deactivating a user', async () => {
     const user = userEvent.setup()
-    const mockUsers = [
-      {
-        id: 1,
-        username: 'admin',
-        email: 'admin@example.com',
-        first_name: 'Admin',
-        last_name: 'User',
-        is_active: true,
-        role: { id: 1, name: 'Administrator' },
-        date_joined: '2023-01-01T00:00:00Z',
-      },
-    ]
+    const adminUser = createMockUser({ id: 1, username: 'admin', email: 'admin@example.com', first_name: 'Admin', is_staff: true })
+    const mockUsers = [adminUser]
 
-    const deactivatedUser = { ...mockUsers[0], is_active: false }
+    const deactivatedUser = createMockUser({ ...adminUser, is_active: false })
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
     vi.mocked(usersApi.deactivateUser).mockResolvedValue(deactivatedUser)
@@ -219,24 +209,14 @@ describe('UsersPage', () => {
 
   it('should allow undoing the last action', async () => {
     const user = userEvent.setup()
-    const mockUsers = [
-      {
-        id: 1,
-        username: 'admin',
-        email: 'admin@example.com',
-        first_name: 'Admin',
-        last_name: 'User',
-        is_active: true,
-        role: { id: 1, name: 'Administrator' },
-        date_joined: '2023-01-01T00:00:00Z',
-      },
-    ]
+    const adminUser = createMockUser({ id: 1, username: 'admin', email: 'admin@example.com', first_name: 'Admin', is_staff: true })
+    const mockUsers = [adminUser]
 
-    const deactivatedUser = { ...mockUsers[0], is_active: false }
+    const deactivatedUser = createMockUser({ ...adminUser, is_active: false })
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
     vi.mocked(usersApi.deactivateUser).mockResolvedValue(deactivatedUser)
-    vi.mocked(usersApi.updateUser).mockResolvedValue(mockUsers[0])
+    vi.mocked(usersApi.updateUser).mockResolvedValue(adminUser)
 
     render(<UsersPage />, { wrapper })
 
@@ -262,8 +242,8 @@ describe('UsersPage', () => {
   it('should filter users by active status', async () => {
     const user = userEvent.setup()
     const mockUsers = [
-      { id: 1, username: 'admin', email: 'admin@example.com', is_active: true },
-      { id: 2, username: 'user', email: 'user@example.com', is_active: false },
+      createMockUser({ id: 1, username: 'admin', email: 'admin@example.com', is_active: true }),
+      createMockUser({ id: 2, username: 'user', email: 'user@example.com', is_active: false }),
     ]
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
@@ -288,8 +268,8 @@ describe('UsersPage', () => {
   it('should search users', async () => {
     const user = userEvent.setup()
     const mockUsers = [
-      { id: 1, username: 'admin', email: 'admin@example.com', is_active: true },
-      { id: 2, username: 'user', email: 'user@example.com', is_active: true },
+      createMockUser({ id: 1, username: 'admin', email: 'admin@example.com', is_active: true }),
+      createMockUser({ id: 2, username: 'user', email: 'user@example.com', is_active: true }),
     ]
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
