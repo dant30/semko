@@ -42,11 +42,13 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://semko-backend.onrender.com/api
-        
+
   - type: redis
     name: semko-redis
     plan: free
     region: oregon
+    ipAllowList:
+      - source: 0.0.0.0/0
 
 databases:
   - name: semko-db
