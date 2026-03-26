@@ -77,7 +77,8 @@ describe('useRolesWorkspace', () => {
 
     const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
 
-    await result.current.submitRole(newRole)
+    result.current.setRoleForm(newRole)
+    await result.current.submitRole()
 
     await waitFor(() => {
       expect(mockCreateRole).toHaveBeenCalledWith(newRole)
@@ -139,7 +140,8 @@ describe('useRolesWorkspace', () => {
 
     const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
 
-    await result.current.submitRole(newRole)
+    result.current.setRoleForm(newRole)
+    await result.current.submitRole()
 
     await waitFor(() => {
       expect(mockToast).toHaveBeenCalledWith({
@@ -166,7 +168,8 @@ describe('useRolesWorkspace', () => {
       permissions: 'viewUsers',
     }
 
-    await result.current.submitRole(newRole)
+    result.current.setRoleForm(newRole)
+    await result.current.submitRole()
 
     await waitFor(() => {
       expect(mockToast).toHaveBeenCalledWith({

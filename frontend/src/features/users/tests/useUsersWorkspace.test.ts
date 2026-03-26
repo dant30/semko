@@ -90,7 +90,8 @@ describe('useUsersWorkspace', () => {
 
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 
-    await result.current.submitUser(newUser)
+    result.current.setUserForm(newUser)
+    await result.current.submitUser()
 
     await waitFor(() => {
       expect(mockCreateUser).toHaveBeenCalledWith(newUser)
@@ -150,7 +151,7 @@ describe('useUsersWorkspace', () => {
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 
     // Deactivate user
-    await result.current.deactivateUser(user)
+    await result.current.deactivateUser(user.id)
 
     await waitFor(() => {
       expect(result.current.lastAction?.type).toBe('deactivate')
@@ -183,7 +184,8 @@ describe('useUsersWorkspace', () => {
 
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 
-    await result.current.submitUser(newUser)
+    result.current.setUserForm(newUser)
+    await result.current.submitUser()
 
     await waitFor(() => {
       expect(mockToast).toHaveBeenCalledWith({
@@ -213,7 +215,8 @@ describe('useUsersWorkspace', () => {
       password_confirm: 'password123',
     }
 
-    await result.current.submitUser(newUser)
+    result.current.setUserForm(newUser)
+    await result.current.submitUser()
 
     await waitFor(() => {
       expect(mockToast).toHaveBeenCalledWith({
