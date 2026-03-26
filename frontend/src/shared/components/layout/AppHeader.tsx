@@ -87,7 +87,7 @@ export function AppHeader({ onToggleSidebar, onToggleSidebarCollapse, sidebarCol
       .fetchInbox()
       .then((items) => {
         if (active) {
-          setNotifications(items.slice(0, 8));
+          setNotifications(items.results.slice(0, 8));
         }
       })
       .catch(() => {

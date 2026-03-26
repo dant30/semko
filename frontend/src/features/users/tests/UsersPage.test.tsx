@@ -11,6 +11,25 @@ import { rootReducer } from '../../../core/store/root-reducer'
 import { toast } from '../../../shared/ui/notifications'
 import type { UserRecord } from '../types/user'
 
+// Mock complete UserRecord for testing
+const createMockUser = (overrides?: Partial<UserRecord>): UserRecord => ({
+  id: 1,
+  username: 'testuser',
+  email: 'test@example.com',
+  first_name: 'Test',
+  last_name: 'User',
+  phone_number: '+1234567890',
+  is_active: true,
+  is_staff: false,
+  must_change_password: false,
+  date_joined: '2023-01-01T00:00:00Z',
+  last_login: '2023-01-02T00:00:00Z',
+  created_at: '2023-01-01T00:00:00Z',
+  updated_at: '2023-01-01T00:00:00Z',
+  role: { id: 1, name: 'User', code: 'user' },
+  ...overrides,
+})
+
 // Mock dependencies
 vi.mock('../services/users.api')
 vi.mock('../../../shared/ui/notifications')
@@ -27,11 +46,11 @@ const createTestStore = () => {
   })
 }
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  React.createElement(Provider, { store: createTestStore() },
-    React.createElement(MemoryRouter, null, children)
-  )
-)
+const wrapper = ({ children }: { children: React.ReactNode }) =>
+  React.createElement(Provider, { store: createTestStore(), children:
+    React.createElement(MemoryRouter, { children })
+  })
+
 
 describe('UsersPage', () => {
   beforeEach(() => {
@@ -52,26 +71,8 @@ describe('UsersPage', () => {
 
   it('should display users table when data loads', async () => {
     const mockUsers = [
-      {
-        id: 1,
-        username: 'admin',
-        email: 'admin@example.com',
-        first_name: 'Admin',
-        last_name: 'User',
-        is_active: true,
-        role: { id: 1, name: 'Administrator' },
-        date_joined: '2023-01-01T00:00:00Z',
-      },
-      {
-        id: 2,
-        username: 'user',
-        email: 'user@example.com',
-        first_name: 'Regular',
-        last_name: 'User',
-        is_active: false,
-        role: { id: 2, name: 'User' },
-        date_joined: '2023-01-02T00:00:00Z',
-      },
+      createMockUser({ id: 1, username: 'admin', email: 'admin@example.com', first_name: 'Admin', is_staff: true }),
+      createMockUser({ id: 2, username: 'user', email: 'user@example.com', first_name: 'Regular', is_active: false }),
     ]
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
@@ -86,8 +87,8 @@ describe('UsersPage', () => {
 
   it('should display summary cards', async () => {
     const mockUsers = [
-      { id: 1, username: 'admin', email: 'admin@example.com', is_active: true, is_staff: true },
-      { id: 2, username: 'user', email: 'user@example.com', is_active: false, is_staff: false },
+      createMockUser({ id: 1, username: 'admin', is_active: true, is_staff: true }),
+      createMockUser({ id: 2, username: 'user', is_active: false, is_staff: false }),
     ]
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
@@ -109,17 +110,7 @@ describe('UsersPage', () => {
   it('should allow creating a new user', async () => {
     const user = userEvent.setup()
     const mockUsers: UserRecord[] = []
-    const newUser = {
-      id: 3,
-      username: 'newuser',
-      email: 'newuser@example.com',
-      first_name: 'New',
-      last_name: 'User',
-      is_active: true,
-      is_staff: false,
-      role: { id: 2, name: 'User' },
-      date_joined: '2023-01-03T00:00:00Z',
-    }
+    const newUser = createMockUser({ id: 3, username: 'newuser', email: 'newuser@example.com', first_name: 'New' })
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
     vi.mocked(usersApi.createUser).mockResolvedValue(newUser)
@@ -160,23 +151,10 @@ describe('UsersPage', () => {
 
   it('should allow editing an existing user', async () => {
     const user = userEvent.setup()
-    const mockUsers = [
-      {
-        id: 1,
-        username: 'admin',
-        email: 'admin@example.com',
-        first_name: 'Admin',
-        last_name: 'User',
-        is_active: true,
-        role: { id: 1, name: 'Administrator' },
-        date_joined: '2023-01-01T00:00:00Z',
-      },
-    ]
+    const mockUser = createMockUser({ id: 1, username: 'admin', email: 'admin@example.com', first_name: 'Admin' })
+    const mockUsers = [mockUser]
 
-    const updatedUser = {
-      ...mockUsers[0],
-      email: 'updated@example.com',
-    }
+    const updatedUser = createMockUser({ ...mockUser, email: 'updated@example.com' })
 
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
     vi.mocked(usersApi.updateUser).mockResolvedValue(updatedUser)

@@ -11,6 +11,16 @@ import { rootReducer } from '../../../core/store/root-reducer'
 import { toast } from '../../../shared/ui/notifications'
 import type { RoleRecord } from '../types/role'
 
+// Mock complete RoleRecord for testing
+const createMockRole = (overrides?: Partial<RoleRecord>): RoleRecord => ({
+  id: 1,
+  name: 'Test Role',
+  code: 'test_role',
+  description: 'A test role',
+  permissions: [],
+  ...overrides,
+})
+
 // Mock dependencies
 vi.mock('../services/roles.api')
 vi.mock('../../../shared/ui/notifications')
@@ -27,11 +37,10 @@ const createTestStore = () => {
   })
 }
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  React.createElement(Provider, { store: createTestStore() },
-    React.createElement(MemoryRouter, null, children)
-  )
-)
+const wrapper = ({ children }: { children: React.ReactNode }) =>
+  React.createElement(Provider, { store: createTestStore(), children:
+    React.createElement(MemoryRouter, { children })
+  })
 
 describe('RolesPage', () => {
   beforeEach(() => {

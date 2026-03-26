@@ -7,6 +7,17 @@ import { useRolesWorkspace } from '../hooks/useRolesWorkspace'
 import { rolesApi } from '../services/roles.api'
 import { rootReducer } from '../../../core/store/root-reducer'
 import { toast } from '../../../shared/ui/notifications'
+import type { RoleRecord } from '../types/role'
+
+// Mock complete RoleRecord for testing
+const createMockRole = (overrides?: Partial<RoleRecord>): RoleRecord => ({
+  id: 1,
+  name: 'Test Role',
+  code: 'test_role',
+  description: 'A test role',
+  permissions: [],
+  ...overrides,
+})
 
 // Mock the API
 vi.mock('../services/roles.api')
@@ -19,9 +30,8 @@ const createTestStore = () => {
   })
 }
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) =>
   React.createElement(Provider, { store: createTestStore(), children })
-)
 
 describe('useRolesWorkspace', () => {
   beforeEach(() => {
@@ -38,8 +48,8 @@ describe('useRolesWorkspace', () => {
 
   it('should fetch roles on mount', async () => {
     const mockRoles = [
-      { id: 1, name: 'Administrator', code: 'ADMIN', description: 'Full access', permissions: ['viewUsers', 'manageUsers'] },
-      { id: 2, name: 'User', code: 'USER', description: 'Limited access', permissions: ['viewUsers'] },
+      createMockRole({ id: 1, name: 'Administrator', code: 'ADMIN', permissions: ['viewUsers', 'manageUsers'] }),
+      createMockRole({ id: 2, name: 'User', code: 'USER', permissions: ['viewUsers'] }),
     ]
 
     const mockFetchRoles = vi.fn().mockResolvedValue(mockRoles)

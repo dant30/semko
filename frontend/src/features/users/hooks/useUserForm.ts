@@ -31,13 +31,13 @@ export function useUserForm(userId?: number) {
         setRoles(rolesData);
 
         if (userData) {
-          const formData = {
+          const formData: UserFormValues = {
             username: userData.username,
             email: userData.email,
             first_name: userData.first_name,
             last_name: userData.last_name,
             phone_number: userData.phone_number || "",
-            role_id: userData.role?.id ?? "",
+            role_id: typeof userData.role?.id === 'number' ? userData.role.id : "",
             password: "",
             password_confirm: "",
             is_active: userData.is_active,
@@ -115,13 +115,13 @@ export function useUserForm(userId?: number) {
       }
 
       navigate(appRoutes.users);
-    } catch (err: any) {
-      const errorData = err?.response?.data;
+    } catch (err: unknown) {
+      const errorData = (err as { response?: { data?: unknown } })?.response?.data;
       if (errorData && typeof errorData === "object") {
         const newFieldErrors: Partial<Record<keyof UserFormValues, string>> = {};
         for (const [key, value] of Object.entries(errorData)) {
           if (key in formValues) {
-            newFieldErrors[key as keyof UserFormValues] = Array.isArray(value) ? value[0] : String(value);
+            newFieldErrors[key as keyof UserFormValues] = Array.isArray(value) ? String(value[0]) : String(value);
           }
         }
         setFieldErrors(newFieldErrors);

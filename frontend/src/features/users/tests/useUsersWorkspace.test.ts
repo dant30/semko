@@ -7,6 +7,26 @@ import { useUsersWorkspace } from '../hooks/useUsersWorkspace'
 import { usersApi } from '../services/users.api'
 import { rootReducer } from '../../../core/store/root-reducer'
 import { toast } from '../../../shared/ui/notifications'
+import type { UserRecord } from '../types/user'
+
+// Mock complete UserRecord for testing
+const createMockUser = (overrides?: Partial<UserRecord>): UserRecord => ({
+  id: 1,
+  username: 'testuser',
+  email: 'test@example.com',
+  first_name: 'Test',
+  last_name: 'User',
+  phone_number: '+1234567890',
+  is_active: true,
+  is_staff: false,
+  must_change_password: false,
+  date_joined: '2023-01-01T00:00:00Z',
+  last_login: '2023-01-02T00:00:00Z',
+  created_at: '2023-01-01T00:00:00Z',
+  updated_at: '2023-01-01T00:00:00Z',
+  role: { id: 1, name: 'User', code: 'user' },
+  ...overrides,
+})
 
 // Mock the API
 vi.mock('../services/users.api')
@@ -19,9 +39,8 @@ const createTestStore = () => {
   })
 }
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) =>
   React.createElement(Provider, { store: createTestStore(), children })
-)
 
 describe('useUsersWorkspace', () => {
   beforeEach(() => {
@@ -39,8 +58,8 @@ describe('useUsersWorkspace', () => {
 
   it('should fetch users on mount', async () => {
     const mockUsers = [
-      { id: 1, username: 'user1', email: 'user1@example.com', is_active: true },
-      { id: 2, username: 'user2', email: 'user2@example.com', is_active: false },
+      createMockUser({ id: 1, username: 'user1', email: 'user1@example.com', is_active: true }),
+      createMockUser({ id: 2, username: 'user2', email: 'user2@example.com', is_active: false }),
     ]
 
     const mockFetchUsers = vi.fn().mockResolvedValue(mockUsers)
