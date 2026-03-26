@@ -7,7 +7,7 @@ services:
     rootDir: backend
     autoDeploy: true
     healthCheckPath: /api/health/
-    buildCommand: bash ./backend/build.sh
+    buildCommand: bash build.sh
     startCommand: gunicorn semko.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
     envVars:
       - key: DJANGO_SETTINGS_MODULE
@@ -17,7 +17,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: .onrender.com
+        value: .onrender.com,localhost,127.0.0.1
       - key: DATABASE_URL
         fromDatabase:
           name: semko-db

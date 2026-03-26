@@ -70,12 +70,14 @@ echo "Setting up superuser..."
 python manage.py shell <<'PY'
 import os, secrets
 from django.db import transaction
-from apps.users.models import User
+from apps.users.models import Role, User
 
 email = os.getenv('ADMIN_EMAIL', 'admin@semko.local')
 phone = os.getenv('ADMIN_PHONE', '+0000000000')
 password = os.getenv('ADMIN_PASSWORD')
 rotate_password = os.getenv('ADMIN_ROTATE_PASSWORD_ON_DEPLOY', 'false').lower() == 'true'
+
+admin_role = Role.objects.filter(code='admin').first()
 
 with transaction.atomic():
     user = User.objects.filter(email=email, is_superuser=True).first()
@@ -99,7 +101,7 @@ with transaction.atomic():
             username=email,
             email=email,
             password=password,
-            role=User.objects.filter(role__code='admin').first(),
+            role=admin_role,
         )
         print(f'Created superuser {email}')
 PY
