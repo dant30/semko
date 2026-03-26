@@ -1,0 +1,81 @@
+@layer base {
+  html {
+    @apply scroll-smooth antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: "Manrope", "Segoe UI", "Helvetica Neue", sans-serif;
+    color: var(--text-primary);
+  }
+
+  body {
+    @apply min-h-screen leading-relaxed;
+    background:
+      radial-gradient(1200px circle at 0% 0%, rgba(35, 109, 70, 0.12), transparent 42%),
+      radial-gradient(900px circle at 100% 0%, rgba(35, 90, 214, 0.08), transparent 38%),
+      var(--surface-bg);
+    color: var(--text-primary);
+  }
+
+  ::selection {
+    @apply bg-accent-200 text-accent-900;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-950;
+  }
+
+  ::-webkit-scrollbar {
+    @apply h-2 w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100 dark:bg-slate-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-300 dark:bg-slate-700;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-600;
+  }
+
+  h1 {
+    @apply text-3xl font-extrabold tracking-tight md:text-4xl;
+    color: var(--text-primary);
+  }
+
+  h2 {
+    @apply text-2xl font-bold tracking-tight md:text-3xl;
+    color: var(--text-primary);
+  }
+
+  h3 {
+    @apply text-xl font-semibold tracking-tight md:text-2xl;
+    color: var(--text-primary);
+  }
+
+  h4 {
+    @apply text-lg font-semibold;
+    color: var(--text-primary);
+  }
+
+  p {
+    @apply leading-relaxed;
+    color: var(--text-secondary);
+  }
+
+  a {
+    @apply text-accent-600 underline-offset-2 transition-colors duration-150 hover:text-accent-700;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

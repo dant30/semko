@@ -1,0 +1,8 @@
+{
+  "name": "SEMKO IMS",
+  "short_name": "SEMKO",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f2e8",
+  "theme_color": "#0f3b2e"
+}

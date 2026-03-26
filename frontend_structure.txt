@@ -1,0 +1,277 @@
+frontend/
+├── package.json
+├── package-lock.json
+├── Dockerfile
+├── vite.config.ts
+├── tailwind.config.js
+├── postcss.config.js
+├── tsconfig.json
+├── tsconfig.node.json
+├── eslint.config.js
+├── index.html
+├── .env.example
+├── .gitignore
+├── public/
+│   ├── favicon.ico
+│   ├── logo.png
+│   ├── logo-dark.png
+│   └── manifest.json
+└── src/
+    ├── main.tsx
+    ├── App.tsx
+    ├── index.css
+    ├── core/
+    │   ├── api/
+    │   │   ├── client.ts
+    │   │   ├── interceptors.ts
+    │   │   ├── endpoints.ts
+    │   │   └── api-types.ts
+    │   ├── auth/
+    │   │   ├── auth-session.ts
+    │   │   ├── auth-guards.ts
+    │   │   └── permission-utils.ts
+    │   ├── constants/
+    │   │   ├── app.ts
+    │   │   ├── routes.ts
+    │   │   └── permissions.ts
+    │   ├── contexts/
+    │   │   ├── AppProviders.tsx
+    │   │   ├── ThemeProvider.tsx
+    │   │   └── NotificationProvider.tsx
+    │   ├── router/
+    │   │   ├── router.tsx
+    │   │   ├── route-config.ts
+    │   │   └── guards/
+    │   │       ├── AuthenticatedGuard.tsx
+    │   │       ├── GuestGuard.tsx
+    │   │       └── PermissionGuard.tsx
+    │   ├── store/
+    │   │   ├── index.ts
+    │   │   ├── root-reducer.ts
+    │   │   └── hooks.ts
+    │   ├── storage/
+    │   │   ├── local-storage.ts
+    │   │   └── session-storage.ts
+    │   ├── types/
+    │   │   ├── auth.ts
+    │   │   ├── api.ts
+    │   │   └── common.ts
+    │   └── utils/
+    │       ├── formatters.ts
+    │       ├── dates.ts
+    │       ├── tables.ts
+    │       └── downloads.ts
+    ├── shared/
+    │   ├── components/
+    │   │   ├── ui/
+    │   │   │   ├── Button.tsx
+    │   │   │   ├── Card.tsx
+    │   │   │   └── Badge.tsx
+    │   │   ├── forms/
+    │   │   │   ├── FormSection.tsx
+    │   │   │   └── FormField.tsx
+    │   │   ├── tables/
+    │   │   │   └── DataTable.tsx
+    │   │   ├── charts/
+    │   │   │   └── ChartCard.tsx
+    │   │   ├── feedback/
+    │   │   │   └── EmptyState.tsx
+    │   │   └── layout/
+    │   │       ├── AppLayout.tsx
+    │   │       ├── PublicLayout.tsx
+    │   │       ├── AppHeader.tsx
+    │   │       ├── AppSidebar.tsx
+    │   │       └── PageContainer.tsx
+    │   ├── hooks/
+    │   │   └── usePageTitle.ts
+    │   ├── constants/
+    │   │   └── ui.ts
+    │   ├── types/
+    │   │   └── layout.ts
+    │   └── utils/
+    │       └── classnames.ts
+    ├── features/
+    │   ├── auth/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/LoginPage.tsx
+    │   │   ├── services/auth.api.ts
+    │   │   ├── store/auth.slice.ts
+    │   │   ├── types/auth.ts
+    │   │   └── index.ts
+    │   ├── dashboard/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/DashboardPage.tsx
+    │   │   ├── services/dashboard.api.ts
+    │   │   ├── store/dashboard.slice.ts
+    │   │   ├── types/dashboard.ts
+    │   │   └── index.ts
+    │   ├── users/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/UsersPage.tsx
+    │   │   ├── services/users.api.ts
+    │   │   ├── store/users.slice.ts
+    │   │   ├── types/user.ts
+    │   │   └── index.ts
+    │   ├── roles/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/RolesPage.tsx
+    │   │   ├── services/roles.api.ts
+    │   │   ├── store/roles.slice.ts
+    │   │   ├── types/role.ts
+    │   │   └── index.ts
+    │   ├── audit/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/AuditPage.tsx
+    │   │   ├── services/audit.api.ts
+    │   │   ├── store/audit.slice.ts
+    │   │   ├── types/audit.ts
+    │   │   └── index.ts
+    │   ├── vehicles/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/VehiclesPage.tsx
+    │   │   ├── services/vehicles.api.ts
+    │   │   ├── store/vehicles.slice.ts
+    │   │   ├── types/vehicle.ts
+    │   │   └── index.ts
+    │   ├── drivers/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/DriversPage.tsx
+    │   │   ├── services/drivers.api.ts
+    │   │   ├── store/drivers.slice.ts
+    │   │   ├── types/driver.ts
+    │   │   └── index.ts
+    │   ├── clients/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/ClientsPage.tsx
+    │   │   ├── services/clients.api.ts
+    │   │   ├── store/clients.slice.ts
+    │   │   ├── types/client.ts
+    │   │   └── index.ts
+    │   ├── materials/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/MaterialsPage.tsx
+    │   │   ├── services/materials.api.ts
+    │   │   ├── store/materials.slice.ts
+    │   │   ├── types/material.ts
+    │   │   └── index.ts
+    │   ├── trips/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/TripsPage.tsx
+    │   │   ├── services/trips.api.ts
+    │   │   ├── store/trips.slice.ts
+    │   │   ├── types/trip.ts
+    │   │   └── index.ts
+    │   ├── rules/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/RulesPage.tsx
+    │   │   ├── services/rules.api.ts
+    │   │   ├── store/rules.slice.ts
+    │   │   ├── types/rule.ts
+    │   │   └── index.ts
+    │   ├── cess/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/CessPage.tsx
+    │   │   ├── services/cess.api.ts
+    │   │   ├── store/cess.slice.ts
+    │   │   ├── types/cess.ts
+    │   │   └── index.ts
+    │   ├── stores/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/StoresPage.tsx
+    │   │   ├── services/stores.api.ts
+    │   │   ├── store/stores.slice.ts
+    │   │   ├── types/store.ts
+    │   │   └── index.ts
+    │   ├── fuel/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/FuelPage.tsx
+    │   │   ├── services/fuel.api.ts
+    │   │   ├── store/fuel.slice.ts
+    │   │   ├── types/fuel.ts
+    │   │   └── index.ts
+    │   ├── maintenance/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/MaintenancePage.tsx
+    │   │   ├── services/maintenance.api.ts
+    │   │   ├── store/maintenance.slice.ts
+    │   │   ├── types/maintenance.ts
+    │   │   └── index.ts
+    │   ├── payroll/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/PayrollPage.tsx
+    │   │   ├── services/payroll.api.ts
+    │   │   ├── store/payroll.slice.ts
+    │   │   ├── types/payroll.ts
+    │   │   └── index.ts
+    │   ├── reports/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/ReportsPage.tsx
+    │   │   ├── services/reports.api.ts
+    │   │   ├── store/reports.slice.ts
+    │   │   ├── types/report.ts
+    │   │   └── index.ts
+    │   ├── notifications/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/NotificationsPage.tsx
+    │   │   ├── services/notifications.api.ts
+    │   │   ├── store/notifications.slice.ts
+    │   │   ├── types/notification.ts
+    │   │   └── index.ts
+    │   ├── settings/
+    │   │   ├── components/index.ts
+    │   │   ├── hooks/index.ts
+    │   │   ├── pages/SettingsPage.tsx
+    │   │   ├── services/settings.api.ts
+    │   │   ├── store/settings.slice.ts
+    │   │   ├── types/settings.ts
+    │   │   └── index.ts
+    │   ├── support/
+    │   │   ├── pages/SupportPage.tsx
+    │   │   └── index.ts
+    │   ├── docs/
+    │   │   ├── pages/DocsPage.tsx
+    │   │   └── index.ts
+    │   ├── legal/
+    │   │   ├── pages/LegalPage.tsx
+    │   │   └── index.ts
+    │   ├── not-found/
+    │   │   ├── pages/NotFoundPage.tsx
+    │   │   └── index.ts
+    │   └── unauthorized/
+    │       ├── pages/UnauthorizedPage.tsx
+    │       └── index.ts
+    ├── styles/
+    │   ├── variables.css
+    │   ├── theme.css
+    │   ├── globals.css
+    │   ├── components.css
+    │   └── animations.css
+    └── tests/
+        ├── unit/.gitkeep
+        ├── integration/.gitkeep
+        └── e2e/.gitkeep
+
+Notes
+- TypeScript-first frontend: use `.ts` for logic and `.tsx` for JSX.
+- App-wide framework concerns live under `src/core`.
+- Reusable presentation and UI primitives live under `src/shared`.
+- Each SEMKO feature owns its `components`, `hooks`, `pages`, `services`, `store`, and `types` inside the same feature directory.
+- The structure is aligned directly to the backend modules already implemented.

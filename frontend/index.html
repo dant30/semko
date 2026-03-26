@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>SEMKO Integrated Management System</title>
+    <meta
+      name="description"
+      content="SEMKO Integrated Management System for fleet operations, dispatch, stores, fuel, maintenance, payroll, and governance."
+    />
+    <meta name="theme-color" content="#123524" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --semko-cobalt: #235ad6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Manrope", system-ui, -apple-system, sans-serif;
+        background: radial-gradient(circle at top, #0e2230, #050b11 65%);
+        color: #e8f2ee;
+      }
+
+      #app-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: radial-gradient(circle at top, #0e2230, #050b11 65%);
+        z-index: 9999;
+      }
+
+      .loader-ring {
+        width: 56px;
+        height: 56px;
+        border-radius: 9999px;
+        border: 4px solid rgba(255, 255, 255, 0.15);
+        border-top-color: var(--semko-cobalt);
+        animation: spin 1s linear infinite;
+      }
+
+      .loader-text {
+        color: #d7e7ff;
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+      }
+
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-loader">
+      <div class="loader-ring"></div>
+      <div class="loader-text">Starting SEMKO workspace...</div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("app-loader");
+        if (loader) {
+          loader.classList.add("hidden");
+        }
+      });
+    </script>
+  </body>
+</html>

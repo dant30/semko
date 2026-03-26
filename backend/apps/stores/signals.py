@@ -1,0 +1,1 @@
+# backend/apps/stores/signals.py

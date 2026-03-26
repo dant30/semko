@@ -1,0 +1,566 @@
+SEMKO ROLE AND PERMISSION REFERENCE
+===================================
+
+Purpose
+-------
+This file gives you a clean, backend-aligned reference for creating roles in Django admin.
+All permission codes below are taken from the backend constants and are ready to paste into
+the `permissions` list field on each Role record.
+
+Core Rule
+---------
+1. Use Django `is_superuser=True` only for true system ownership.
+2. Use Role permissions for all normal business users.
+3. Prefer Role-based access over direct per-user permissions.
+4. The frontend sidebar is permission-driven, so users will only see modules that match
+   the permissions in their role or effective permissions.
+
+
+ALL AVAILABLE BACKEND PERMISSION CODES
+--------------------------------------
+users.view_user
+users.manage_user
+users.view_role
+users.manage_role
+audit.view_log
+vehicles.view_vehicle
+vehicles.manage_vehicle
+drivers.view_driver
+drivers.manage_driver
+clients.view_client
+clients.manage_client
+materials.view_material
+materials.manage_material
+trips.view_trip
+trips.manage_trip
+rules.view_rule
+rules.manage_rule
+cess.view_cess
+cess.manage_cess
+payroll.view_payroll
+payroll.manage_payroll
+payroll.view_own_payslip
+notifications.view_notification
+notifications.manage_notification
+stores.view_store
+stores.manage_store
+fuel.view_fuel
+fuel.manage_fuel
+maintenance.view_maintenance
+maintenance.manage_maintenance
+
+
+ROLE DESIGN PRINCIPLES
+----------------------
+System Administrator
+- Technical owner
+- Best handled with Django superuser
+- Should see everything automatically
+
+Director
+- Broad visibility across the app
+- Prefer Role-based full access instead of Django superuser
+- Good for executives who need app-wide visibility but not technical system root access
+
+Department Roles
+- Narrow roles should only see their working modules
+- Example: Trips Officer should see Trips and supporting master data, not Payroll or Users
+
+
+RECOMMENDED SAMPLE ROLES
+------------------------
+
+1. SYSTEM ADMINISTRATOR
+-----------------------
+Use for:
+- platform owner
+- backend/admin owner
+- technical admin
+
+Recommended setup:
+- `is_superuser=True`
+- `is_staff=True`
+- role optional
+
+If you still want a role record for reference, use:
+[
+  "users.view_user",
+  "users.manage_user",
+  "users.view_role",
+  "users.manage_role",
+  "audit.view_log",
+  "vehicles.view_vehicle",
+  "vehicles.manage_vehicle",
+  "drivers.view_driver",
+  "drivers.manage_driver",
+  "clients.view_client",
+  "clients.manage_client",
+  "materials.view_material",
+  "materials.manage_material",
+  "trips.view_trip",
+  "trips.manage_trip",
+  "rules.view_rule",
+  "rules.manage_rule",
+  "cess.view_cess",
+  "cess.manage_cess",
+  "payroll.view_payroll",
+  "payroll.manage_payroll",
+  "payroll.view_own_payslip",
+  "notifications.view_notification",
+  "notifications.manage_notification",
+  "stores.view_store",
+  "stores.manage_store",
+  "fuel.view_fuel",
+  "fuel.manage_fuel",
+  "maintenance.view_maintenance",
+  "maintenance.manage_maintenance"
+]
+
+
+2. DIRECTOR
+-----------
+Use for:
+- managing director
+- executive oversight
+- organization-wide visibility
+
+Recommended intent:
+- sees everything in the app
+- not necessarily Django superuser
+
+Recommended permissions:
+[
+  "users.view_user",
+  "users.view_role",
+  "audit.view_log",
+  "vehicles.view_vehicle",
+  "drivers.view_driver",
+  "clients.view_client",
+  "materials.view_material",
+  "trips.view_trip",
+  "rules.view_rule",
+  "cess.view_cess",
+  "payroll.view_payroll",
+  "notifications.view_notification",
+  "stores.view_store",
+  "fuel.view_fuel",
+  "maintenance.view_maintenance"
+]
+
+If you want the Director to actively approve or manage everything in the app, use:
+[
+  "users.view_user",
+  "users.manage_user",
+  "users.view_role",
+  "users.manage_role",
+  "audit.view_log",
+  "vehicles.view_vehicle",
+  "vehicles.manage_vehicle",
+  "drivers.view_driver",
+  "drivers.manage_driver",
+  "clients.view_client",
+  "clients.manage_client",
+  "materials.view_material",
+  "materials.manage_material",
+  "trips.view_trip",
+  "trips.manage_trip",
+  "rules.view_rule",
+  "rules.manage_rule",
+  "cess.view_cess",
+  "cess.manage_cess",
+  "payroll.view_payroll",
+  "payroll.manage_payroll",
+  "notifications.view_notification",
+  "notifications.manage_notification",
+  "stores.view_store",
+  "stores.manage_store",
+  "fuel.view_fuel",
+  "fuel.manage_fuel",
+  "maintenance.view_maintenance",
+  "maintenance.manage_maintenance"
+]
+
+
+3. OPERATIONS MANAGER
+---------------------
+Use for:
+- transport and site operations oversight
+- dispatch and delivery supervision
+- cross-module operational review
+
+Recommended permissions:
+[
+  "vehicles.view_vehicle",
+  "drivers.view_driver",
+  "clients.view_client",
+  "materials.view_material",
+  "trips.view_trip",
+  "trips.manage_trip",
+  "cess.view_cess",
+  "notifications.view_notification",
+  "stores.view_store",
+  "fuel.view_fuel",
+  "maintenance.view_maintenance"
+]
+
+
+4. TRIPS OFFICER
+----------------
+Use for:
+- trip creation
+- dispatch
+- delivery confirmation
+- document verification
+
+Recommended permissions:
+[
+  "vehicles.view_vehicle",
+  "drivers.view_driver",
+  "clients.view_client",
+  "materials.view_material",
+  "trips.view_trip",
+  "trips.manage_trip",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Trips
+- Drivers
+- Clients
+- Materials
+- Vehicles
+
+
+5. FUEL OFFICER
+---------------
+Use for:
+- fuel stations
+- fuel transactions
+- consumption monitoring
+
+Recommended permissions:
+[
+  "vehicles.view_vehicle",
+  "drivers.view_driver",
+  "fuel.view_fuel",
+  "fuel.manage_fuel",
+  "notifications.view_notification"
+]
+
+Optional addition if fuel entries should be linked to trip workflows:
+[
+  "vehicles.view_vehicle",
+  "drivers.view_driver",
+  "trips.view_trip",
+  "fuel.view_fuel",
+  "fuel.manage_fuel",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Fuel
+- Drivers
+- Vehicles
+- optionally Trips
+
+
+6. FLEET OFFICER
+----------------
+Use for:
+- vehicle records
+- asset readiness
+- vehicle oversight
+
+Recommended permissions:
+[
+  "vehicles.view_vehicle",
+  "vehicles.manage_vehicle",
+  "drivers.view_driver",
+  "notifications.view_notification"
+]
+
+Optional stronger operational variant:
+[
+  "vehicles.view_vehicle",
+  "vehicles.manage_vehicle",
+  "drivers.view_driver",
+  "fuel.view_fuel",
+  "maintenance.view_maintenance",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Vehicles
+- Drivers
+- optionally Fuel
+- optionally Maintenance
+
+
+7. MAINTENANCE OFFICER
+----------------------
+Use for:
+- maintenance schedules
+- service records
+- workshop activity
+- parts usage
+
+Recommended permissions:
+[
+  "vehicles.view_vehicle",
+  "maintenance.view_maintenance",
+  "maintenance.manage_maintenance",
+  "stores.view_store",
+  "notifications.view_notification"
+]
+
+Optional variant if maintenance team should directly manage parts flow:
+[
+  "vehicles.view_vehicle",
+  "maintenance.view_maintenance",
+  "maintenance.manage_maintenance",
+  "stores.view_store",
+  "stores.manage_store",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Maintenance
+- Vehicles
+- Stores
+
+
+8. STORES OFFICER
+-----------------
+Use for:
+- stock receiving
+- requisitions
+- issues
+- adjustments
+- item control
+
+Recommended permissions:
+[
+  "stores.view_store",
+  "stores.manage_store",
+  "notifications.view_notification"
+]
+
+Optional broader operational variant:
+[
+  "stores.view_store",
+  "stores.manage_store",
+  "maintenance.view_maintenance",
+  "fuel.view_fuel",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Stores
+- optionally Maintenance
+- optionally Fuel
+
+
+9. PAYROLL / HR OFFICER
+-----------------------
+Use for:
+- payroll periods
+- payslips
+- compensation profiles
+- payroll items
+
+Recommended permissions:
+[
+  "drivers.view_driver",
+  "trips.view_trip",
+  "payroll.view_payroll",
+  "payroll.manage_payroll",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Payroll
+- Trips
+- Drivers
+
+
+10. DRIVER SELF-SERVICE
+-----------------------
+Use for:
+- driver user account
+- own payslip visibility
+- personal notifications
+
+Recommended permissions:
+[
+  "payroll.view_own_payslip",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Notifications
+- own payslip access where surfaced
+
+
+11. CESS / FINANCE OFFICER
+--------------------------
+Use for:
+- cess transactions
+- cess tracking
+- financial review of trip-linked statutory items
+
+Recommended permissions:
+[
+  "trips.view_trip",
+  "cess.view_cess",
+  "cess.manage_cess",
+  "notifications.view_notification"
+]
+
+Optional finance variant:
+[
+  "trips.view_trip",
+  "cess.view_cess",
+  "cess.manage_cess",
+  "payroll.view_payroll",
+  "notifications.view_notification"
+]
+
+Expected sidebar shape:
+- Trips
+- Cess
+- optionally Payroll
+
+
+12. AUDIT / COMPLIANCE OFFICER
+------------------------------
+Use for:
+- audit trail review
+- compliance oversight
+- read-only system visibility where needed
+
+Recommended permissions:
+[
+  "users.view_user",
+  "users.view_role",
+  "audit.view_log",
+  "trips.view_trip",
+  "payroll.view_payroll",
+  "stores.view_store",
+  "fuel.view_fuel",
+  "maintenance.view_maintenance"
+]
+
+Expected sidebar shape:
+- Users
+- Roles
+- Audit
+- Trips
+- Payroll
+- Stores
+- Fuel
+- Maintenance
+
+
+PRACTICAL QUICK SETUPS
+----------------------
+
+If you want a user to see ONLY Trips:
+[
+  "trips.view_trip"
+]
+
+If they should also work in Trips:
+[
+  "trips.view_trip",
+  "trips.manage_trip"
+]
+
+If you want a user to see ONLY Fuel:
+[
+  "fuel.view_fuel"
+]
+
+If they should also manage Fuel:
+[
+  "fuel.view_fuel",
+  "fuel.manage_fuel"
+]
+
+If you want a user to see ONLY Vehicles:
+[
+  "vehicles.view_vehicle"
+]
+
+If they should also manage Vehicles:
+[
+  "vehicles.view_vehicle",
+  "vehicles.manage_vehicle"
+]
+
+If you want a user to see Trips + Fuel + Vehicles:
+[
+  "vehicles.view_vehicle",
+  "trips.view_trip",
+  "fuel.view_fuel"
+]
+
+If they should manage all three:
+[
+  "vehicles.view_vehicle",
+  "vehicles.manage_vehicle",
+  "trips.view_trip",
+  "trips.manage_trip",
+  "fuel.view_fuel",
+  "fuel.manage_fuel"
+]
+
+
+WHAT TO DO FOR YOUR OWN ACCOUNT
+-------------------------------
+For your own admin account:
+- keep `is_superuser=True`
+- keep `is_staff=True`
+- role can be left blank, or assigned to a full-access role if you want consistency
+
+Important:
+- an empty role with `permissions=[]` gives a normal user almost nothing
+- a superuser should still see everything because the frontend now honors `is_superuser`
+
+
+WHAT TO DO FOR A DIRECTOR USER
+------------------------------
+Best practice:
+- create a normal user
+- set `is_staff=False` unless they must access Django admin
+- assign the `Director` role
+- do NOT make them Django superuser unless they truly need system-root powers
+
+If the Director must use Django admin too:
+- set `is_staff=True`
+- keep them non-superuser unless truly necessary
+
+
+RECOMMENDED STARTING ROLE SET
+-----------------------------
+Create these first:
+- System Administrator
+- Director
+- Operations Manager
+- Trips Officer
+- Fuel Officer
+- Fleet Officer
+- Maintenance Officer
+- Stores Officer
+- Payroll Officer
+- Cess Officer
+- Audit Officer
+
+
+FINAL RECOMMENDATION
+--------------------
+Use this model:
+- You: Django superuser
+- Director: broad all-module role
+- Department users: narrow business roles
+- Direct user permissions: only for exceptions
+- Groups: optional, not required for this system to work

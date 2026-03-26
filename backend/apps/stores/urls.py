@@ -1,0 +1,95 @@
+from django.urls import path
+
+from apps.stores.views.api import (
+    AdjustmentDetailAPIView,
+    AdjustmentListCreateAPIView,
+    ItemDetailAPIView,
+    ItemListCreateAPIView,
+    PurchaseOrderDetailAPIView,
+    PurchaseOrderListCreateAPIView,
+    RequisitionDetailAPIView,
+    RequisitionListCreateAPIView,
+    StockIssueDetailAPIView,
+    StockIssueListCreateAPIView,
+    StockReceivingDetailAPIView,
+    StockReceivingListCreateAPIView,
+    SupplierCreateAPIView,
+    SupplierDetailAPIView,
+    SupplierListAPIView,
+    StoresSummaryAPIView,
+)
+
+urlpatterns = [
+    path("", ItemListCreateAPIView.as_view(), name="store-item-list-create"),
+    path("<int:pk>/", ItemDetailAPIView.as_view(), name="store-item-detail"),
+    path(
+        "receivings/",
+        StockReceivingListCreateAPIView.as_view(),
+        name="store-receiving-list-create",
+    ),
+    path(
+        "receivings/<int:pk>/",
+        StockReceivingDetailAPIView.as_view(),
+        name="store-receiving-detail",
+    ),
+    path(
+        "requisitions/",
+        RequisitionListCreateAPIView.as_view(),
+        name="store-requisition-list-create",
+    ),
+    path(
+        "requisitions/<int:pk>/",
+        RequisitionDetailAPIView.as_view(),
+        name="store-requisition-detail",
+    ),
+    path(
+        "issues/",
+        StockIssueListCreateAPIView.as_view(),
+        name="store-issue-list-create",
+    ),
+    path(
+        "issues/<int:pk>/",
+        StockIssueDetailAPIView.as_view(),
+        name="store-issue-detail",
+    ),
+    path(
+        "purchase-orders/",
+        PurchaseOrderListCreateAPIView.as_view(),
+        name="store-purchase-order-list-create",
+    ),
+    path(
+        "purchase-orders/<int:pk>/",
+        PurchaseOrderDetailAPIView.as_view(),
+        name="store-purchase-order-detail",
+    ),
+    path(
+        "suppliers/",
+        SupplierListAPIView.as_view(),
+        name="store-supplier-list",
+    ),
+    path(
+        "suppliers/create/",
+        SupplierCreateAPIView.as_view(),
+        name="store-supplier-create",
+    ),
+    path(
+        "suppliers/<int:pk>/",
+        SupplierDetailAPIView.as_view(),
+        name="store-supplier-detail",
+    ),
+    path(
+        "adjustments/",
+        AdjustmentListCreateAPIView.as_view(),
+        name="store-adjustment-list-create",
+    ),
+    path(
+        "adjustments/<int:pk>/",
+        AdjustmentDetailAPIView.as_view(),
+        name="store-adjustment-detail",
+    ),
+    path(
+        "summary/",
+        StoresSummaryAPIView.as_view(),
+        name="store-summary",
+    ),
+]

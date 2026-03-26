@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: semko-backend
+    env: python
+    plan: free
+    region: oregon
+    rootDir: backend
+    autoDeploy: true
+    healthCheckPath: /api/health/
+    buildCommand: bash ./backend/build.sh
+    startCommand: gunicorn semko.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: semko.settings.production
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: semko-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: semko-redis
+          property: connectionString
+
+  - type: static
+    name: semko-frontend
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: redis
+    name: semko-redis
+    plan: free
+    region: oregon
+
+databases:
+  - name: semko-db
+    databaseName: semko_db
+    plan: free
+    region: oregon
