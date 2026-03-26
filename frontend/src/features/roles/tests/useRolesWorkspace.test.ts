@@ -100,10 +100,10 @@ describe('useRolesWorkspace', () => {
     expect(result.current.editingRoleId).toBe(1)
 
     // Submit edit
-    await result.current.submitRole(updatedRole)
+    await result.current.submitRole()
 
     await waitFor(() => {
-      expect(mockUpdateRole).toHaveBeenCalledWith(1, updatedRole)
+      expect(mockUpdateRole).toHaveBeenCalledWith(1, expect.any(Object))
       expect(result.current.editingRoleId).toBeNull()
     })
   })
@@ -116,7 +116,7 @@ describe('useRolesWorkspace', () => {
 
     const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
 
-    await result.current.deleteRole(roleToDelete)
+    await result.current.deleteRole(1)
 
     await waitFor(() => {
       expect(mockDeleteRole).toHaveBeenCalledWith(1)

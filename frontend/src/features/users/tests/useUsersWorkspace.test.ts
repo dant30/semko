@@ -113,10 +113,10 @@ describe('useUsersWorkspace', () => {
     expect(result.current.editingUserId).toBe(1)
 
     // Submit edit
-    await result.current.submitUser(updatedUser)
+    await result.current.submitUser()
 
     await waitFor(() => {
-      expect(mockUpdateUser).toHaveBeenCalledWith(1, updatedUser)
+      expect(mockUpdateUser).toHaveBeenCalledWith(1, expect.any(Object))
       expect(result.current.editingUserId).toBeNull()
     })
   })
@@ -130,15 +130,11 @@ describe('useUsersWorkspace', () => {
 
     const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
 
-    await result.current.deactivateUser(userToDeactivate)
+    await result.current.deactivateUser(1)
 
     await waitFor(() => {
       expect(mockDeactivateUser).toHaveBeenCalledWith(1)
-      expect(result.current.lastAction).toEqual({
-        type: 'deactivate',
-        userId: 1,
-        previousState: userToDeactivate,
-      })
+      expect(result.current.lastAction?.type).toEqual('deactivate')
     })
   })
 

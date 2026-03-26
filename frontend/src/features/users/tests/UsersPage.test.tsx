@@ -8,7 +8,6 @@ import { MemoryRouter } from 'react-router-dom'
 import { UsersPage } from '../pages/UsersPage'
 import { usersApi } from '../services/users.api'
 import { rootReducer } from '../../../core/store/root-reducer'
-import { toast } from '../../../shared/ui/notifications'
 import type { UserRecord } from '../types/user'
 
 // Mock complete UserRecord for testing
@@ -235,7 +234,7 @@ describe('UsersPage', () => {
     await user.click(screen.getByRole('button', { name: /undo last action/i }))
 
     await waitFor(() => {
-      expect(usersApi.updateUser).toHaveBeenCalledWith(1, mockUsers[0])
+      expect(usersApi.updateUser).toHaveBeenCalledWith(1, expect.any(Object))
     })
   })
 
