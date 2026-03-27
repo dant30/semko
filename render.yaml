@@ -10,6 +10,8 @@ services:
     buildCommand: bash build.sh
     startCommand: gunicorn semko.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
       - key: DJANGO_SETTINGS_MODULE
         value: semko.settings.production
       - key: DEBUG
