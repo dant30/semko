@@ -3,6 +3,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/health/', HealthCheckAPIView.as_view(), name='health'),
     path('api/core/', include('apps.core.urls')),
     path('api/users/', include('apps.users.urls')),
     path('api/vehicles/', include('apps.vehicles.urls')),
