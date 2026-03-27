@@ -4,6 +4,18 @@ from .base import *
 DEBUG = False
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'www.semko.co.ke,semko.co.ke').split(',')
 
+# Render injects the active hostname in RENDER_EXTERNAL_HOSTNAME; allow it for health checks
+RENDER_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_HOSTNAME and RENDER_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_HOSTNAME)
+
+# Also accept explicit legacy ALLOWED_HOSTS env var from UI (for compatibility)
+LEGACY_HOSTS = os.environ.get('ALLOWED_HOSTS')
+if LEGACY_HOSTS:
+    for host in [h.strip() for h in LEGACY_HOSTS.split(',') if h.strip()]:
+        if host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(host)
+
 # ============================================================================
 # Security: HTTPS & Cookies
 # ============================================================================
@@ -39,6 +51,11 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
     'https://www.semko.co.ke,https://semko.co.ke'
 ).split(',')
+
+FRONTEND_URL = os.environ.get('FRONTEND_URL') or os.environ.get('VITE_API_URL')
+if FRONTEND_URL and FRONTEND_URL not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+
 CORS_ALLOW_CREDENTIALS = True
 
 # Restrict CORS methods and headers
