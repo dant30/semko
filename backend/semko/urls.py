@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 
+from apps.core.views.api import HealthCheckAPIView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/health/', HealthCheckAPIView.as_view(), name='health'),
