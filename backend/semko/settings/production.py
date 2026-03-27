@@ -71,8 +71,11 @@ DATABASES['default']['CONN_MAX_AGE'] = 600  # 10 minutes per connection
 # Secrets & Keys
 # ============================================================================
 # Enforce SECRET_KEY from environment; no hardcoded fallback
-if not os.environ.get('DJANGO_SECRET_KEY'):
+DJANGO_SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or os.environ.get('SECRET_KEY')
+if not DJANGO_SECRET_KEY:
     raise ValueError(
-        "DJANGO_SECRET_KEY environment variable must be set in production. "
+        "DJANGO_SECRET_KEY or SECRET_KEY environment variable must be set in production. "
         "Generate with: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'"
     )
+
+SECRET_KEY = DJANGO_SECRET_KEY
