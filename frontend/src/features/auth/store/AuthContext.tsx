@@ -1,6 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useAppDispatch } from "@/core/store/hooks";
 import { clearSession, getAccessToken, getStoredUser, persistSession } from "@/core/auth/auth-session";
 import { authApi } from "@/features/auth/services/auth.api";
+import { setSession, clearAuth } from "@/features/auth/store/auth.slice";
 import type { AuthUser, LoginPayload } from "@/core/types/auth";
 
 interface AuthContextType {
@@ -34,6 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
+  const dispatch = useAppDispatch();
+
   // Login handler
   const login = useCallback(async (payload: LoginPayload) => {
     setLoading(true);
@@ -55,25 +59,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Persist session with performed and verified data
       persistSession(response.access, response.refresh, user);
 
+      dispatch(
+        setSession({
+          access: response.access,
+          refresh: response.refresh,
+          user,
+        })
+      );
+
       setUser(user || null);
       setIsAuthenticated(true);
     } catch (error) {
       console.error("Login failed:", error);
       clearSession();
+      dispatch(clearAuth());
       setUser(null);
       setIsAuthenticated(false);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dispatch]);
 
   // Logout handler
   const logout = useCallback(() => {
     clearSession();
+    dispatch(clearAuth());
     setUser(null);
     setIsAuthenticated(false);
-  }, []);
+  }, [dispatch]);
 
   const value: AuthContextType = {
     user,

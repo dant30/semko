@@ -113,10 +113,18 @@ export function useNotificationsWorkspace() {
   }, [filters.search, filters.status, filters.channel, filters.eventCode, showToast]);
 
   // Fetch notifications when filters change
+  const { isAuthenticated } = useAuthContext();
+
   useEffect(() => {
+    if (!isAuthenticated) {
+      setNotifications([]);
+      setArchivedNotifications([]);
+      return;
+    }
+
     void fetchNotifications();
     void fetchArchivedNotifications();
-  }, [filters.search, filters.status, filters.channel, filters.eventCode, fetchNotifications, fetchArchivedNotifications]);
+  }, [isAuthenticated, filters.search, filters.status, filters.channel, filters.eventCode, fetchNotifications, fetchArchivedNotifications]);
 
   // ========================================================================
   // FETCH SUMMARY

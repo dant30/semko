@@ -24,7 +24,7 @@ class BlacklistAwareJWTAuthentication(JWTAuthentication):
         if result is None:
             return result
 
-        validated_token, user = result
+        user, validated_token = result
 
         # Extract the raw token from the Authorization header
         try:

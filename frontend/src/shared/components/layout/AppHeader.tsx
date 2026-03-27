@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/core/contexts/useTheme";
 import { appRoutes } from "@/core/constants/routes";
 import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
+import { useAuthContext } from "@/features/auth/store/AuthContext";
 import { clearAuth } from "@/features/auth/store/auth.slice";
 import { notificationsApi } from "@/features/notifications/services/notifications.api";
 import type { NotificationRecord } from "@/features/notifications/types/notification";
@@ -58,6 +59,7 @@ export function AppHeader({ onToggleSidebar, onToggleSidebarCollapse, sidebarCol
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
+  const { logout } = useAuthContext();
   const user = useAppSelector((state) => state.auth.user);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -226,9 +228,10 @@ export function AppHeader({ onToggleSidebar, onToggleSidebarCollapse, sidebarCol
   }, [isMobileSearchOpen]);
 
   const handleLogout = useCallback(() => {
+    logout();
     dispatch(clearAuth());
     navigate(appRoutes.login, { replace: true });
-  }, [dispatch, navigate]);
+  }, [dispatch, logout, navigate]);
 
   const handleSearch = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {

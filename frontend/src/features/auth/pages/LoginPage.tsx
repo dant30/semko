@@ -1,5 +1,5 @@
 // frontend/src/features/auth/pages/LoginPage.tsx
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { APP_NAME, APP_TAGLINE } from "@/core/constants/app";
@@ -12,18 +12,12 @@ import { Input } from "@/shared/components/ui/Input";
 import { PasswordInput } from "@/shared/components/ui/PasswordInput";
 
 export function LoginPage() {
-  const { login, isAuthenticated, loading } = useAuthContext();
+  const { login } = useAuthContext();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!loading && isAuthenticated) {
-      navigate(appRoutes.dashboard, { replace: true });
-    }
-  }, [isAuthenticated, loading, navigate]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
