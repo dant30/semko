@@ -211,10 +211,8 @@ describe('UsersPage', () => {
     const adminUser = createMockUser({ id: 1, username: 'admin', email: 'admin@example.com', first_name: 'Admin', is_staff: true })
     const mockUsers = [adminUser]
 
-    const deactivatedUser = createMockUser({ ...adminUser, is_active: false })
-
     vi.mocked(usersApi.fetchUsers).mockResolvedValue(mockUsers)
-    vi.mocked(usersApi.deactivateUser).mockResolvedValue(deactivatedUser)
+    vi.mocked(usersApi.deactivateUser).mockResolvedValue(undefined)
     vi.mocked(usersApi.updateUser).mockResolvedValue(adminUser)
 
     render(<UsersPage />, { wrapper })

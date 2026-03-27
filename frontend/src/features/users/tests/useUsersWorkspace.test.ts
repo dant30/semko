@@ -79,9 +79,13 @@ describe('useUsersWorkspace', () => {
       email: 'newuser@example.com',
       first_name: 'New',
       last_name: 'User',
-      role: 1,
+      phone_number: '',
+      role_id: 1,
       password: 'password123',
       password_confirm: 'password123',
+      is_active: true,
+      is_staff: false,
+      must_change_password: false,
     }
 
     const createdUser = createMockUser({ id: 3, username: 'newuser', email: 'newuser@example.com', first_name: 'New' })
@@ -175,9 +179,13 @@ describe('useUsersWorkspace', () => {
       email: 'newuser@example.com',
       first_name: 'New',
       last_name: 'User',
-      role: 1,
+      phone_number: '',
+      role_id: 1,
       password: 'password123',
       password_confirm: 'password123',
+      is_active: true,
+      is_staff: false,
+      must_change_password: false,
     }
 
     vi.mocked(usersApi.createUser).mockResolvedValue(createMockUser({ id: 3, username: 'newuser', email: 'newuser@example.com', first_name: 'New' }))
@@ -210,9 +218,13 @@ describe('useUsersWorkspace', () => {
       email: 'newuser@example.com',
       first_name: 'New',
       last_name: 'User',
-      role: 1,
+      phone_number: '',
+      role_id: 1,
       password: 'password123',
       password_confirm: 'password123',
+      is_active: true,
+      is_staff: false,
+      must_change_password: false,
     }
 
     result.current.setUserForm(newUser)
