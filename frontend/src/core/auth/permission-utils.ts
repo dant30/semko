@@ -1,3 +1,4 @@
+// frontend/src/core/auth/permission-utils.ts
 import type { AuthUser } from "@/core/types/auth";
 
 export function getUserPermissions(user?: AuthUser | null) {

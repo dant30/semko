@@ -6,6 +6,7 @@ import { ThemeProvider } from "./ThemeProvider";
 import { NotificationProvider } from "./NotificationProvider";
 import { store } from "@/core/store";
 import { registerApiInterceptors } from "@/core/api/interceptors";
+import { AuthProvider } from "@/features/auth/store/AuthContext";
 
 export function AppProviders({ children }: PropsWithChildren) {
   useEffect(() => {
@@ -14,9 +15,11 @@ export function AppProviders({ children }: PropsWithChildren) {
 
   return (
     <Provider store={store}>
-      <ThemeProvider>
-        <NotificationProvider>{children}</NotificationProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <NotificationProvider>{children}</NotificationProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </Provider>
   );
 }

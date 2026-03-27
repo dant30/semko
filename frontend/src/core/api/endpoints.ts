@@ -1,3 +1,4 @@
+// frontend/src/core/api/endpoints.ts
 export const endpoints = {
   auth: {
     login: "/users/login/",

@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -11,6 +12,7 @@ from apps.users.serializers import DEFAULT_ADMIN_ROLE_PERMISSIONS
 User = get_user_model()
 
 
+@override_settings(ALLOW_PUBLIC_REGISTRATION=True)
 class AuthAPITests(APITestCase):
     def setUp(self):
         self.role = Role.objects.create(
@@ -68,3 +70,22 @@ class AuthAPITests(APITestCase):
 
     def test_role_permissions_are_serialized(self):
         self.assertIn(RolePermissionCodes.MANAGE_USERS, self.role.permissions)
+
+    def test_user_login_fails_with_invalid_credentials(self):
+        User.objects.create_user(
+            username="john",
+            email="john@example.com",
+            password="S3curePass123",
+            role=self.role,
+        )
+
+        login_response = self.client.post(
+            reverse("token-obtain-pair"),
+            {"username": "john", "password": "wrong-password"},
+            format="json",
+        )
+
+        self.assertEqual(login_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertNotIn("access", login_response.data)
+        self.assertNotIn("refresh", login_response.data)
+

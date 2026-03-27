@@ -1,3 +1,4 @@
+# semko/settings/testing.py
 from .base import *
 
 DEBUG = True

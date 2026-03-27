@@ -1,3 +1,4 @@
+// frontend/src/features/auth/pages/ResetPasswordPage.tsx
 import { useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 

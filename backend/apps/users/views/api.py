@@ -6,11 +6,14 @@ from django.core.mail import send_mail
 from django.db.models import Q
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from datetime import timedelta
 
 from apps.audit.models import AuditLog
 from apps.core.constants import RolePermissionCodes
@@ -27,7 +30,8 @@ from apps.users.serializers import (
     UserSelfUpdateSerializer,
     UserUpdateSerializer,
 )
-from apps.users.models import Role
+from apps.users.models import Role, TokenBlacklist
+
 
 User = get_user_model()
 
@@ -67,6 +71,28 @@ class ChangePasswordAPIView(APIView):
         user.must_change_password = False
         user.save(update_fields=["password", "must_change_password", "updated_at"])
 
+        # Blacklist current token to force re-authentication
+        try:
+            auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+            if auth_header.startswith('Bearer '):
+                token = auth_header.split(' ', 1)[1]
+                # Get token expiration from the token itself
+                from rest_framework_simplejwt.tokens import AccessToken
+                try:
+                    access_token = AccessToken(token)
+                    expires_at = timezone.datetime.fromtimestamp(access_token['exp'], tz=timezone.utc)
+                    TokenBlacklist.blacklist_token(
+                        token,
+                        user,
+                        token_type="access",
+                        expires_at=expires_at,
+                        reason="password_change",
+                    )
+                except:
+                    pass
+        except:
+            pass
+
         AuditLog.objects.create(
             actor=user,
             action=AuditLog.Action.UPDATE,
@@ -76,7 +102,82 @@ class ChangePasswordAPIView(APIView):
             metadata={"event": "password_change"},
         )
 
-        return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Password changed successfully. Please login again."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class LogoutAPIView(APIView):
+    """
+    Logout endpoint that blacklists both access and refresh tokens.
+    """
+
+    permission_classes = [IsAuthenticatedAndActive]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            access_token_str = None
+
+            # Extract access token from Authorization header
+            auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+            if auth_header.startswith("Bearer "):
+                access_token_str = auth_header.split(" ", 1)[1]
+
+            # Blacklist access token
+            if access_token_str:
+                try:
+                    from rest_framework_simplejwt.tokens import AccessToken
+                    access_token = AccessToken(access_token_str)
+                    expires_at = timezone.datetime.fromtimestamp(
+                        access_token["exp"], tz=timezone.utc
+                    )
+                    TokenBlacklist.blacklist_token(
+                        access_token_str,
+                        request.user,
+                        token_type="access",
+                        expires_at=expires_at,
+                        reason="logout",
+                    )
+                except Exception as e:
+                    pass
+
+            # Blacklist refresh token
+            if refresh_token:
+                try:
+                    refresh = RefreshToken(refresh_token)
+                    expires_at = timezone.datetime.fromtimestamp(
+                        refresh["exp"], tz=timezone.utc
+                    )
+                    TokenBlacklist.blacklist_token(
+                        refresh_token,
+                        request.user,
+                        token_type="refresh",
+                        expires_at=expires_at,
+                        reason="logout",
+                    )
+                except Exception as e:
+                    pass
+
+            AuditLog.objects.create(
+                actor=request.user,
+                action=AuditLog.Action.UPDATE,
+                method=request.method,
+                path=request.path,
+                status_code=200,
+                metadata={"event": "logout"},
+            )
+
+            return Response(
+                {"detail": "Successfully logged out."},
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            return Response(
+                {"detail": f"Logout failed: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class ForgotPasswordAPIView(APIView):
@@ -129,6 +230,11 @@ class ResetPasswordAPIView(APIView):
         user.must_change_password = False
         user.save(update_fields=["password", "must_change_password", "updated_at"])
 
+        # Blacklist all existing tokens for security
+        # (password reset implies compromise or account recovery)
+        far_future = timezone.now() + timedelta(days=365)
+        TokenBlacklist.objects.filter(user=user, expires_at__gt=timezone.now()).delete()
+
         AuditLog.objects.create(
             actor=user,
             action=AuditLog.Action.UPDATE,
@@ -138,7 +244,7 @@ class ResetPasswordAPIView(APIView):
             metadata={"event": "password_reset"},
         )
 
-        return Response({"detail": "Password has been reset."}, status=status.HTTP_200_OK)
+        return Response({"detail": "Password has been reset. Please login again."}, status=status.HTTP_200_OK)
 
 
 class UserListCreateAPIView(generics.ListCreateAPIView):

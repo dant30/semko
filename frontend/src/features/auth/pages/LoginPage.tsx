@@ -1,11 +1,10 @@
-import { useState, type FormEvent } from "react";
+// frontend/src/features/auth/pages/LoginPage.tsx
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { APP_NAME, APP_TAGLINE } from "@/core/constants/app";
 import { appRoutes } from "@/core/constants/routes";
-import { useAppDispatch } from "@/core/store/hooks";
-import { authApi } from "@/features/auth/services/auth.api";
-import { setSession } from "@/features/auth/store/auth.slice";
+import { useAuthContext } from "@/features/auth/store/AuthContext";
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
 import { Card } from "@/shared/components/ui/Card";
@@ -13,12 +12,18 @@ import { Input } from "@/shared/components/ui/Input";
 import { PasswordInput } from "@/shared/components/ui/PasswordInput";
 
 export function LoginPage() {
-  const dispatch = useAppDispatch();
+  const { login, isAuthenticated, loading } = useAuthContext();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate(appRoutes.dashboard, { replace: true });
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,18 +31,14 @@ export function LoginPage() {
     setError("");
 
     try {
-      const session = await authApi.login({ username, password });
-      const me = await authApi.fetchMe(session.access);
-      dispatch(
-        setSession({
-          access: session.access,
-          refresh: session.refresh,
-          user: me,
-        })
-      );
+      await login({ username, password });
       navigate(appRoutes.dashboard, { replace: true });
-    } catch {
-      setError("We could not sign you in. Please confirm your credentials.");
+    } catch (err) {
+      const errPayload = err as { response?: { data?: { detail?: string } } };
+      const message =
+        errPayload.response?.data?.detail ||
+        "We could not sign you in. Please confirm your credentials.";
+      setError(message);
     } finally {
       setSubmitting(false);
     }

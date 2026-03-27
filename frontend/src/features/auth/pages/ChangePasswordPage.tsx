@@ -1,3 +1,4 @@
+// frontend/src/features/auth/pages/ChangePasswordPage.tsx
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 

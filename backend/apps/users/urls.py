@@ -5,6 +5,7 @@ from apps.users.views.api import (
     ChangePasswordAPIView,
     ForgotPasswordAPIView,
     LoginAPIView,
+    LogoutAPIView,
     MeAPIView,
     RegisterAPIView,
     ResetPasswordAPIView,
@@ -17,6 +18,7 @@ from apps.users.views.api import (
 urlpatterns = [
     path("register/", RegisterAPIView.as_view(), name="user-register"),
     path("login/", LoginAPIView.as_view(), name="token-obtain-pair"),
+    path("logout/", LogoutAPIView.as_view(), name="user-logout"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path("me/", MeAPIView.as_view(), name="user-me"),
     path("password/change/", ChangePasswordAPIView.as_view(), name="user-password-change"),

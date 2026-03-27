@@ -1,3 +1,4 @@
+# backend/semko/settings/base.py
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -134,15 +135,18 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'apps.users.authentication.BlacklistAwareJWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Short-lived access tokens
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Longer-lived refresh tokens
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'JTI_CLAIM': 'jti',
+    'UPDATE_LAST_LOGIN': True,
 }
 
 # Cross-origin configuration (environment-driven, with secure defaults)
