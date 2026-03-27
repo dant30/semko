@@ -1,3 +1,4 @@
+# backend/apps/core/utils/permissions.py
 def user_has_role_permission(user, permission_code):
     if not user or not getattr(user, "is_authenticated", False):
         return False

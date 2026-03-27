@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 
+const BACKEND_TARGET = process.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -18,17 +20,19 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:8000",
+        target: BACKEND_TARGET,
         changeOrigin: true,
         secure: false,
+        // Rewrite to v1 path automatically; useful when `/api` is proxied to `/api/v1`
+        // pathRewrite: { "^/api": "/api/v1" },
       },
       "/media": {
-        target: "http://127.0.0.1:8000",
+        target: BACKEND_TARGET,
         changeOrigin: true,
         secure: false,
       },
       "/static": {
-        target: "http://127.0.0.1:8000",
+        target: BACKEND_TARGET,
         changeOrigin: true,
         secure: false,
       },

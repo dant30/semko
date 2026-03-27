@@ -1,3 +1,4 @@
+# backend/apps/core/permissions.py
 from rest_framework.permissions import BasePermission
 
 from apps.core.utils.permissions import user_has_role_permission

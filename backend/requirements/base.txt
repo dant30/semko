@@ -4,5 +4,5 @@ djangorestframework==3.14
 djangorestframework-simplejwt==5.3.1
 psycopg2-binary==2.9.10
 python-dotenv==1.0
+django-cors-headers==3.14.0   # ✅ FIXED
 celery==5.4.0
-

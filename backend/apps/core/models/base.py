@@ -1,3 +1,4 @@
+# backend/apps/core/models/base.py
 from django.db import models
 
 

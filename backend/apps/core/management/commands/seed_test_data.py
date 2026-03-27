@@ -175,8 +175,9 @@ class Command(BaseCommand):
                         line.received_quantity += received_qty
                         line.save()
 
-            for _ in range(5):
-                item = random.choice(items)
+            direct_items = random.sample(items, min(5, len(items)))
+            direct_suppliers = random.sample(suppliers, min(5, len(suppliers)))
+            for item, supplier in zip(direct_items, direct_suppliers):
                 qty = Decimal(random.randint(5, 50))
                 StockReceiving.objects.create(
                     item=item,
@@ -184,7 +185,7 @@ class Command(BaseCommand):
                     received_date=date.today() - timedelta(days=random.randint(1, 20)),
                     quantity=qty,
                     unit_cost=Decimal(str(random.randint(10, 200))) / 10,
-                    supplier_name=random.choice(suppliers).name,
+                    supplier_name=supplier.name,
                     notes="Direct receiving without PO",
                     is_active=True,
                 )
@@ -192,18 +193,18 @@ class Command(BaseCommand):
             # 7. Create requisitions
             requisitions = []
             requesting_user = User.objects.filter(is_staff=True).first() or User.objects.first()
-            for _ in range(10):
-                item = random.choice(items)
+            requisition_items = random.choices(items, k=10)
+            requisition_statuses = [
+                Requisition.RequisitionStatus.DRAFT,
+                Requisition.RequisitionStatus.PENDING_APPROVAL,
+                Requisition.RequisitionStatus.APPROVED,
+                Requisition.RequisitionStatus.PARTIALLY_ISSUED,
+                Requisition.RequisitionStatus.FULFILLED,
+                Requisition.RequisitionStatus.REJECTED,
+                Requisition.RequisitionStatus.CANCELLED,
+            ]
+            for item, status in zip(requisition_items, random.choices(requisition_statuses, k=10)):
                 qty_requested = Decimal(random.randint(1, 30))
-                status = random.choice([
-                    Requisition.RequisitionStatus.DRAFT,
-                    Requisition.RequisitionStatus.PENDING_APPROVAL,
-                    Requisition.RequisitionStatus.APPROVED,
-                    Requisition.RequisitionStatus.PARTIALLY_ISSUED,
-                    Requisition.RequisitionStatus.FULFILLED,
-                    Requisition.RequisitionStatus.REJECTED,
-                    Requisition.RequisitionStatus.CANCELLED,
-                ])
                 quantity_approved = None
                 if status in [
                     Requisition.RequisitionStatus.APPROVED,
@@ -257,8 +258,8 @@ class Command(BaseCommand):
                             req.status = Requisition.RequisitionStatus.PARTIALLY_ISSUED
                         req.save()
 
-            for _ in range(5):
-                item = random.choice(items)
+            issue_items = random.sample(items, min(5, len(items)))
+            for item in issue_items:
                 qty = Decimal(random.randint(1, 10))
                 StockIssue.objects.create(
                     item=item,
@@ -309,7 +310,7 @@ class Command(BaseCommand):
             raise  # re-raise so transaction rolls back
 
     def _create_role(self, name, code, permissions, is_system=False):
-        role, created = Role.objects.get_or_create(
+        role, _ = Role.objects.update_or_create(
             code=code,
             defaults={
                 "name": name,
@@ -317,15 +318,10 @@ class Command(BaseCommand):
                 "is_system": is_system,
             },
         )
-        if not created:
-            role.name = name
-            role.permissions = permissions
-            role.is_system = is_system
-            role.save()
         return role
 
     def _create_user(self, username, email, password, role=None, is_staff=False, is_superuser=False):
-        user, created = User.objects.get_or_create(
+        user, created = User.objects.update_or_create(
             username=username,
             defaults={
                 "email": email,
@@ -334,14 +330,8 @@ class Command(BaseCommand):
                 "is_superuser": is_superuser,
             },
         )
-        if created:
+        if created or not user.check_password(password):
             user.set_password(password)
-            user.save()
-        else:
-            user.email = email
-            user.role = role
-            user.is_staff = is_staff
-            user.is_superuser = is_superuser
             user.save()
         return user
 

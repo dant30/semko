@@ -1,3 +1,4 @@
+# backend/apps/core/constants.py
 class RolePermissionCodes:
     VIEW_USERS = "users.view_user"
     MANAGE_USERS = "users.manage_user"
