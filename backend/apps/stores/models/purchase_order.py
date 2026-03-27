@@ -38,7 +38,11 @@ class PurchaseOrder(TimeStampedModel):
 
     @property
     def total_ordered(self):
-        return self.lines.aggregate(total=Sum(F("ordered_quantity") * F("unit_cost")))
+        total = self.lines.aggregate(total=Sum(F("ordered_quantity") * F("unit_cost"))).get("total")
+        # Ensure output is scalar usable in JSON and React render; convert to string for client
+        if total is None:
+            return "0.00"
+        return str(total)
 
 
 class PurchaseOrderLine(TimeStampedModel):

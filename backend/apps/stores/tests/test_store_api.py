@@ -281,6 +281,10 @@ class StoreAPITests(APITestCase):
         )
         self.assertEqual(po_response.status_code, status.HTTP_201_CREATED)
         po_id = po_response.data["id"]
+
+        # total_ordered should be scalar (string/number), not an object reference
+        self.assertNotIsInstance(po_response.data.get("total_ordered"), dict)
+        self.assertEqual(str(po_response.data.get("total_ordered")), "750.00")
         line = PurchaseOrderLine.objects.get(purchase_order_id=po_id)
 
         receiving_response = self.client.post(
