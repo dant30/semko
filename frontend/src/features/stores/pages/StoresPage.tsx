@@ -42,6 +42,25 @@ function getViewFromPath(pathname: string): StoreView {
   return "items";
 }
 
+function getStoreViewLabel(view: StoreView): string {
+  switch (view) {
+    case "items":
+      return "Items";
+    case "receivings":
+      return "Receivings";
+    case "requisitions":
+      return "Requisitions";
+    case "issues":
+      return "Stock issues";
+    case "adjustments":
+      return "Adjustments";
+    case "purchase_orders":
+      return "Purchase orders";
+    case "suppliers":
+      return "Suppliers";
+  }
+}
+
 export function StoresPage() {
   const location = useLocation();
   const activeView = getViewFromPath(location.pathname);
@@ -161,12 +180,12 @@ export function StoresPage() {
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-xl capitalize">{activeView}</h3>
+            <h3 className="text-xl capitalize">{getStoreViewLabel(activeView)}</h3>
             <p className="mt-1 text-sm text-app-secondary">
               {activeView === "items" && "Manage inventory items, stock levels, and transaction records."}
               {activeView === "receivings" && "Review inbound stock records and supplier deliveries."}
               {activeView === "requisitions" && "Review internal demand requests and approvals."}
-              {activeView === "issues" && "Review issued stock records to teams, vehicles, and workshops."}
+              {activeView === "issues" && "Review stock issue records to teams, vehicles, and workshops."}
               {activeView === "adjustments" && "Review inventory adjustments and stock correction history."}
             </p>
           </div>
@@ -180,7 +199,7 @@ export function StoresPage() {
               {activeView === "items" && "Create item"}
               {activeView === "receivings" && "Record receiving"}
               {activeView === "requisitions" && "Create requisition"}
-              {activeView === "issues" && "Record issue"}
+              {activeView === "issues" && "Record stock issue"}
               {activeView === "purchase_orders" && "Create purchase order"}
               {activeView === "suppliers" && "Add supplier"}
               {activeView === "adjustments" && "Record adjustment"}

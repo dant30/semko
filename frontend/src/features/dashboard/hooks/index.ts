@@ -1,1 +1,1 @@
-export {};
+export { useDashboardWorkspace } from "./useDashboardWorkspace";

@@ -333,7 +333,7 @@ export function IssueFormCard({
       </div>
       <div className="mt-5 flex justify-end">
         <Button disabled={submitting} onClick={onSubmit} type="button">
-          {submitting ? "Saving..." : "Record issue"}
+          {submitting ? "Saving..." : "Record stock issue"}
         </Button>
       </div>
     </Card>

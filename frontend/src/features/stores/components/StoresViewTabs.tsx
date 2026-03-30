@@ -8,7 +8,7 @@ const tabs: Array<{ label: string; route: string; view: StoreView }> = [
   { label: "Items", route: appRoutes.stores, view: "items" },
   { label: "Receivings", route: appRoutes.storesReceivings, view: "receivings" },
   { label: "Requisitions", route: appRoutes.storesRequisitions, view: "requisitions" },
-  { label: "Issues", route: appRoutes.storesIssues, view: "issues" },
+  { label: "Stock issues", route: appRoutes.storesIssues, view: "issues" },
   { label: "Adjustments", route: appRoutes.storesAdjustments, view: "adjustments" },
   { label: "Purchase orders", route: appRoutes.storesPurchaseOrders, view: "purchase_orders" },
   { label: "Suppliers", route: appRoutes.storesSuppliers, view: "suppliers" },

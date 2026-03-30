@@ -11,12 +11,7 @@ interface DashboardState {
 }
 
 const initialState: DashboardState = {
-  metrics: [
-    { label: "Trips Today", value: "24", tone: "success" },
-    { label: "Open Requisitions", value: "6", tone: "warning" },
-    { label: "Fuel Cost Today", value: "KES 182,400", tone: "default" },
-    { label: "Overdue Maintenance", value: "3", tone: "danger" },
-  ],
+  metrics: [],
 };
 
 const dashboardSlice = createSlice({

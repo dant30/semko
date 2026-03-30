@@ -44,7 +44,7 @@ export const mainNavigation: NavItem[] = [
         requiredPermissions: [permissions.viewStores],
       },
       {
-        label: "Issues",
+        label: "Stock issues",
         path: appRoutes.storesIssues,
         requiredPermissions: [permissions.viewStores],
       },
