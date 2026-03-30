@@ -418,6 +418,7 @@ export function useStoresWorkspace() {
     setPurchaseOrderFilters,
     editingItemId,
     editingSupplierId,
+    fieldErrors,
     startEditItem,
     cancelEditItem,
     startEditSupplier,
