@@ -82,6 +82,8 @@ export const storesApi = {
     const response = await apiClient.post<StockReceivingRecord>("/stores/receivings/", {
       ...values,
       item_id: Number(values.item_id),
+      purchase_order_id: values.purchase_order_id ? Number(values.purchase_order_id) : null,
+      purchase_order_line_id: values.purchase_order_line_id ? Number(values.purchase_order_line_id) : null,
       quantity: values.quantity || "0.00",
       unit_cost: values.unit_cost || null,
     });
@@ -222,6 +224,8 @@ export function createInitialStoreItemFormValues(): StoreItemFormValues {
 export function createInitialReceivingFormValues(): StockReceivingFormValues {
   return {
     item_id: "",
+    purchase_order_id: "",
+    purchase_order_line_id: "",
     is_active: true,
     notes: "",
     quantity: "",

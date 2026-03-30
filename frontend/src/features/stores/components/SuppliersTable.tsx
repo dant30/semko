@@ -26,6 +26,8 @@ export function SuppliersTable({
     );
   }
 
+  const [removingId, setRemovingId] = useState<number | null>(null);
+
   if (suppliers.length === 0) {
     return (
       <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-soft backdrop-blur dark:border-slate-800 dark:bg-slate-950/65">
@@ -80,12 +82,30 @@ export function SuppliersTable({
                         </button>
                       )}
                       {onDelete && (
-                        <button
+                                        <button
                           className="btn-ghost text-rose-500"
                           type="button"
-                          onClick={() => onDelete(supplier)}
+                          disabled={removingId === supplier.id}
+                          onClick={async () => {
+                            if (!onDelete) {
+                              return;
+                            }
+
+                            setRemovingId(supplier.id);
+                            try {
+                              await onDelete(supplier);
+                            } finally {
+                              setRemovingId(null);
+                            }
+                          }}
                         >
-                          <Trash2 className="mr-1 inline h-4 w-4" />Remove
+                          {removingId === supplier.id ? (
+                            "Removing..."
+                          ) : (
+                            <>
+                              <Trash2 className="mr-1 inline h-4 w-4" />Remove
+                            </>
+                          )}
                         </button>
                       )}
                     </div>

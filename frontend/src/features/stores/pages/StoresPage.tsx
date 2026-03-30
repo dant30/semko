@@ -92,6 +92,7 @@ export function StoresPage() {
     suppliers,
     supplierForm,
     setSupplierForm,
+    fieldErrors,
     editingSupplierId,
     startEditSupplier,
     cancelEditSupplier,
@@ -221,6 +222,7 @@ export function StoresPage() {
             }}
             setForm={setItemForm}
             submitting={submittingView === "items"}
+            fieldErrors={fieldErrors}
           />
         ) : null}
 
@@ -228,12 +230,14 @@ export function StoresPage() {
           <ReceivingFormCard
             form={receivingForm}
             itemOptions={itemOptions}
+            purchaseOrders={purchaseOrders}
             onSubmit={() => {
               submitForView("receivings");
               setShowCreateForm(false);
             }}
             setForm={setReceivingForm}
             submitting={submittingView === "receivings"}
+            fieldErrors={fieldErrors}
           />
         ) : null}
 
@@ -247,6 +251,7 @@ export function StoresPage() {
             }}
             setForm={setRequisitionForm}
             submitting={submittingView === "requisitions"}
+            fieldErrors={fieldErrors}
           />
         ) : null}
 
@@ -261,6 +266,7 @@ export function StoresPage() {
             requisitionOptions={requisitionOptions}
             setForm={setIssueForm}
             submitting={submittingView === "issues"}
+            fieldErrors={fieldErrors}
           />
         ) : null}
 
@@ -273,7 +279,9 @@ export function StoresPage() {
             }}
             setForm={setPurchaseOrderForm}
             suppliers={suppliers.map((s) => ({ id: s.id, label: s.name }))}
+            itemOptions={itemOptions}
             submitting={submittingView === "purchase_orders"}
+            fieldErrors={fieldErrors}
           />
         ) : null}
 
@@ -291,6 +299,7 @@ export function StoresPage() {
               cancelEditSupplier();
             }}
             submitting={submittingView === "suppliers"}
+            fieldErrors={fieldErrors}
           />
         ) : null}
 
@@ -304,6 +313,7 @@ export function StoresPage() {
             }}
             setForm={setAdjustmentForm}
             submitting={submittingView === "adjustments"}
+            fieldErrors={fieldErrors}
           />
         ) : null}
 

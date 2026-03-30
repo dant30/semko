@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useNotifications } from "@/core/contexts/useNotifications";
 import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
@@ -71,6 +71,7 @@ export function useStoresWorkspace() {
   const [summary, setSummary] = useState<StoreSummaryMetrics>(EMPTY_SUMMARY);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [submittingView, setSubmittingView] = useState<StoreView | null>(null);
 
@@ -161,6 +162,32 @@ export function useStoresWorkspace() {
     [items]
   );
 
+  const parseFieldErrors = useCallback((payload: unknown) => {
+    if (!payload || typeof payload !== "object") {
+      return {} as Record<string, string>;
+    }
+
+    if (Array.isArray(payload)) {
+      return {} as Record<string, string>;
+    }
+
+    return Object.entries(payload).reduce((errors, [key, value]) => {
+      if (typeof value === "string") {
+        errors[key] = value;
+      } else if (Array.isArray(value)) {
+        errors[key] = value.filter((item) => typeof item === "string").join(" ");
+      } else if (value !== null && typeof value === "object") {
+        errors[key] = JSON.stringify(value);
+      }
+      return errors;
+    }, {} as Record<string, string>);
+  }, []);
+
+  const setFiltersCallback = useCallback(
+    (payload: Partial<typeof filters>) => dispatch(setStoresFilters(payload)),
+    [dispatch]
+  );
+
   async function refreshAll() {
     setIsLoading(true);
     try {
@@ -210,6 +237,7 @@ export function useStoresWorkspace() {
   async function submitForView(view: StoreView) {
     setSubmittingView(view);
     setError("");
+    setFieldErrors({});
 
     try {
       switch (view) {
@@ -259,7 +287,7 @@ export function useStoresWorkspace() {
         title: "Stores updated",
         tone: "success",
       });
-    } catch {
+    } catch (error) {
       const message = "We could not save the stores transaction. Please review the form and try again.";
       setError(message);
       showToast({
@@ -267,6 +295,11 @@ export function useStoresWorkspace() {
         title: "Stores save failed",
         tone: "danger",
       });
+
+      const payload = (error as any)?.response?.data;
+      if (payload) {
+        setFieldErrors(parseFieldErrors(payload));
+      }
     } finally {
       setSubmittingView(null);
     }

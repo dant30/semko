@@ -1,9 +1,12 @@
+import { useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 
 import type {
   AdjustmentFormValues,
   AdjustmentType,
   IssuedToType,
+  PurchaseOrderLineRecord,
+  PurchaseOrderRecord,
   RequisitionFormValues,
   RequisitionStatus,
   StockIssueFormValues,
@@ -14,6 +17,7 @@ import type {
 } from "@/features/stores/types/store";
 import { Button } from "@/shared/components/ui/Button";
 import { Card } from "@/shared/components/ui/Card";
+import { formatNumber } from "@/shared/utils/number";
 
 interface ItemOption {
   id: number;
@@ -24,15 +28,38 @@ interface ItemOption {
 function FormField({
   children,
   label,
+  error,
 }: {
   children: ReactNode;
   label: string;
+  error?: string;
 }) {
   return (
     <label className="form-group">
       <span className="form-label">{label}</span>
       {children}
+      {error ? <p className="mt-2 text-xs text-rose-500">{error}</p> : null}
     </label>
+  );
+}
+
+function ErrorSummary({
+  errors,
+}: {
+  errors?: Record<string, string>;
+}) {
+  if (!errors || Object.keys(errors).length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/20 dark:text-rose-200">
+      {Object.entries(errors).map(([field, message]) => (
+        <p key={field} className="mb-1">
+          <strong>{field.replace(/_/g, " ")}:</strong> {message}
+        </p>
+      ))}
+    </div>
   );
 }
 
@@ -65,6 +92,7 @@ export function StoreItemFormCard({
   submitting,
   editing,
   onCancel,
+  fieldErrors,
 }: {
   form: StoreItemFormValues;
   onSubmit: () => void;
@@ -72,6 +100,7 @@ export function StoreItemFormCard({
   submitting: boolean;
   editing?: boolean;
   onCancel?: () => void;
+  fieldErrors?: Record<string, string>;
 }) {
   const categories: StoreItemCategory[] = [
     "spare_part",
@@ -91,6 +120,7 @@ export function StoreItemFormCard({
           Register stock-controlled items with reorder and issue guidance.
         </p>
       </div>
+      <ErrorSummary errors={fieldErrors} />
       <div className="grid gap-4 md:grid-cols-2">
         <FormField label="Item name">
           <input className="form-input" onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} value={form.name} />
@@ -143,16 +173,67 @@ export function StoreItemFormCard({
 export function ReceivingFormCard({
   form,
   itemOptions,
+  purchaseOrders,
   onSubmit,
   setForm,
   submitting,
+  fieldErrors,
 }: {
   form: StockReceivingFormValues;
   itemOptions: ItemOption[];
+  purchaseOrders: PurchaseOrderRecord[];
   onSubmit: () => void;
   setForm: Dispatch<SetStateAction<StockReceivingFormValues>>;
   submitting: boolean;
+  fieldErrors?: Record<string, string>;
 }) {
+  const availablePurchaseOrders = purchaseOrders.filter((po) =>
+    ["approved", "partially_received"].includes(po.status)
+  );
+  const selectedPurchaseOrder = availablePurchaseOrders.find(
+    (po) => String(po.id) === form.purchase_order_id
+  );
+  const selectedPurchaseOrderLine = selectedPurchaseOrder?.lines.find(
+    (line) => String(line.id) === form.purchase_order_line_id
+  );
+  const defaultPurchaseOrderLine =
+    selectedPurchaseOrder && selectedPurchaseOrder.lines.length === 1
+      ? selectedPurchaseOrder.lines[0]
+      : undefined;
+  const activePurchaseOrderLine = selectedPurchaseOrderLine || defaultPurchaseOrderLine;
+  const remainingQuantity = activePurchaseOrderLine
+    ? Math.max(
+        0,
+        Number(activePurchaseOrderLine.ordered_quantity || 0) - Number(activePurchaseOrderLine.received_quantity || 0)
+      )
+    : null;
+  const [quantityError, setQuantityError] = useState<string | null>(null);
+
+  const handlePurchaseOrderChange = (poId: string) => {
+    const selected = availablePurchaseOrders.find((po) => String(po.id) === poId);
+    setForm((current) => ({
+      ...current,
+      purchase_order_id: poId,
+      purchase_order_line_id:
+        selected && selected.lines.length === 1 ? String(selected.lines[0].id) : "",
+      item_id:
+        selected && selected.lines.length === 1
+          ? String(selected.lines[0].item)
+          : current.item_id,
+      supplier_name: selected ? selected.supplier_name : current.supplier_name,
+    }));
+    setQuantityError(null);
+  };
+
+  const handlePurchaseOrderLineChange = (lineId: string) => {
+    const line = selectedPurchaseOrder?.lines.find((row) => String(row.id) === lineId);
+    setForm((current) => ({
+      ...current,
+      purchase_order_line_id: lineId,
+      item_id: line ? String(line.item) : current.item_id,
+    }));
+    setQuantityError(null);
+  };
   return (
     <Card className="rounded-[2rem] p-6">
       <div className="mb-5">
@@ -160,7 +241,37 @@ export function ReceivingFormCard({
         <p className="mt-2 text-sm">Record inward stock from suppliers and update stock visibility.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <FormField label="Item">
+        <FormField label="Purchase order (optional)" error={fieldErrors?.purchase_order_id}>
+          <select
+            className="form-select"
+            value={form.purchase_order_id}
+            onChange={(event) => handlePurchaseOrderChange(event.target.value)}
+          >
+            <option value="">No PO (direct receiving)</option>
+            {availablePurchaseOrders.map((po) => (
+              <option key={po.id} value={String(po.id)}>
+                {po.reference_no} - {po.supplier_name}
+              </option>
+            ))}
+          </select>
+        </FormField>
+        {selectedPurchaseOrder && selectedPurchaseOrder.lines.length > 1 ? (
+          <FormField label="PO line" error={fieldErrors?.purchase_order_line_id}>
+            <select
+              className="form-select"
+              value={form.purchase_order_line_id}
+              onChange={(event) => handlePurchaseOrderLineChange(event.target.value)}
+            >
+              <option value="">Select PO line</option>
+              {selectedPurchaseOrder.lines.map((line) => (
+                <option key={line.id} value={String(line.id)}>
+                  {line.item_name} • ordered {formatNumber(Number(line.ordered_quantity || 0))}, remaining {formatNumber(Number(line.ordered_quantity || 0) - Number(line.received_quantity || 0))}
+                </option>
+              ))}
+            </select>
+          </FormField>
+        ) : null}
+        <FormField label="Item" error={fieldErrors?.item_id}>
           <ItemSelect itemOptions={itemOptions} onChange={(value) => setForm((current) => ({ ...current, item_id: value }))} value={form.item_id} />
         </FormField>
         <FormField label="Reference number">
@@ -172,8 +283,30 @@ export function ReceivingFormCard({
         <FormField label="Supplier name">
           <input className="form-input" onChange={(event) => setForm((current) => ({ ...current, supplier_name: event.target.value }))} value={form.supplier_name} />
         </FormField>
-        <FormField label="Quantity">
-          <input className="form-input" min="0" onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} step="0.01" type="number" value={form.quantity} />
+        <FormField label="Quantity" error={fieldErrors?.quantity || quantityError || undefined}>
+          <input
+            className="form-input"
+            min="0"
+            onChange={(event) => {
+              const value = event.target.value;
+              setForm((current) => ({ ...current, quantity: value }));
+              if (remainingQuantity !== null && value !== "" && Number(value) > remainingQuantity) {
+                setQuantityError(
+                  `Quantity cannot exceed remaining PO balance of ${remainingQuantity}`
+                );
+              } else {
+                setQuantityError(null);
+              }
+            }}
+            step="0.01"
+            type="number"
+            value={form.quantity}
+          />
+          {remainingQuantity !== null ? (
+            <p className="mt-2 text-xs text-app-muted">
+              Remaining PO line balance: {remainingQuantity}
+            </p>
+          ) : null}
         </FormField>
         <FormField label="Unit cost">
           <input className="form-input" min="0" onChange={(event) => setForm((current) => ({ ...current, unit_cost: event.target.value }))} step="0.01" type="number" value={form.unit_cost} />
@@ -183,7 +316,11 @@ export function ReceivingFormCard({
         <textarea className="form-textarea" onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} value={form.notes} />
       </FormField>
       <div className="mt-5 flex justify-end">
-        <Button disabled={submitting} onClick={onSubmit} type="button">
+        <Button
+          disabled={submitting || Boolean(quantityError)}
+          onClick={onSubmit}
+          type="button"
+        >
           {submitting ? "Saving..." : "Record receiving"}
         </Button>
       </div>
@@ -197,12 +334,14 @@ export function RequisitionFormCard({
   onSubmit,
   setForm,
   submitting,
+  fieldErrors,
 }: {
   form: RequisitionFormValues;
   itemOptions: ItemOption[];
   onSubmit: () => void;
   setForm: Dispatch<SetStateAction<RequisitionFormValues>>;
   submitting: boolean;
+  fieldErrors?: Record<string, string>;
 }) {
   const statuses: RequisitionStatus[] = [
     "draft",
@@ -220,6 +359,7 @@ export function RequisitionFormCard({
         <h3>New requisition</h3>
         <p className="mt-2 text-sm">Capture internal demand and approval status for stock movement.</p>
       </div>
+      <ErrorSummary errors={fieldErrors} />
       <div className="grid gap-4 md:grid-cols-2">
         <FormField label="Item">
           <ItemSelect itemOptions={itemOptions} onChange={(value) => setForm((current) => ({ ...current, item_id: value }))} value={form.item_id} />
@@ -268,6 +408,7 @@ export function IssueFormCard({
   requisitionOptions,
   setForm,
   submitting,
+  fieldErrors,
 }: {
   form: StockIssueFormValues;
   itemOptions: ItemOption[];
@@ -275,6 +416,7 @@ export function IssueFormCard({
   requisitionOptions: Array<{ id: number; label: string }>;
   setForm: Dispatch<SetStateAction<StockIssueFormValues>>;
   submitting: boolean;
+  fieldErrors?: Record<string, string>;
 }) {
   const issueTargets: IssuedToType[] = ["driver", "vehicle", "department", "workshop", "other"];
 
@@ -284,6 +426,7 @@ export function IssueFormCard({
         <h3>Stock issue</h3>
         <p className="mt-2 text-sm">Issue stock against direct demand or a linked approved requisition.</p>
       </div>
+      <ErrorSummary errors={fieldErrors} />
       <div className="grid gap-4 md:grid-cols-2">
         <FormField label="Item">
           <ItemSelect itemOptions={itemOptions} onChange={(value) => setForm((current) => ({ ...current, item_id: value }))} value={form.item_id} />
@@ -346,12 +489,14 @@ export function AdjustmentFormCard({
   onSubmit,
   setForm,
   submitting,
+  fieldErrors,
 }: {
   form: AdjustmentFormValues;
   itemOptions: ItemOption[];
   onSubmit: () => void;
   setForm: Dispatch<SetStateAction<AdjustmentFormValues>>;
   submitting: boolean;
+  fieldErrors?: Record<string, string>;
 }) {
   const adjustmentTypes: AdjustmentType[] = ["increase", "decrease"];
 
@@ -361,6 +506,7 @@ export function AdjustmentFormCard({
         <h3>Stock adjustment</h3>
         <p className="mt-2 text-sm">Capture corrections, losses, or inventory count realignments.</p>
       </div>
+      <ErrorSummary errors={fieldErrors} />
       <div className="grid gap-4 md:grid-cols-2">
         <FormField label="Item">
           <ItemSelect itemOptions={itemOptions} onChange={(value) => setForm((current) => ({ ...current, item_id: value }))} value={form.item_id} />

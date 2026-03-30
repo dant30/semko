@@ -10,6 +10,7 @@ export function SupplierFormCard({
   submitting,
   editing,
   onCancel,
+  fieldErrors,
 }: {
   form: Omit<SupplierRecord, "id">;
   onSubmit: () => void;
@@ -17,6 +18,7 @@ export function SupplierFormCard({
   submitting: boolean;
   editing?: boolean;
   onCancel?: () => void;
+  fieldErrors?: Record<string, string>;
 }) {
   return (
     <Card className="rounded-[2rem] p-6">
@@ -24,6 +26,15 @@ export function SupplierFormCard({
         <h3>{editing ? "Edit supplier" : "New supplier"}</h3>
         <p className="mt-2 text-sm">Manage supplier contacts for purchase orders and receivings.</p>
       </div>
+      {fieldErrors && Object.keys(fieldErrors).length ? (
+        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-700">
+          {Object.entries(fieldErrors).map(([field, message]) => (
+            <p key={field} className="mb-1">
+              <strong>{field.replace(/_/g, " ")}:</strong> {message}
+            </p>
+          ))}
+        </div>
+      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="form-group">

@@ -166,6 +166,8 @@ export interface StoreItemFormValues {
 
 export interface StockReceivingFormValues {
   item_id: string;
+  purchase_order_id: string;
+  purchase_order_line_id: string;
   is_active: boolean;
   notes: string;
   quantity: string;

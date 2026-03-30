@@ -12,13 +12,17 @@ export function PurchaseOrderFormCard({
   onSubmit,
   setForm,
   suppliers,
+  itemOptions,
   submitting,
+  fieldErrors,
 }: {
   form: PurchaseOrderFormValues;
   onSubmit: () => void;
   setForm: Dispatch<SetStateAction<PurchaseOrderFormValues>>;
   suppliers: { id: number; label: string }[];
+  itemOptions: { id: number; label: string; subtitle?: string }[];
   submitting: boolean;
+  fieldErrors?: Record<string, string>;
 }) {
   const supplierOptions = suppliers;
 
@@ -56,6 +60,24 @@ export function PurchaseOrderFormCard({
           Create and manage incoming purchase orders before stock receiving.
         </p>
       </div>
+      {fieldErrors && Object.keys(fieldErrors).length ? (
+        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-700">
+          {Object.entries(fieldErrors).map(([field, message]) => (
+            <p key={field} className="mb-1">
+              <strong>{field.replace(/_/g, " ")}:</strong> {message}
+            </p>
+          ))}
+        </div>
+      ) : null}
+      {fieldErrors && Object.keys(fieldErrors).length ? (
+        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-700">
+          {Object.entries(fieldErrors).map(([key, value]) => (
+            <p key={key} className="mb-1">
+              <strong>{key.replace(/_/g, " ")}:</strong> {value}
+            </p>
+          ))}
+        </div>
+      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="form-group">
@@ -129,12 +151,20 @@ export function PurchaseOrderFormCard({
         {form.line_items.map((line, index) => (
           <div key={index} className="grid gap-3 md:grid-cols-4 items-end">
             <label className="form-group">
-              <span className="form-label">Item ID</span>
-              <input
-                className="form-input"
+              <span className="form-label">Item</span>
+              <select
+                className="form-select"
                 value={line.item_id}
                 onChange={(event) => updateLine(index, { item_id: event.target.value })}
-              />
+              >
+                <option value="">Select item</option>
+                {itemOptions.map((item) => (
+                  <option key={item.id} value={String(item.id)}>
+                    {item.label}
+                    {item.subtitle ? ` - ${item.subtitle}` : ""}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="form-group">
               <span className="form-label">Ordered qty</span>

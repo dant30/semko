@@ -21,9 +21,25 @@ export function StoreItemsTable({
     setActionMenuItemId(actionMenuItemId === itemId ? null : itemId);
   };
 
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
   const closeActionMenu = () => {
     setActionMenuItemId(null);
   };
+
+  const handleDelete = async (item: StoreItemRecord) => {
+    if (!onDelete) {
+      return;
+    }
+
+    setDeletingId(item.id);
+    try {
+      await onDelete(item);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-3 rounded-[2rem] border border-white/70 bg-white/75 p-5 shadow-soft backdrop-blur dark:border-slate-800 dark:bg-slate-950/65">
@@ -124,12 +140,19 @@ export function StoreItemsTable({
                           <button
                             className="dropdown-item"
                             type="button"
-                            onClick={() => {
-                              onDelete(item);
+                            disabled={deletingId === item.id}
+                            onClick={async () => {
+                              await handleDelete(item);
                               closeActionMenu();
                             }}
                           >
-                            <Trash2 className="mr-2 inline h-4 w-4" /> Delete
+                            {deletingId === item.id ? (
+                              "Deleting..."
+                            ) : (
+                              <>
+                                <Trash2 className="mr-2 inline h-4 w-4" /> Delete
+                              </>
+                            )}
                           </button>
                         ) : null}
                       </div>
