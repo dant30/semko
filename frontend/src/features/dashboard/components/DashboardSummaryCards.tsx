@@ -14,7 +14,7 @@ const toneClasses: Record<NonNullable<DashboardMetric["tone"]>, string> = {
 
 export function DashboardSummaryCards({ metrics }: DashboardSummaryCardsProps) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {metrics.map((metric) => (
         <Card className="hover-lift rounded-3xl border-white/70 p-5" key={metric.label}>
           <div className="flex items-center justify-between gap-3">
@@ -29,6 +29,19 @@ export function DashboardSummaryCards({ metrics }: DashboardSummaryCardsProps) {
           <strong className={`mt-4 block text-3xl ${toneClasses[metric.tone ?? "default"]}`}>
             {metric.value}
           </strong>
+
+          {metric.details?.length ? (
+            <div className="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm text-app-muted">
+              {metric.details.map((detail) => (
+                <div key={detail.label} className="flex items-center justify-between gap-3">
+                  <span>{detail.label}</span>
+                  <span className={`font-semibold ${toneClasses[detail.tone ?? "default"]}`}>
+                    {detail.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : null}
         </Card>
       ))}
     </div>

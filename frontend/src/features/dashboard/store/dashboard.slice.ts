@@ -1,10 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
-interface DashboardMetric {
-  label: string;
-  value: string;
-  tone?: "default" | "success" | "warning" | "danger";
-}
+import type { DashboardMetric } from "@/features/dashboard/types/dashboard";
 
 interface DashboardState {
   metrics: DashboardMetric[];

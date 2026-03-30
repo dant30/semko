@@ -6,56 +6,59 @@ import { dashboardApi } from "@/features/dashboard/services/dashboard.api";
 import { setMetrics } from "@/features/dashboard/store/dashboard.slice";
 import type {
   DashboardAlert,
+  DashboardMetric,
   DashboardSummaryPayload,
 } from "@/features/dashboard/types/dashboard";
-
-type DashboardMetric = {
-  label: string;
-  value: string;
-  tone?: "default" | "success" | "warning" | "danger";
-};
 
 function buildDashboardMetrics(summary: DashboardSummaryPayload): DashboardMetric[] {
   return [
     {
-      label: "Total inventory items",
+      label: "Inventory",
       value: `${summary.total_inventory_items}`,
-      tone: "default",
-    },
-    {
-      label: "Low stock items",
-      value: `${summary.low_stock_items}`,
       tone: summary.low_stock_items > 0 ? "warning" : "success",
+      details: [
+        {
+          label: "Low stock items",
+          value: `${summary.low_stock_items}`,
+          tone: summary.low_stock_items > 0 ? "warning" : "success",
+        },
+      ],
     },
     {
-      label: "Trips today",
+      label: "Trips",
       value: `${summary.trips_today}`,
       tone: summary.trips_today > 0 ? "success" : "default",
+      details: [
+        {
+          label: "This week",
+          value: `${summary.trips_this_week}`,
+          tone: summary.trips_this_week > 0 ? "default" : "warning",
+        },
+      ],
     },
     {
-      label: "Trips this week",
-      value: `${summary.trips_this_week}`,
-      tone: summary.trips_this_week > 0 ? "default" : "warning",
-    },
-    {
-      label: "Fuel today",
+      label: "Fuel",
       value: `${summary.fuel_today_litres} L`,
       tone: summary.fuel_today_litres > 0 ? "default" : "warning",
+      details: [
+        {
+          label: "This month",
+          value: `${summary.fuel_this_month_litres} L`,
+          tone: "default",
+        },
+      ],
     },
     {
-      label: "Fuel this month",
-      value: `${summary.fuel_this_month_litres} L`,
-      tone: "default",
-    },
-    {
-      label: "Active vehicles",
+      label: "Vehicles",
       value: `${summary.active_vehicles}`,
       tone: summary.active_vehicles > 0 ? "success" : "warning",
-    },
-    {
-      label: "Overdue maintenance",
-      value: `${summary.overdue_maintenance}`,
-      tone: summary.overdue_maintenance > 0 ? "danger" : "success",
+      details: [
+        {
+          label: "Overdue maintenance",
+          value: `${summary.overdue_maintenance}`,
+          tone: summary.overdue_maintenance > 0 ? "danger" : "success",
+        },
+      ],
     },
     {
       label: "Pending requisitions",

@@ -22,6 +22,7 @@ export type DashboardMetric = {
   label: string;
   value: string | number;
   tone?: "default" | "success" | "warning" | "danger";
+  details?: DashboardMetric[];
 };
 
 export type DashboardSummary = DashboardMetric[];
