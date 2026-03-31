@@ -1,4 +1,8 @@
-def build_payroll_period_pdf_payload(summary):
+from typing import Any
+
+
+def build_payroll_period_pdf_payload(summary: dict[str, Any]) -> bytes:
+    """Render a simple payroll summary payload for PDF generation."""
     lines = [
         f"Payroll Period: {summary['payroll_period']}",
         f"Status: {summary['status']}",
@@ -10,7 +14,8 @@ def build_payroll_period_pdf_payload(summary):
     return "\n".join(lines).encode("utf-8")
 
 
-def build_payslip_pdf_payload(payslip):
+def build_payslip_pdf_payload(payslip: Any) -> bytes:
+    """Render a simple payslip payload for PDF generation."""
     lines = [
         "SEMKO PAYSLIP",
         f"Payroll Period: {payslip.payroll_period.name}",

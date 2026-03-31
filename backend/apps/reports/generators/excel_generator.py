@@ -1,4 +1,8 @@
-def build_payroll_period_excel_rows(summary):
+from typing import Any
+
+
+def build_payroll_period_excel_rows(summary: dict[str, Any]) -> list[list[Any]]:
+    """Build header rows for payroll period Excel exports."""
     rows = [
         [
             "Driver",

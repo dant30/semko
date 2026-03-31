@@ -12,6 +12,7 @@ import rolesReducer from "@/features/roles/store/roles.slice";
 import usersReducer from "@/features/users/store/users.slice";
 import vehiclesReducer from "@/features/vehicles/store/vehicles.slice";
 import materialsReducer from "@/features/materials/store/materials.slice";
+import reportsReducer from "@/features/reports/store/reports.slice";
 
 export const rootReducer = combineReducers({
   auth: authReducer,
@@ -26,6 +27,7 @@ export const rootReducer = combineReducers({
   users: usersReducer,
   vehicles: vehiclesReducer,
   materials: materialsReducer,
+  reports: reportsReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

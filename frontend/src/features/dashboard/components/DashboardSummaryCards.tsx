@@ -12,6 +12,12 @@ const toneClasses: Record<NonNullable<DashboardMetric["tone"]>, string> = {
   danger: "text-rose-600",
 };
 
+const trendClasses: Record<NonNullable<DashboardMetric["trend"]>["direction"], string> = {
+  up: "text-emerald-600",
+  down: "text-rose-600",
+  flat: "text-app-muted",
+};
+
 export function DashboardSummaryCards({ metrics }: DashboardSummaryCardsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -29,6 +35,12 @@ export function DashboardSummaryCards({ metrics }: DashboardSummaryCardsProps) {
           <strong className={`mt-4 block text-3xl ${toneClasses[metric.tone ?? "default"]}`}>
             {metric.value}
           </strong>
+
+          {metric.trend ? (
+            <p className={`mt-3 text-sm font-semibold ${trendClasses[metric.trend.direction]}`}>
+              {metric.trend.label}
+            </p>
+          ) : null}
 
           {metric.details?.length ? (
             <div className="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm text-app-muted">

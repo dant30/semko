@@ -1,12 +1,15 @@
 import csv
 from io import StringIO
+from typing import Any, Dict
 
 from django.shortcuts import get_object_or_404
 
 from apps.payroll.models import PayrollPeriod
 
+PayrollPeriodSummary = Dict[str, Any]
 
-def get_payroll_period_report_data(payroll_period_id):
+
+def get_payroll_period_report_data(payroll_period_id: int) -> PayrollPeriodSummary:
     payroll_period = get_object_or_404(
         PayrollPeriod.objects.prefetch_related("payslips__bonus_earnings", "payslips__deductions"),
         pk=payroll_period_id,
@@ -38,9 +41,9 @@ def get_payroll_period_report_data(payroll_period_id):
     }
 
 
-def build_payroll_period_csv(summary):
+def build_payroll_period_csv(summary: PayrollPeriodSummary) -> str:
     buffer = StringIO()
-    writer = csv.writer(buffer)
+    writer = csv.writer(buffer, lineterminator="\n")
     writer.writerow(
         [
             "Driver",

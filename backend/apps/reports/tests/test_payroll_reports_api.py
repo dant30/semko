@@ -19,11 +19,22 @@ class PayrollReportsAPITests(APITestCase):
             code="payroll-reporter",
             permissions=[RolePermissionCodes.VIEW_PAYROLL],
         )
+        self.no_permission_role = Role.objects.create(
+            name="Limited User",
+            code="limited-user",
+            permissions=[],
+        )
         self.user = User.objects.create_user(
             username="payroll-report-user",
             email="payroll-report@example.com",
             password="S3curePass123",
             role=self.role,
+        )
+        self.user_without_permission = User.objects.create_user(
+            username="payroll-no-permission",
+            email="payroll-no-permission@example.com",
+            password="S3curePass123",
+            role=self.no_permission_role,
         )
         self.driver = Driver.objects.create(
             employee_id="DRV-REPORT-01",
@@ -60,8 +71,9 @@ class PayrollReportsAPITests(APITestCase):
             total_hired_owner_settlement="0.00",
         )
 
-    def authenticate(self):
-        token = str(RefreshToken.for_user(self.user).access_token)
+    def authenticate(self, user=None):
+        target_user = user or self.user
+        token = str(RefreshToken.for_user(target_user).access_token)
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
 
     def test_payroll_period_summary_endpoint_returns_aggregates(self):
@@ -77,6 +89,22 @@ class PayrollReportsAPITests(APITestCase):
         self.assertEqual(str(response.data["gross_non_trip_earnings"]), "2000.00")
         self.assertEqual(str(response.data["total_deductions"]), "400.00")
 
+    def test_unauthenticated_user_cannot_access_summary(self):
+        response = self.client.get(
+            reverse("report-payroll-period-summary", kwargs={"pk": self.period.id})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_user_without_permission_cannot_access_summary(self):
+        self.authenticate(self.user_without_permission)
+
+        response = self.client.get(
+            reverse("report-payroll-period-summary", kwargs={"pk": self.period.id})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_payroll_period_export_endpoint_returns_csv(self):
         self.authenticate()
 
@@ -87,3 +115,7 @@ class PayrollReportsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertIn("Driver,Delivered Trips,Verified Trips", response.content.decode("utf-8"))
+        self.assertIn(
+            'attachment; filename="payroll-period-%s-summary.csv"' % self.period.id,
+            response["Content-Disposition"],
+        )

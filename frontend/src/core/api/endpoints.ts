@@ -18,4 +18,9 @@ export const endpoints = {
     summary: "/trips/summary/",
     detailSummary: (tripId: number) => `/trips/${tripId}/summary/`,
   },
+  reports: {
+    payrollPeriods: "/payroll/periods/",
+    payrollPeriodSummary: (payrollPeriodId: number) => `/reports/payroll/periods/${payrollPeriodId}/summary/`,
+    payrollPeriodExport: (payrollPeriodId: number) => `/reports/payroll/periods/${payrollPeriodId}/export/`,
+  },
 };

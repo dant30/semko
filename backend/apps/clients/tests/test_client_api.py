@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.clients.models import Client, Quarry
+from apps.clients.models import Client, CorporateClientProfile, IndividualClientProfile, Quarry
 from apps.core.constants import RolePermissionCodes
 from apps.users.models import Role
 
@@ -149,6 +149,49 @@ class ClientAPITests(APITestCase):
             format="json",
         )
         self.assertEqual(create_response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_manager_can_switch_client_type_and_cleanup_profiles(self):
+        self.authenticate(self.manager)
+
+        create_response = self.client.post(
+            reverse("client-list-create"),
+            {
+                "name": "Switching Client",
+                "code": "switching-client",
+                "client_type": "corporate",
+                "contact_person": "Alice Mwangi",
+                "phone_number": "0722222222",
+                "corporate_profile": {
+                    "company_registration_number": "CPR-009",
+                    "kra_pin": "P987654321B",
+                    "credit_limit": "150000.00",
+                    "payment_terms_days": 30,
+                    "industry": "Mining",
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        client_id = create_response.data["id"]
+
+        switch_response = self.client.patch(
+            reverse("client-detail", kwargs={"pk": client_id}),
+            {
+                "client_type": "individual",
+                "individual_profile": {
+                    "national_id": "876543210",
+                    "occupation": "Contractor",
+                },
+            },
+            format="json",
+        )
+
+        self.assertEqual(switch_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(switch_response.data["client_type"], "individual")
+
+        client = Client.objects.get(pk=client_id)
+        self.assertFalse(CorporateClientProfile.objects.filter(client=client).exists())
+        self.assertTrue(IndividualClientProfile.objects.filter(client=client).exists())
 
     def test_client_and_quarry_filters_work(self):
         client = Client.objects.create(

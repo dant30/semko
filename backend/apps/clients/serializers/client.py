@@ -132,9 +132,17 @@ class ClientWriteSerializer(serializers.ModelSerializer):
                 client=client,
                 defaults=corporate_data,
             )
+
         if individual_data is not None:
             IndividualClientProfile.objects.update_or_create(
                 client=client,
                 defaults=individual_data,
             )
+
+        # Ensure only the correct profile exists after a type transition.
+        if client.client_type == Client.ClientType.CORPORATE:
+            IndividualClientProfile.objects.filter(client=client).delete()
+        if client.client_type == Client.ClientType.INDIVIDUAL:
+            CorporateClientProfile.objects.filter(client=client).delete()
+
         return client

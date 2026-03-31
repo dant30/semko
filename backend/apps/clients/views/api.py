@@ -9,7 +9,7 @@ from apps.core.permissions import HasRolePermissions
 
 
 class ClientListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Client.objects.select_related().prefetch_related(
+    queryset = Client.objects.prefetch_related(
         "corporate_profile",
         "individual_profile",
     ).order_by("name", "code")
