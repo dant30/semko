@@ -38,11 +38,11 @@
   }
 
   .ui-page-heading {
-    @apply mb-4 text-3xl font-extrabold tracking-tight md:text-4xl;
+    @apply font-heading mb-4 text-3xl font-extrabold tracking-tight md:text-4xl;
   }
 
   .ui-section-heading {
-    @apply mb-3 text-2xl font-bold tracking-tight md:text-3xl;
+    @apply font-heading mb-3 text-2xl font-bold tracking-tight md:text-3xl;
   }
 
   .app-surface {
@@ -55,6 +55,10 @@
 }
 
 @layer utilities {
+  .font-heading {
+    font-family: theme('fontFamily.heading');
+  }
+
   .text-app-primary {
     color: var(--text-primary);
   }

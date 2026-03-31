@@ -30,6 +30,7 @@ export * from "./MetricCard";
 export * from "./Modal";
 export * from "./PageHeading";
 export * from "./Pagination";
+export * from "./Heading";
 export * from "./Panel";
 export * from "./PasswordInput";
 export * from "./ProgressBar";

@@ -1,3 +1,4 @@
+// frontend/src/shared/components/layout/AppHeader.tsx
 import {
   Bell,
   ChevronDown,

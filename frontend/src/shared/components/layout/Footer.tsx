@@ -1,3 +1,4 @@
+// frontend/src/shared/components/layout/Footer.tsx
 import { Globe, ShieldCheck } from "lucide-react";
 
 import { APP_NAME } from "@/core/constants/app";

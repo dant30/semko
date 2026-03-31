@@ -1,3 +1,4 @@
+// frontend/src/shared/components/layout/PageContainer.tsx
 import type { PropsWithChildren } from "react";
 
 export function PageContainer({ children }: PropsWithChildren) {

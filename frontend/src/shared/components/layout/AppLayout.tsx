@@ -1,3 +1,4 @@
+// frontend/src/shared/components/layout/AppLayout.tsx
 import { ArrowUp } from "lucide-react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";

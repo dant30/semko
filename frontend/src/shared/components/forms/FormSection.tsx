@@ -1,3 +1,4 @@
+// frontend/src/shared/components/forms/FormSection.tsx
 import type { PropsWithChildren } from "react";
 
 import { classNames } from "@/shared/utils/classnames";

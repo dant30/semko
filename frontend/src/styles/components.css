@@ -51,6 +51,14 @@
     @apply btn border-2 border-brand-600 bg-transparent text-brand-700 hover:bg-brand-50 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-900;
   }
 
+  .btn-link {
+    @apply btn bg-transparent p-0 text-brand-600 dark:text-brand-300 hover:underline hover:bg-transparent;
+  }
+
+  .btn-danger {
+    @apply btn bg-rose-600 text-white hover:bg-rose-700;
+  }
+
   .form-group {
     @apply space-y-2;
   }
@@ -85,6 +93,26 @@
 
   .badge-accent {
     @apply inline-flex items-center gap-1 rounded-full border border-accent-100 bg-accent-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent-800 dark:border-accent-900 dark:bg-accent-900 dark:text-accent-200;
+  }
+
+  .badge-primary {
+    @apply inline-flex items-center gap-1 rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-800 dark:border-brand-900 dark:bg-brand-900 dark:text-brand-200;
+  }
+
+  .badge-success {
+    @apply inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-800 dark:border-emerald-900 dark:bg-emerald-900 dark:text-emerald-200;
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center gap-1 rounded-full border border-amber-100 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-amber-800 dark:border-amber-900 dark:bg-amber-900 dark:text-amber-200;
+  }
+
+  .badge-danger {
+    @apply inline-flex items-center gap-1 rounded-full border border-rose-100 bg-rose-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-rose-800 dark:border-rose-900 dark:bg-rose-900 dark:text-rose-200;
+  }
+
+  .badge-neutral {
+    @apply inline-flex items-center gap-1 rounded-full border border-slate-100 bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-800 dark:border-slate-700 dark:bg-slate-700 dark:text-slate-300;
   }
 
   .table-container {
@@ -145,6 +173,10 @@
 
   .alert-danger {
     @apply alert border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-900 dark:bg-rose-900 dark:text-rose-100;
+  }
+
+  .loading-spinner {
+    @apply inline-block h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-brand-600 dark:border-slate-600 dark:border-t-brand-400;
   }
 
   .modal-overlay {

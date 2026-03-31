@@ -1,3 +1,4 @@
+// frontend/src/shared/components/layout/AppSidebar.tsx
 import {
   Bell,
   Boxes,
