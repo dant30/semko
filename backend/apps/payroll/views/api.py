@@ -7,8 +7,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.constants import RolePermissionCodes
-from apps.core.permissions import HasRolePermissions, IsAuthenticatedAndActive
-from apps.core.utils.permissions import user_has_role_permission
+from apps.core.permissions import (
+    HasRolePermissions,
+    IsAuthenticatedAndActive,
+    user_has_role_permission,
+)
 from apps.payroll.models import DriverCompensationProfile, DriverPayrollItem, PayrollPeriod, Payslip
 from apps.payroll.serializers import (
     DriverCompensationProfileSerializer,

@@ -38,6 +38,7 @@ export * from "./RadioCard";
 export * from "./SearchInput";
 export * from "./SectionHeading";
 export * from "./Select";
+export * from "./DatePicker";
 export * from "./Skeleton";
 export * from "./Spinner";
 export * from "./Stack";

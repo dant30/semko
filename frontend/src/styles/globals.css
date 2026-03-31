@@ -55,10 +55,6 @@
 }
 
 @layer utilities {
-  .font-heading {
-    font-family: theme('fontFamily.heading');
-  }
-
   .text-app-primary {
     color: var(--text-primary);
   }
