@@ -17,6 +17,7 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <link rel="manifest" href="/manifest.json" />
     <style>
       :root {
         --semko-cobalt: #235ad6;
@@ -80,13 +81,5 @@
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      window.addEventListener("DOMContentLoaded", () => {
-        const loader = document.getElementById("app-loader");
-        if (loader) {
-          loader.classList.add("hidden");
-        }
-      });
-    </script>
   </body>
 </html>
