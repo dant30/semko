@@ -11,6 +11,7 @@
 
 export type NotificationStatus = "unread" | "read" | "archived";
 export type NotificationChannel = "email" | "sms" | "push" | "in_app";
+export type NotificationPriority = "low" | "medium" | "high" | "critical";
 
 export const NotificationStatuses = {
   UNREAD: "unread" as NotificationStatus,
@@ -64,6 +65,15 @@ export type NotificationAudience =
 // NOTIFICATION RECORD (IN-APP NOTIFICATION)
 // ============================================================================
 
+export interface NotificationMetadata {
+  action_type?: string;
+  action_url?: string;
+  entity?: string;
+  entity_id?: number;
+  priority?: NotificationPriority;
+  [key: string]: unknown;
+}
+
 export interface NotificationRecord {
   id: number;
   title: string;
@@ -72,7 +82,8 @@ export interface NotificationRecord {
   channel: NotificationChannel;
   event_code: NotificationEventCode;
   audience: NotificationAudience;
-  metadata?: Record<string, unknown>;
+  priority?: NotificationPriority;
+  metadata?: NotificationMetadata;
   created_at: string;
   updated_at?: string;
   read_at?: string | null;

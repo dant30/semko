@@ -12,11 +12,12 @@ export function NotificationsSummaryCards({ summary, isLoading }: NotificationsS
         { label: "Unread", value: summary.total_unread, color: "text-rose-600" },
         { label: "Read", value: summary.total_read, color: "text-slate-700" },
         { label: "Archived", value: summary.total_archived, color: "text-app-muted" },
+        { label: "Recent", value: summary.recent_count, color: "text-amber-600" },
       ]
     : [];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {isLoading
         ? Array.from({ length: 3 }).map((_, idx) => (
             <Card className="h-28 animate-pulse rounded-3xl" key={idx}>

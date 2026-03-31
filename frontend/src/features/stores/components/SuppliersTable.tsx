@@ -15,6 +15,7 @@ export function SuppliersTable({
   onDelete?: (supplier: SupplierRecord) => void;
 }) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [removingId, setRemovingId] = useState<number | null>(null);
 
   if (isLoading) {
     return (
@@ -25,8 +26,6 @@ export function SuppliersTable({
       </div>
     );
   }
-
-  const [removingId, setRemovingId] = useState<number | null>(null);
 
   if (suppliers.length === 0) {
     return (
