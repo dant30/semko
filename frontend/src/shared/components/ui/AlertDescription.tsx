@@ -1,5 +1,9 @@
-import type { PropsWithChildren } from "react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-export function AlertDescription({ children }: PropsWithChildren) {
-  return <p className="ui-alert__description">{children}</p>;
-}
+export const AlertDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => {
+    return <div ref={ref} className={cn('text-sm', className)} {...props} />;
+  }
+);
+AlertDescription.displayName = 'AlertDescription';

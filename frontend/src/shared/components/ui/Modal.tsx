@@ -1,11 +1,17 @@
-import type { PropsWithChildren } from "react";
+import type {
+  KeyboardEvent,
+  MouseEvent,
+  PropsWithChildren,
+  ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 import { Button } from "./Button";
+import { cn } from "@/lib/utils";
 
 export interface ModalProps {
-  children: React.ReactNode;
+  children: ReactNode;
   isOpen: boolean;
   onClose: () => void;
   title?: string;
@@ -35,13 +41,13 @@ export function Modal({
 }: ModalProps) {
   if (!isOpen) return null;
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
+  const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && closeOnBackdrop) {
       onClose();
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Escape" && closeOnEscape) {
       onClose();
     }
@@ -49,7 +55,7 @@ export function Modal({
 
   const modalContent = (
     <div
-      className="modal-overlay animate-fade-in"
+      className={cn("modal-overlay animate-fade-in")}
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       role="dialog"
@@ -79,9 +85,7 @@ export function Modal({
                 )}
               </div>
             )}
-            <div className="px-6 py-4">
-              {children}
-            </div>
+            <div className="px-6 py-4">{children}</div>
           </div>
         </div>
       </div>
@@ -91,26 +95,37 @@ export function Modal({
   return createPortal(modalContent, document.body);
 }
 
-// Modal sub-components
-export function ModalHeader({ children, className, ...props }: PropsWithChildren<{ className?: string }>) {
+export function ModalHeader({
+  children,
+  className,
+  ...props
+}: PropsWithChildren<{ className?: string }>) {
   return (
-    <div className={`border-b border-surface-border px-6 py-4 ${className || ""}`} {...props}>
+    <div className={cn("border-b border-surface-border px-6 py-4", className)} {...props}>
       {children}
     </div>
   );
 }
 
-export function ModalBody({ children, className, ...props }: PropsWithChildren<{ className?: string }>) {
+export function ModalBody({
+  children,
+  className,
+  ...props
+}: PropsWithChildren<{ className?: string }>) {
   return (
-    <div className={`px-6 py-4 ${className || ""}`} {...props}>
+    <div className={cn("px-6 py-4", className)} {...props}>
       {children}
     </div>
   );
 }
 
-export function ModalFooter({ children, className, ...props }: PropsWithChildren<{ className?: string }>) {
+export function ModalFooter({
+  children,
+  className,
+  ...props
+}: PropsWithChildren<{ className?: string }>) {
   return (
-    <div className={`border-t border-surface-border px-6 py-4 ${className || ""}`} {...props}>
+    <div className={cn("border-t border-surface-border px-6 py-4", className)} {...props}>
       {children}
     </div>
   );

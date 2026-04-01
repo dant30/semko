@@ -1,5 +1,12 @@
-import type { PropsWithChildren } from "react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { Heading } from './Heading';
 
-export function SectionHeading({ children }: PropsWithChildren) {
-  return <h2 className="ui-section-heading">{children}</h2>;
-}
+interface SectionHeadingProps extends React.ComponentPropsWithoutRef<typeof Heading> {}
+
+export const SectionHeading = React.forwardRef<HTMLHeadingElement, SectionHeadingProps>(
+  ({ className, ...props }, ref) => {
+    return <Heading ref={ref} level={2} weight="semibold" className={cn('mb-3', className)} {...props} />;
+  }
+);
+SectionHeading.displayName = 'SectionHeading';

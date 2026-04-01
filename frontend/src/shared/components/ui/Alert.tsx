@@ -1,98 +1,48 @@
-// frontend/src/shared/components/ui/Alert.tsx
-import type { PropsWithChildren } from "react";
-import { forwardRef } from "react";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Info,
-  X,
-  XCircle,
-} from "lucide-react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
-import { classNames } from "@/shared/utils/classnames";
-import { Button } from "./Button";
-
-type AlertVariant = "info" | "success" | "warning" | "danger";
-
-const variantClasses: Record<AlertVariant, string> = {
-  info: "alert-info",
-  success: "alert-success",
-  warning: "alert-warning",
-  danger: "alert-danger",
-};
-
-const variantIcons: Record<AlertVariant, React.ComponentType<{ className?: string }>> = {
-  info: Info,
-  success: CheckCircle2,
-  warning: AlertCircle,
-  danger: XCircle,
-};
-
-export interface AlertProps {
-  children: React.ReactNode;
-  className?: string;
-  variant?: AlertVariant;
+interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'info' | 'success' | 'warning' | 'danger';
   title?: string;
-  icon?: React.ReactNode;
-  onClose?: () => void;
-  dismissible?: boolean;
+  description?: string;
 }
 
-export const Alert = forwardRef<HTMLDivElement, AlertProps>(
-  (
-    {
-      children,
-      className,
-      variant = "info",
-      title,
-      icon,
-      onClose,
-      dismissible = false,
-      ...props
-    },
-    ref
-  ) => {
-    const Icon = variantIcons[variant];
+const variantStyles = {
+  info: 'alert-info',
+  success: 'alert-success',
+  warning: 'alert-warning',
+  danger: 'alert-danger',
+};
 
+const icons = {
+  info: Info,
+  success: CheckCircle,
+  warning: AlertTriangle,
+  danger: AlertCircle,
+};
+
+export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+  ({ className, variant = 'info', title, description, children, ...props }, ref) => {
+    const Icon = icons[variant];
     return (
       <div
         ref={ref}
-        className={classNames("alert", variantClasses[variant], className)}
+        className={cn('alert', variantStyles[variant], className)}
         role="alert"
         {...props}
       >
         <div className="flex gap-3">
-          <div className="flex-shrink-0">
-            {icon || <Icon className="h-5 w-5" />}
+          <Icon className="h-5 w-5 shrink-0" />
+          <div>
+            {title && <div className="font-semibold">{title}</div>}
+            {description && <div className="mt-1 text-sm">{description}</div>}
+            {children}
           </div>
-          <div className="flex-1">
-            {title && (
-              <h4 className="font-semibold text-sm mb-1">
-                {title}
-              </h4>
-            )}
-            <div className="text-sm">
-              {children}
-            </div>
-          </div>
-          {dismissible && (
-            <div className="flex-shrink-0">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="h-6 w-6 p-0 hover:bg-transparent"
-                aria-label="Dismiss alert"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     );
   }
 );
-
-Alert.displayName = "Alert";
+Alert.displayName = 'Alert';
 

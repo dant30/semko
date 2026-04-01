@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { forwardRef } from "react";
 
-import { classNames } from "@/shared/utils/classnames";
+import { cn } from "@/lib/utils";
 
 type CardVariant = "default" | "elevated" | "outlined" | "filled";
 type CardPadding = "none" | "sm" | "md" | "lg" | "xl";
@@ -46,7 +46,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <Component
         ref={ref}
-        className={classNames(
+        className={cn(
           variantClasses[variant],
           paddingClasses[padding],
           hover && "hover-lift",
@@ -69,7 +69,7 @@ export function CardHeader({
   ...props
 }: PropsWithChildren<{ className?: string }>) {
   return (
-    <div className={classNames("card-header", className)} {...props}>
+    <div className={cn("card-header", className)} {...props}>
       {children}
     </div>
   );
@@ -81,7 +81,7 @@ export function CardBody({
   ...props
 }: PropsWithChildren<{ className?: string }>) {
   return (
-    <div className={classNames("card-body", className)} {...props}>
+    <div className={cn("card-body", className)} {...props}>
       {children}
     </div>
   );
@@ -93,7 +93,7 @@ export function CardFooter({
   ...props
 }: PropsWithChildren<{ className?: string }>) {
   return (
-    <div className={classNames("card-footer", className)} {...props}>
+    <div className={cn("card-footer", className)} {...props}>
       {children}
     </div>
   );

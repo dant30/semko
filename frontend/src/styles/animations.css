@@ -1,6 +1,17 @@
 @layer utilities {
+  /* ==========================
+     ENTRY ANIMATIONS
+  ========================== */
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out both;
+    animation: fadeIn 0.25s ease-out both;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out both;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out both;
   }
 
   .animate-slide-up {
@@ -11,77 +22,92 @@
     animation: scaleIn 0.2s ease-out both;
   }
 
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-bounce-slow {
+    animation: bounce 2s infinite;
+  }
+
+  /* ==========================
+     KEYFRAMES
+  ========================== */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideInLeft {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  }
+
+  /* ==========================
+     MICRO INTERACTIONS
+  ========================== */
   .hover-lift {
     @apply transition-transform duration-200 ease-out hover:-translate-y-1;
   }
 
   .hover-grow {
-    @apply transition-transform duration-200 ease-out hover:scale-[1.02];
+    @apply transition-transform duration-200 ease-out hover:scale-105;
   }
 
+  /* ==========================
+     SKELETON / SHIMMER
+  ========================== */
   .skeleton {
     position: relative;
     overflow: hidden;
-    border-radius: 0.5rem;
-    background-color: rgb(226 232 240);
+    background-color: var(--surface-subtle);
+    border-radius: 0.25rem;
   }
 
   .skeleton::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: -150%;
     width: 150%;
     height: 100%;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.35) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
     animation: shimmer 1.5s infinite;
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
   @keyframes shimmer {
-    0% {
-      transform: translateX(-150%);
-    }
-    100% {
-      transform: translateX(150%);
-    }
+    0% { transform: translateX(-150%); }
+    100% { transform: translateX(150%); }
   }
 
+  /* ==========================
+     TEXT UTILITIES
+  ========================== */
   .text-balance {
     text-wrap: balance;
   }
@@ -94,16 +120,44 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
 
   .glass {
-    @apply border border-white/20 bg-white/70 backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-900/60;
+    @apply backdrop-blur-md border;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .dark .glass {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .gradient-text {
     @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+
+  /* ==========================
+     THEME UTILITIES
+  ========================== */
+  .text-app-primary {
+    color: var(--text-primary);
+  }
+
+  .text-app-secondary {
+    color: var(--text-secondary);
+  }
+
+  .text-app-muted {
+    color: var(--text-muted);
+  }
+
+  .bg-app-surface {
+    background-color: var(--surface-bg);
+  }
+
+  .bg-app-panel {
+    background-color: var(--surface-panel);
   }
 }

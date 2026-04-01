@@ -1,25 +1,44 @@
-import type { PropsWithChildren } from "react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
 
-import { cn } from "@/shared/utils/classnames";
-
-export function Toast({
-  children,
-  title,
-  tone = "info",
-}: PropsWithChildren<{ title?: string; tone?: "success" | "info" | "warning" | "danger" }>) {
-  return (
-    <div
-      className={cn(
-        "pointer-events-auto rounded-2xl border px-4 py-4 shadow-hard backdrop-blur",
-        tone === "success" && "border-emerald-200 bg-emerald-50/95 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/90 dark:text-emerald-100",
-        tone === "info" && "border-accent-200 bg-white/95 text-slate-900 dark:border-accent-900 dark:bg-slate-900/95 dark:text-slate-100",
-        tone === "warning" && "border-amber-200 bg-amber-50/95 text-amber-900 dark:border-amber-900 dark:bg-amber-950/90 dark:text-amber-100",
-        tone === "danger" && "border-rose-200 bg-rose-50/95 text-rose-900 dark:border-rose-900 dark:bg-rose-950/90 dark:text-rose-100"
-      )}
-      role="status"
-    >
-      {title ? <p className="text-sm font-semibold">{title}</p> : null}
-      <p className={cn("text-sm", title && "mt-1")}>{children}</p>
-    </div>
-  );
+interface ToastProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'info' | 'success' | 'warning' | 'danger';
+  title?: string;
+  onClose?: () => void;
 }
+
+export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
+  ({ className, variant = 'info', title, children, onClose, ...props }, ref) => {
+    const variantClasses = {
+      info: 'bg-accent-50 border-accent-200 text-accent-900 dark:bg-accent-900/20 dark:border-accent-800',
+      success: 'bg-success/10 border-success/20 text-success-800 dark:bg-success/10 dark:border-success/30',
+      warning: 'bg-warning/10 border-warning/20 text-warning-800 dark:bg-warning/10 dark:border-warning/30',
+      danger: 'bg-danger/10 border-danger/20 text-danger-800 dark:bg-danger/10 dark:border-danger/30',
+    };
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'relative rounded-lg border p-4 shadow-hard animate-slide-up',
+          variantClasses[variant],
+          className
+        )}
+        role="alert"
+        {...props}
+      >
+        {title && <div className="font-semibold mb-1">{title}</div>}
+        <div>{children}</div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-text-muted hover:text-text-primary"
+          >
+            <X size={16} />
+          </button>
+        )}
+      </div>
+    );
+  }
+);
+Toast.displayName = 'Toast';

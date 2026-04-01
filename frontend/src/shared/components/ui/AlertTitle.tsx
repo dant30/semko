@@ -1,5 +1,9 @@
-import type { PropsWithChildren } from "react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-export function AlertTitle({ children }: PropsWithChildren) {
-  return <strong className="ui-alert__title">{children}</strong>;
-}
+export const AlertTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
+  ({ className, ...props }, ref) => {
+    return <h5 ref={ref} className={cn('font-semibold', className)} {...props} />;
+  }
+);
+AlertTitle.displayName = 'AlertTitle';

@@ -1,39 +1,22 @@
-import type { TextareaHTMLAttributes } from "react";
-import { forwardRef } from "react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-import { classNames } from "@/shared/utils/classnames";
-
-export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  error?: boolean;
-  resize?: "none" | "vertical" | "horizontal" | "both";
-  size?: "sm" | "md" | "lg";
+export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  error?: string;
 }
 
-const sizeClasses = {
-  sm: "px-3 py-2 text-sm",
-  md: "px-4 py-3 text-sm",
-  lg: "px-4 py-3.5 text-base",
-};
-
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, error, resize = "vertical", size = "md", ...props }, ref) => {
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, error, ...props }, ref) => {
     return (
-      <textarea
-        ref={ref}
-        className={classNames(
-          "form-textarea ui-focus",
-          sizeClasses[size],
-          resize === "none" && "resize-none",
-          resize === "vertical" && "resize-y",
-          resize === "horizontal" && "resize-x",
-          resize === "both" && "resize",
-          error && "border-rose-300 focus:border-rose-500 focus:ring-rose-100 dark:border-rose-600 dark:focus:border-rose-500 dark:focus:ring-rose-900",
-          className
-        )}
-        {...props}
-      />
+      <div className="w-full">
+        <textarea
+          className={cn('form-textarea', error && 'border-danger focus:ring-danger/20', className)}
+          ref={ref}
+          {...props}
+        />
+        {error && <p className="form-error mt-1">{error}</p>}
+      </div>
     );
   }
 );
-
-Textarea.displayName = "Textarea";
+Textarea.displayName = 'Textarea';

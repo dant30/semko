@@ -1,13 +1,21 @@
-interface DataPairProps {
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+interface DataPairProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
-  value: string;
+  value: React.ReactNode;
+  orientation?: 'horizontal' | 'vertical';
 }
 
-export function DataPair({ label, value }: DataPairProps) {
-  return (
-    <div className="ui-data-pair">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
+export const DataPair = React.forwardRef<HTMLDivElement, DataPairProps>(
+  ({ className, label, value, orientation = 'horizontal', ...props }, ref) => {
+    const orientationClasses = orientation === 'horizontal' ? 'flex justify-between' : 'space-y-1';
+    return (
+      <div ref={ref} className={cn(orientationClasses, className)} {...props}>
+        <dt className="text-sm text-text-muted">{label}</dt>
+        <dd className="text-sm font-medium text-text-primary">{value}</dd>
+      </div>
+    );
+  }
+);
+DataPair.displayName = 'DataPair';

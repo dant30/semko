@@ -1,23 +1,30 @@
-import { useState } from "react";
+import * as React from 'react';
+import { Input } from './Input';
+import { Eye, EyeOff } from 'lucide-react';
+import { IconButton } from './IconButton';
 
-import { Input, type InputProps } from "./Input";
-import { Button } from "./Button";
-
-export function PasswordInput(props: InputProps) {
-  const [visible, setVisible] = useState(false);
-
-  return (
-    <div className="relative">
-      <Input className="pr-24" type={visible ? "text" : "password"} {...props} />
-      <Button
-        className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5"
-        onClick={() => setVisible((current) => !current)}
-        size="sm"
-        type="button"
-        variant="ghost"
-      >
-        {visible ? "Hide" : "Show"}
-      </Button>
-    </div>
-  );
-}
+export const PasswordInput = React.forwardRef<HTMLInputElement, React.ComponentProps<typeof Input>>(
+  ({ ...props }, ref) => {
+    const [showPassword, setShowPassword] = React.useState(false);
+    return (
+      <div className="relative">
+        <Input
+          ref={ref}
+          type={showPassword ? 'text' : 'password'}
+          {...props}
+          className="pr-10"
+        />
+        <IconButton
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="absolute right-2 top-1/2 -translate-y-1/2"
+          onClick={() => setShowPassword(!showPassword)}
+          icon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        />
+      </div>
+    );
+  }
+);
+PasswordInput.displayName = 'PasswordInput';

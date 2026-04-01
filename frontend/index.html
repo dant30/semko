@@ -1,25 +1,64 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
+    <!-- =========================================================
+         BASIC META
+    ========================================================== -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
     <title>SEMKO Integrated Management System</title>
+
     <meta
       name="description"
       content="SEMKO Integrated Management System for fleet operations, dispatch, stores, fuel, maintenance, payroll, and governance."
     />
+    <meta
+      name="keywords"
+      content="fleet management, dispatch, stores, fuel, maintenance, payroll, governance"
+    />
+    <meta name="author" content="SEMKO" />
+
+    <!-- =========================================================
+         BRAND / THEME
+    ========================================================== -->
     <meta name="theme-color" content="#123524" />
     <meta name="color-scheme" content="light dark" />
+
+    <!-- =========================================================
+         ICONS & PWA
+    ========================================================== -->
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- =========================================================
+         OPEN GRAPH / SOCIAL
+    ========================================================== -->
+    <meta property="og:title" content="SEMKO Integrated Management System" />
+    <meta property="og:description" content="Comprehensive fleet and operations management." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com" />
+    <meta property="og:image" content="/icons/icon-192.svg" />
+
+    <!-- =========================================================
+         FONTS (Preloaded)
+    ========================================================== -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- =========================================================
+         CRITICAL LOADING STYLES
+    ========================================================== -->
     <style>
       :root {
         --semko-cobalt: #235ad6;
@@ -34,6 +73,7 @@
         font-family: "Manrope", system-ui, -apple-system, sans-serif;
         background: radial-gradient(circle at top, #0e2230, #050b11 65%);
         color: #e8f2ee;
+        overflow-x: hidden;
       }
 
       #app-loader {
@@ -43,7 +83,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
         background: radial-gradient(circle at top, #0e2230, #050b11 65%);
         z-index: 9999;
       }
@@ -55,18 +94,7 @@
         border: 4px solid rgba(255, 255, 255, 0.15);
         border-top-color: var(--semko-cobalt);
         animation: spin 1s linear infinite;
-      }
-
-      .loader-text {
-        color: #d7e7ff;
-        font-size: 0.95rem;
-        letter-spacing: 0.04em;
-      }
-
-      .hidden {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.25s ease;
+        margin-bottom: 16px;
       }
 
       @keyframes spin {
@@ -74,14 +102,75 @@
           transform: rotate(360deg);
         }
       }
+
+      .loader-text {
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+        color: #d7e7ff;
+      }
+
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
     </style>
   </head>
+
   <body>
+    <!-- APP LOADER (removed by React) -->
     <div id="app-loader">
       <div class="loader-ring"></div>
-      <div class="loader-text">Starting SEMKO workspace...</div>
+      <div class="loader-text">Starting SEMKO workspace…</div>
     </div>
+
+    <!-- REACT ROOT -->
     <div id="root"></div>
+
+    <!-- VITE ENTRY -->
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- SERVICE WORKER (optional) -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/service-worker.js")
+            .catch(() => {});
+        });
+      }
+
+      // Hide loader once JS boots
+      window.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("app-loader");
+        if (loader) loader.classList.add("hidden");
+      });
+    </script>
+
+    <!-- NO-JS FALLBACK -->
+    <noscript>
+      <div
+        style="
+          position: fixed;
+          inset: 0;
+          background: #0e2230;
+          color: #e8f2ee;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 2rem;
+        "
+      >
+        <div>
+          <h1 style="font-size: 1.75rem; margin-bottom: 1rem">
+            JavaScript Required
+          </h1>
+          <p style="opacity: 0.8">
+            SEMKO requires JavaScript to run. Please enable JavaScript and refresh the page.
+          </p>
+        </div>
+      </div>
+    </noscript>
   </body>
 </html>

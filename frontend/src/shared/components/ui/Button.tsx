@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
 import { forwardRef } from "react";
 
-import { classNames } from "@/shared/utils/classnames";
+import { cn } from "@/lib/utils";
 
 type ButtonVariant =
   | "primary"
@@ -13,20 +13,20 @@ type ButtonVariant =
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "btn-primary focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900",
-  secondary: "btn-secondary focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-800",
-  ghost: "btn-ghost focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-800",
-  danger: "btn-danger focus:ring-4 focus:ring-rose-100 dark:focus:ring-rose-900",
-  success: "btn-success focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900",
-  outline: "btn-outline focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900",
+  primary: "bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-400",
+  secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 focus:ring-slate-300",
+  ghost: "bg-transparent text-slate-700 hover:bg-slate-100 focus:ring-slate-300",
+  danger: "bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-400",
+  success: "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-400",
+  outline: "border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 focus:ring-slate-300",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  xs: "px-2.5 py-1.5 text-xs gap-1.5",
-  sm: "px-3 py-2 text-xs gap-1.5",
-  md: "px-4 py-2.5 text-sm gap-2",
-  lg: "px-5 py-3 text-base gap-2",
-  xl: "px-6 py-4 text-lg gap-2.5",
+  xs: "px-3 py-1.5 text-xs gap-1.5",
+  sm: "px-3.5 py-2 text-sm gap-2",
+  md: "px-4 py-2.5 text-sm gap-2.5",
+  lg: "px-5 py-3 text-base gap-2.5",
+  xl: "px-6 py-3.5 text-lg gap-3",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -55,22 +55,22 @@ export const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProp
     return (
       <button
         ref={ref}
-        className={classNames(
-          "btn",
+        className={cn(
+          "inline-flex items-center justify-center rounded-xl border font-semibold transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
           variantClasses[variant],
           sizeClasses[size],
-          isLoading && "cursor-wait opacity-75",
+          isLoading && "cursor-wait opacity-80",
           className
         )}
         disabled={disabled || isLoading}
         {...rest}
       >
         {isLoading && (
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          <span className="mr-2 inline-flex h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
         )}
-        {!isLoading && leftIcon && <span className="shrink-0">{leftIcon}</span>}
+        {!isLoading && leftIcon && <span className="mr-2 shrink-0">{leftIcon}</span>}
         <span className={isLoading ? "opacity-0" : ""}>{children}</span>
-        {!isLoading && rightIcon && <span className="shrink-0">{rightIcon}</span>}
+        {!isLoading && rightIcon && <span className="ml-2 shrink-0">{rightIcon}</span>}
       </button>
     );
   }

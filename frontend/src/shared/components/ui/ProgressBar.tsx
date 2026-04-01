@@ -1,74 +1,34 @@
-import { forwardRef } from "react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-import { classNames } from "@/shared/utils/classnames";
-
-export interface ProgressBarProps {
+interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
   value: number;
-  className?: string;
-  variant?: "primary" | "success" | "warning" | "danger";
-  size?: "sm" | "md" | "lg";
-  showLabel?: boolean;
-  animated?: boolean;
+  max?: number;
+  variant?: 'brand' | 'accent' | 'success';
 }
 
-const variantClasses = {
-  primary: "bg-gradient-primary",
-  success: "bg-emerald-500",
-  warning: "bg-amber-500",
-  danger: "bg-rose-500",
+const variantMap = {
+  brand: 'bg-brand-600',
+  accent: 'bg-accent-600',
+  success: 'bg-success-600',
 };
 
-const sizeClasses = {
-  sm: "h-1.5",
-  md: "h-2.5",
-  lg: "h-4",
-};
-
-export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
-  (
-    {
-      value,
-      className,
-      variant = "primary",
-      size = "md",
-      showLabel = false,
-      animated = true,
-      ...props
-    },
-    ref
-  ) => {
-    const clampedValue = Math.max(0, Math.min(value, 100));
-
+export const ProgressBar = React.forwardRef<HTMLDivElement, ProgressBarProps>(
+  ({ className, value, max = 100, variant = 'brand', ...props }, ref) => {
+    const percent = Math.min(100, Math.max(0, (value / max) * 100));
     return (
-      <div className="space-y-1">
+      <div
+        ref={ref}
+        className={cn('h-2 w-full bg-surface-subtle rounded-full overflow-hidden', className)}
+        {...props}
+      >
         <div
-          ref={ref}
-          className={classNames(
-            "w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800",
-            sizeClasses[size],
-            className
-          )}
-          {...props}
-        >
-          <div
-            className={classNames(
-              "h-full rounded-full transition-all duration-300",
-              variantClasses[variant],
-              animated && "transition-all duration-500 ease-out",
-              `w-[${clampedValue}%]`
-            )}
-          />
-        </div>
-        {showLabel && (
-          <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
-            <span>Progress</span>
-            <span>{clampedValue}%</span>
-          </div>
-        )}
+          className={cn('h-full rounded-full transition-all duration-300', variantMap[variant])}
+          style={{ width: `${percent}%` }}
+        />
       </div>
     );
   }
 );
-
-ProgressBar.displayName = "ProgressBar";
+ProgressBar.displayName = 'ProgressBar';
 

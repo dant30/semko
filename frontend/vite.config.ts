@@ -4,6 +4,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import svgr from "vite-plugin-svgr";
 
 const BACKEND_TARGET = process.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
 
@@ -14,7 +15,14 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      react(),
+      react({
+        jsxRuntime: "automatic",
+      }),
+      svgr({
+        svgrOptions: {
+          icon: true,
+        },
+      }),
       VitePWA({
         registerType: "autoUpdate",
         includeAssets: [
@@ -62,16 +70,46 @@ export default defineConfig(({ mode }) => {
           brotliSize: true,
         }),
     ].filter(Boolean),
+
     resolve: {
       alias: {
+        // Core aliases
         "@": path.resolve(rootDir, "./src"),
         "@core": path.resolve(rootDir, "./src/core"),
         "@features": path.resolve(rootDir, "./src/features"),
         "@shared": path.resolve(rootDir, "./src/shared"),
         "@styles": path.resolve(rootDir, "./src/styles"),
         "@api": path.resolve(rootDir, "./src/core/api"),
+
+        // Extended aliases (from second example)
+        "@components/customers": path.resolve(rootDir, "./src/features/customers/components"),
+        "@components/loans": path.resolve(rootDir, "./src/features/loans/components"),
+        "@components/repayments": path.resolve(rootDir, "./src/features/repayments/components"),
+        "@components/notifications": path.resolve(rootDir, "./src/features/notifications/components"),
+        "@components/dashboard": path.resolve(rootDir, "./src/features/dashboard/components"),
+        "@components/admin/roles": path.resolve(rootDir, "./src/features/admin/roles/components"),
+        "@components/admin/staff": path.resolve(rootDir, "./src/features/admin/staff/components"),
+        "@components/admin/audit": path.resolve(rootDir, "./src/features/admin/audit/components"),
+        "@components": path.resolve(rootDir, "./src/shared/components"),
+        "@pages": path.resolve(rootDir, "./src/features"),
+        "@utils": path.resolve(rootDir, "./src/shared/utils"),
+        "@constants": path.resolve(rootDir, "./src/shared/constants"),
+        "@api/axios": path.resolve(rootDir, "./src/core/api/axios.js"),
+        "@api/admin": path.resolve(rootDir, "./src/features/admin/dashboard/services/admin.js"),
+        "@api/audit": path.resolve(rootDir, "./src/features/admin/audit/services/audit.js"),
+        "@api/auth": path.resolve(rootDir, "./src/features/auth/services/auth.js"),
+        "@api/customers": path.resolve(rootDir, "./src/features/customers/services/customers.js"),
+        "@api/loans": path.resolve(rootDir, "./src/features/loans/services/loans.js"),
+        "@api/mpesa": path.resolve(rootDir, "./src/features/repayments/services/mpesa.js"),
+        "@api/notifications": path.resolve(rootDir, "./src/features/notifications/services/notifications.js"),
+        "@api/repayments": path.resolve(rootDir, "./src/features/repayments/services/repayments.js"),
+        "@api/reports": path.resolve(rootDir, "./src/features/reports/services/reports.js"),
+        "@router": path.resolve(rootDir, "./src/core/router"),
+        "@contexts": path.resolve(rootDir, "./src/core/contexts"),
       },
+      extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
     },
+
     server: {
       host: true,
       port: 3000,
@@ -93,17 +131,27 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+
     preview: {
       host: true,
       port: 3000,
     },
+
     build: {
       sourcemap: !isProd,
+      minify: "terser",
+      terserOptions: {
+        compress: {
+          drop_console: isProd,
+          drop_debugger: isProd,
+        },
+      },
       rollupOptions: {
         output: {
           manualChunks(id) {
             const normalizedId = id.replace(/\\/g, "/");
 
+            // Node modules splitting
             if (normalizedId.includes("/node_modules/")) {
               if (
                 normalizedId.includes("/react/") ||
@@ -120,6 +168,9 @@ export default defineConfig(({ mode }) => {
               ) {
                 return "charts";
               }
+              if (normalizedId.includes("/react-hook-form/")) {
+                return "forms";
+              }
               if (
                 normalizedId.includes("/axios/") ||
                 normalizedId.includes("/date-fns/") ||
@@ -131,26 +182,41 @@ export default defineConfig(({ mode }) => {
               }
             }
 
+            // Feature-based splits (your original + additional granular ones)
             if (normalizedId.includes("/src/features/dashboard/")) {
+              if (
+                normalizedId.includes("/src/features/dashboard/components/Collections") ||
+                normalizedId.includes("/src/features/dashboard/components/Performance") ||
+                normalizedId.includes("/src/features/dashboard/components/RecentActivity")
+              ) {
+                return "dashboard-widgets-secondary";
+              }
+              if (
+                normalizedId.includes("/src/features/dashboard/components/OverviewCards") ||
+                normalizedId.includes("/src/features/dashboard/components/MyCustomers") ||
+                normalizedId.includes("/src/features/dashboard/components/MyLoans") ||
+                normalizedId.includes("/src/features/dashboard/components/PendingApprovals")
+              ) {
+                return "dashboard-widgets-core";
+              }
+              if (normalizedId.includes("/src/features/dashboard/components/")) {
+                return "dashboard-widgets";
+              }
               return "feature-dashboard";
             }
-            if (normalizedId.includes("/src/features/stores/")) {
-              return "feature-stores";
-            }
-            if (normalizedId.includes("/src/features/fuel/")) {
-              return "feature-fuel";
-            }
-            if (normalizedId.includes("/src/features/maintenance/")) {
-              return "feature-maintenance";
-            }
-            if (normalizedId.includes("/src/features/payroll/")) {
-              return "feature-payroll";
-            }
-            if (normalizedId.includes("/src/features/notifications/")) {
-              return "feature-notifications";
-            }
-            if (normalizedId.includes("/src/features/auth/")) {
-              return "feature-auth";
+            if (normalizedId.includes("/src/features/stores/")) return "feature-stores";
+            if (normalizedId.includes("/src/features/fuel/")) return "feature-fuel";
+            if (normalizedId.includes("/src/features/maintenance/")) return "feature-maintenance";
+            if (normalizedId.includes("/src/features/payroll/")) return "feature-payroll";
+            if (normalizedId.includes("/src/features/notifications/")) return "feature-notifications";
+            if (normalizedId.includes("/src/features/auth/")) return "feature-auth";
+
+            // Additional splits from second example
+            if (
+              normalizedId.includes("/src/shared/components/charts/") ||
+              normalizedId.includes("/src/features/reports/components/ReportChart")
+            ) {
+              return "charts-widgets";
             }
           },
           chunkFileNames: "assets/js/[name]-[hash].js",
@@ -167,6 +233,16 @@ export default defineConfig(({ mode }) => {
         },
       },
       chunkSizeWarningLimit: 900,
+    },
+
+    // New test configuration (Vitest)
+    test: {
+      globals: true,
+      environment: "jsdom",
+    },
+
+    css: {
+      postcss: "./postcss.config.js",
     },
   };
 });

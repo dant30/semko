@@ -1,5 +1,16 @@
-import type { PropsWithChildren } from "react";
+import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
+import { forwardRef } from "react";
 
-export function CardContent({ children }: PropsWithChildren) {
-  return <div className="ui-card__content">{children}</div>;
-}
+import { cn } from "@/lib/utils";
+
+export const CardContent = forwardRef<HTMLDivElement, PropsWithChildren<{
+  className?: string;
+}> & ComponentPropsWithoutRef<"div">>(
+  ({ children, className, ...props }, ref) => (
+    <div ref={ref} className={cn("ui-card__content", className)} {...props}>
+      {children}
+    </div>
+  )
+);
+
+CardContent.displayName = "CardContent";

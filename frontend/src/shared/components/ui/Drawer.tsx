@@ -1,6 +1,8 @@
 import { X } from "lucide-react";
 import type { PropsWithChildren, ReactNode } from "react";
 
+import { cn } from "@/lib/utils";
+
 interface DrawerProps extends PropsWithChildren {
   description?: string;
   onClose: () => void;
@@ -29,8 +31,10 @@ export function Drawer({
       />
       <aside
         aria-modal="true"
-        className="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col border-l border-slate-200 bg-white shadow-hard dark:border-slate-800 dark:bg-slate-950"
         role="dialog"
+        className={cn(
+          "absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col border-l border-slate-200 bg-white shadow-hard dark:border-slate-800 dark:bg-slate-950"
+        )}
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5 dark:border-slate-800">
           <div className="space-y-1">

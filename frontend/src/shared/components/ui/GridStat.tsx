@@ -1,13 +1,27 @@
-interface GridStatProps {
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+interface GridStatProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
-  value: string;
+  value: string | number;
+  icon?: React.ReactNode;
 }
 
-export function GridStat({ label, value }: GridStatProps) {
-  return (
-    <div className="ui-grid-stat">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
+export const GridStat = React.forwardRef<HTMLDivElement, GridStatProps>(
+  ({ className, label, value, icon, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn('flex items-center justify-between rounded-lg border border-surface-border p-4', className)}
+        {...props}
+      >
+        <div>
+          <p className="text-sm text-text-muted">{label}</p>
+          <p className="mt-1 text-xl font-semibold text-text-primary">{value}</p>
+        </div>
+        {icon && <div className="text-text-muted">{icon}</div>}
+      </div>
+    );
+  }
+);
+GridStat.displayName = 'GridStat';
