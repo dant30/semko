@@ -1,3 +1,4 @@
 // frontend/src/features/auth/store/index
 export * from "./auth.slice";
-export { AuthProvider, useAuthContext } from "./AuthContext";
+export { AuthProvider } from "./AuthContext";
+export { useAuthContext } from "./auth-context";

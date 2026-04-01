@@ -10,6 +10,7 @@ import {
 import { authApi } from "@/features/auth/services/auth.api";
 import { setSession, clearAuth } from "@/features/auth/store/auth.slice";
 import { AuthContext } from "@/features/auth/store/auth-context";
+import type { AuthContextType } from "@/features/auth/store/auth-context";
 import type { AuthUser, LoginPayload } from "@/core/types/auth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
