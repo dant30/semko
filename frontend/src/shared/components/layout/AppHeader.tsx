@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "@/core/contexts/useTheme";
 import { appRoutes } from "@/core/constants/routes";
+import { IconButton, SearchInput } from "@/shared/components/ui";
 import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
 import { useAuthContext } from "@/features/auth/store/auth-context";
 import { clearAuth } from "@/features/auth/store/auth.slice";
@@ -336,14 +337,13 @@ export function AppHeader({ onToggleSidebar, onToggleSidebarCollapse, sidebarCol
 
           {isDesktop && (
             <div className="min-w-0 flex-1">
-              <form className="relative mx-auto w-full max-w-2xl" onSubmit={handleSearch}>
-                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-                <input
-                  className="form-input w-full pl-10"
-                  onChange={(event) => setSearchQuery(event.target.value)}
+              <form className="mx-auto w-full max-w-2xl" onSubmit={handleSearch}>
+                <SearchInput
+                  className="w-full"
                   placeholder="Search trips, stores, fuel, payroll..."
                   type="search"
                   value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
                 />
               </form>
             </div>
@@ -351,24 +351,26 @@ export function AppHeader({ onToggleSidebar, onToggleSidebarCollapse, sidebarCol
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
             {!isDesktop && (
-              <button
+              <IconButton
                 aria-label="Search"
-                className="rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 md:hidden"
+                icon={<Search className="h-5 w-5" />}
+                variant="ghost"
+                size="sm"
+                className="md:hidden"
                 onClick={() => setIsMobileSearchOpen((current) => !current)}
                 type="button"
-              >
-                <Search className="h-5 w-5" />
-              </button>
+              />
             )}
 
-            <button
+            <IconButton
               aria-label="Help"
-              className="hidden rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 sm:flex"
+              icon={<HelpCircle className="h-5 w-5" />}
+              variant="ghost"
+              size="sm"
+              className="hidden sm:flex"
               onClick={() => navigate(appRoutes.support)}
               type="button"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
+            />
 
             <div className="relative" ref={notificationsRef}>
               <button
@@ -474,14 +476,14 @@ export function AppHeader({ onToggleSidebar, onToggleSidebarCollapse, sidebarCol
               )}
             </div>
 
-            <button
+            <IconButton
               aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              className="rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              icon={isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              variant="ghost"
+              size="sm"
               onClick={toggleTheme}
               type="button"
-            >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
+            />
 
             <div className="relative" ref={profileRef}>
               <button

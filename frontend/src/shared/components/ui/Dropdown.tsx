@@ -6,16 +6,18 @@ interface DropdownProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
   align?: 'left' | 'right';
+  className?: string;
 }
 
-export const Dropdown = ({ trigger, children, align = 'left' }: DropdownProps) => {
+export const Dropdown = ({ trigger, children, align = 'left', className }: DropdownProps) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <Menu.Button as={React.Fragment}>{trigger}</Menu.Button>
       <Menu.Items
         className={cn(
-          'dropdown absolute z-10 mt-2 w-56 origin-top-right',
-          align === 'right' ? 'right-0' : 'left-0'
+          'dropdown absolute z-10 mt-2 origin-top-right',
+          align === 'right' ? 'right-0' : 'left-0',
+          className
         )}
       >
         <div className="py-1">{children}</div>

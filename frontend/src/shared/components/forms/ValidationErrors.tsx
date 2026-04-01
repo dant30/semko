@@ -1,4 +1,4 @@
-import { classNames } from "@/shared/utils/classnames";
+import { cn } from "@/shared/utils/classnames";
 
 interface ValidationErrorsProps {
   id?: string;
@@ -16,12 +16,14 @@ export default function ValidationErrors({
   }
 
   return (
-    <ul id={id} className={classNames("grid gap-1", className)} role="alert" aria-live="polite">
-      {errors.map((error, index) => (
-        <li key={`${error}-${index}`} className="ui-error text-xs">
-          {error}
-        </li>
-      ))}
-    </ul>
+    <div id={id} className={cn("grid gap-1", className)} role="alert" aria-live="polite">
+      <ul>
+        {errors.map((error, index) => (
+          <li key={`${error}-${index}`} className="text-xs text-danger-600 dark:text-danger-400">
+            {error}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

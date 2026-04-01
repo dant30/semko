@@ -1,6 +1,7 @@
 import { cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 
-import { classNames } from "@/shared/utils/classnames";
+import { cn } from "@/shared/utils/classnames";
+import { Label } from "@/shared/components/ui/Label";
 import ValidationErrors from "./ValidationErrors";
 
 interface FormFieldProps {
@@ -42,18 +43,17 @@ export function FormField({
     : children;
 
   return (
-    <div className={classNames("grid gap-1.5", className)}>
+    <div className={cn("grid gap-1.5", className)}>
       {label ? (
-        <label htmlFor={id} className="ui-label">
+        <Label htmlFor={id} required={required}>
           {label}
-          {required ? <span className="ml-1 text-danger-600">*</span> : null}
-        </label>
+        </Label>
       ) : null}
-      <div className={hasErrors ? "rounded-md ring-1 ring-danger-200 dark:ring-danger-900/40" : ""}>
+      <div className={cn(hasErrors && "rounded-md ring-1 ring-danger-200 dark:ring-danger-900/40")}>
         {enhancedChild}
       </div>
       {hint && !hasErrors ? (
-        <p id={hintId} className="ui-help">
+        <p id={hintId} className="text-sm text-text-muted">
           {hint}
         </p>
       ) : null}

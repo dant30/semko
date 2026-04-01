@@ -21,6 +21,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { getUserPermissions, hasAnyPermission } from "@/core/auth/permission-utils";
 import { useAppSelector } from "@/core/store/hooks";
+import { Button, IconButton } from "@/shared/components/ui";
 import {
   governanceNavigation,
   mainNavigation,
@@ -246,9 +247,9 @@ export function AppSidebar({ onClose, onNavigate, collapsed = false }: AppSideba
             collapsed && "px-2"
           )}
         >
-          <button
-            aria-label="Go to dashboard"
-            className="flex items-center gap-3 text-left"
+          <Button
+            variant="ghost"
+            className="flex items-center gap-3 p-0 text-slate-900 dark:text-white"
             onMouseEnter={() => prefetchRoute("/app/dashboard")}
             onFocus={() => prefetchRoute("/app/dashboard")}
             onClick={() => {
@@ -266,24 +267,25 @@ export function AppSidebar({ onClose, onNavigate, collapsed = false }: AppSideba
                 <p className="text-xs text-slate-500 dark:text-slate-400">Operations</p>
               </div>
             )}
-          </button>
-          <button
-            aria-label="Close sidebar"
-            className="rounded-lg p-1.5 text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+          </Button>
+          <IconButton
+            icon={<X className="h-5 w-5" />}
+            variant="ghost"
+            size="sm"
+            className="text-slate-600 dark:text-slate-300"
             onClick={onClose}
+            aria-label="Close sidebar"
             type="button"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          />
         </div>
       )}
 
       {/* Desktop header (expanded) */}
       {!onClose && !collapsed && (
         <div className="flex h-16 items-center border-b border-slate-200 px-4 dark:border-slate-700">
-          <button
-            aria-label="Go to dashboard"
-            className="flex items-center gap-3 text-left"
+          <Button
+            variant="ghost"
+            className="flex items-center gap-3 p-0 text-slate-900 dark:text-white"
             onMouseEnter={() => prefetchRoute("/app/dashboard")}
             onFocus={() => prefetchRoute("/app/dashboard")}
             onClick={() => navigate("/app/dashboard")}
@@ -296,16 +298,16 @@ export function AppSidebar({ onClose, onNavigate, collapsed = false }: AppSideba
               <p className="text-sm font-bold text-slate-900 dark:text-white">SEMKO</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">Operations</p>
             </div>
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Desktop header (collapsed) */}
       {!onClose && collapsed && (
         <div className="flex h-16 items-center justify-center border-b border-slate-200 px-2 dark:border-slate-700">
-          <button
-            aria-label="Go to dashboard"
-            className="flex items-center text-left"
+          <Button
+            variant="ghost"
+            className="p-0 hover:bg-transparent"
             onMouseEnter={() => prefetchRoute("/app/dashboard")}
             onFocus={() => prefetchRoute("/app/dashboard")}
             onClick={() => navigate("/app/dashboard")}
@@ -314,7 +316,7 @@ export function AppSidebar({ onClose, onNavigate, collapsed = false }: AppSideba
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary text-lg font-bold text-white shadow-md">
               S
             </div>
-          </button>
+          </Button>
         </div>
       )}
 

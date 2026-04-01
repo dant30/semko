@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 
-import { Button } from "../ui/Button";
-import { classNames } from "@/shared/utils/classnames";
+import { Button } from "@/shared/components/ui/Button";
+import { cn } from "@/shared/utils/classnames";
 
 interface FormActionsProps {
   primaryLabel?: string;
@@ -27,8 +27,8 @@ export default function FormActions({
 
   return (
     <div
-      className={classNames(
-        "flex flex-wrap gap-2 border-t border-gray-200 pt-3 dark:border-slate-700",
+      className={cn(
+        "flex flex-wrap gap-2 border-t border-surface-border pt-3",
         alignmentClass,
         className
       )}

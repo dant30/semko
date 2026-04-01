@@ -2,12 +2,12 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  options: Array<{ value: string; label: string }>;
+  options?: Array<{ value: string; label: string }>;
   error?: string;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, options, error, ...props }, ref) => {
+  ({ className, options = [], error, ...props }, ref) => {
     return (
       <div className="w-full">
         <select
