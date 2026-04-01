@@ -5,6 +5,7 @@ import dashboardReducer from "@/features/dashboard/store/dashboard.slice";
 import driversReducer from "@/features/drivers/store/drivers.slice";
 import fuelReducer from "@/features/fuel/store/fuel.slice";
 import maintenanceReducer from "@/features/maintenance/store/maintenance.slice";
+import payrollReducer from "@/features/payroll/store/payroll.slice";
 import notificationsReducer from "@/features/notifications/store/notifications.slice";
 import storesReducer from "@/features/stores/store/stores.slice";
 import tripsReducer from "@/features/trips/store/trips.slice";
@@ -20,6 +21,7 @@ export const rootReducer = combineReducers({
   drivers: driversReducer,
   fuel: fuelReducer,
   maintenance: maintenanceReducer,
+  payroll: payrollReducer,
   notifications: notificationsReducer,
   roles: rolesReducer,
   stores: storesReducer,

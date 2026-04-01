@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
-import { useAuthContext } from "@/features/auth/store/AuthContext";
+import { useAuthContext } from "@/features/auth/store/auth-context";
 import { useNotifications } from "@/core/contexts/useNotifications";
 import {
   setNotificationFilters,

@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/core/contexts/useTheme";
 import { appRoutes } from "@/core/constants/routes";
 import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
-import { useAuthContext } from "@/features/auth/store/AuthContext";
+import { useAuthContext } from "@/features/auth/store/auth-context";
 import { clearAuth } from "@/features/auth/store/auth.slice";
 import { notificationsApi } from "@/features/notifications/services/notifications.api";
 import type { NotificationRecord } from "@/features/notifications/types/notification";

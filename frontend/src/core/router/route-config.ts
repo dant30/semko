@@ -121,6 +121,23 @@ export const mainNavigation: NavItem[] = [
     path: appRoutes.payroll,
     icon: "wallet",
     requiredPermissions: [permissions.viewPayroll],
+    children: [
+      {
+        label: "Payroll workspace",
+        path: appRoutes.payroll,
+        requiredPermissions: [permissions.viewPayroll],
+      },
+      {
+        label: "Payroll periods",
+        path: appRoutes.payroll,
+        requiredPermissions: [permissions.viewPayroll],
+      },
+      {
+        label: "Create payroll period",
+        path: appRoutes.payroll,
+        requiredPermissions: [permissions.managePayroll],
+      },
+    ],
   },
   { label: "Reports", path: appRoutes.reports, icon: "chart" },
   { label: "Notifications", path: appRoutes.notifications, icon: "bell" },

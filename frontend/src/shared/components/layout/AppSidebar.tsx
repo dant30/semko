@@ -188,7 +188,7 @@ function SidebarSection({
                                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200"
                             )
                           }
-                          key={child.path}
+                          key={`${child.path}-${child.label}`}
                           onClick={onNavigate}
                           onMouseEnter={() => prefetchRoute(child.path)}
                           onFocus={() => prefetchRoute(child.path)}

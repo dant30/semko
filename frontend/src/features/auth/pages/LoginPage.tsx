@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { APP_NAME, APP_TAGLINE } from "@/core/constants/app";
 import { appRoutes } from "@/core/constants/routes";
-import { useAuthContext } from "@/features/auth/store/AuthContext";
+import { useAuthContext } from "@/features/auth/store/auth-context";
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
 import { Card } from "@/shared/components/ui/Card";

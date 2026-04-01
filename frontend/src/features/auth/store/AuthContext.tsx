@@ -1,42 +1,89 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useAppDispatch } from "@/core/store/hooks";
-import { clearSession, getAccessToken, getStoredUser, persistSession } from "@/core/auth/auth-session";
+import {
+  clearSession,
+  getAccessToken,
+  getRefreshToken,
+  getStoredUser,
+  persistSession,
+} from "@/core/auth/auth-session";
 import { authApi } from "@/features/auth/services/auth.api";
 import { setSession, clearAuth } from "@/features/auth/store/auth.slice";
+import { AuthContext } from "@/features/auth/store/auth-context";
 import type { AuthUser, LoginPayload } from "@/core/types/auth";
 
-interface AuthContextType {
-  user: AuthUser | null;
-  loading: boolean;
-  isAuthenticated: boolean;
-  login: (payload: LoginPayload) => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const dispatch = useAppDispatch();
 
   // Initialize from stored session
   useEffect(() => {
-    const storedUser = getStoredUser();
-    const token = getAccessToken();
+    let active = true;
 
-    if (token && storedUser) {
-      setUser(storedUser);
-      setIsAuthenticated(true);
-    } else {
-      setUser(null);
-      setIsAuthenticated(false);
+    async function initializeAuth() {
+      const storedUser = getStoredUser();
+      const accessToken = getAccessToken();
+      const refreshToken = getRefreshToken();
+
+      if (!accessToken) {
+        if (active) {
+          setUser(null);
+          setIsAuthenticated(false);
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (storedUser) {
+        if (active) {
+          setUser(storedUser);
+          setIsAuthenticated(true);
+          setLoading(false);
+        }
+        return;
+      }
+
+      try {
+        if (active) {
+          setLoading(true);
+        }
+        const currentUser = await authApi.fetchMe(accessToken);
+        if (!active) {
+          return;
+        }
+
+        setUser(currentUser);
+        setIsAuthenticated(true);
+        dispatch(
+          setSession({
+            access: accessToken,
+            refresh: refreshToken || "",
+            user: currentUser,
+          })
+        );
+      } catch (error) {
+        console.error("Failed to restore authenticated user session:", error);
+        clearSession();
+        dispatch(clearAuth());
+        if (active) {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
     }
 
-    setLoading(false);
-  }, []);
+    void initializeAuth();
 
-  const dispatch = useAppDispatch();
+    return () => {
+      active = false;
+    };
+  }, [dispatch]);
 
   // Login handler
   const login = useCallback(async (payload: LoginPayload) => {
@@ -98,16 +145,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-/**
- * useAuthContext - Access authentication context
- * Must be used within AuthProvider
- */
-export function useAuthContext() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuthContext must be used within the AuthProvider");
-  }
-  return context;
 }

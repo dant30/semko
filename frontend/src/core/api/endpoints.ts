@@ -23,4 +23,11 @@ export const endpoints = {
     payrollPeriodSummary: (payrollPeriodId: number) => `/reports/payroll/periods/${payrollPeriodId}/summary/`,
     payrollPeriodExport: (payrollPeriodId: number) => `/reports/payroll/periods/${payrollPeriodId}/export/`,
   },
+  payroll: {
+    periods: "/payroll/periods/",
+    periodDetail: (payrollPeriodId: number) => `/payroll/periods/${payrollPeriodId}/`,
+    generatePayrollFromTrips: (payrollPeriodId: number) => `/payroll/periods/${payrollPeriodId}/generate/`,
+    approvePayrollPeriod: (payrollPeriodId: number) => `/payroll/periods/${payrollPeriodId}/approve/`,
+    lockPayrollPeriod: (payrollPeriodId: number) => `/payroll/periods/${payrollPeriodId}/lock/`,
+  },
 };
