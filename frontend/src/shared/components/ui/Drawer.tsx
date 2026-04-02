@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import type { PropsWithChildren, ReactNode } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/shared/utils/classnames';
 
 interface DrawerProps extends PropsWithChildren {
   description?: string;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/classnames';
 import { Avatar } from './Avatar';
 
 interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {

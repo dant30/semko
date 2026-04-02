@@ -1,3 +1,4 @@
+// frontend/src/core/contexts/useNotifications.ts
 import { useContext } from "react";
 
 import { NotificationContext } from "./NotificationProvider";
@@ -11,3 +12,5 @@ export function useNotifications() {
 
   return context;
 }
+
+export const useToast = useNotifications;

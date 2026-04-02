@@ -1,3 +1,4 @@
+// frontend/src/features/notifications/store/notifications.slice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import type {
@@ -36,7 +37,10 @@ const notificationsSlice = createSlice({
   initialState,
   reducers: {
     // Filter management
-    resetNotificationFilters() {
+    resetNotificationFilters(state) {
+      state.filters = { ...initialFilters };
+    },
+    resetNotificationsState() {
       return initialState;
     },
     setNotificationFilters(state, action: PayloadAction<Partial<NotificationFilters>>) {

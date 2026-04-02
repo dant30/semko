@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/classnames';
 import { Input } from './Input';
 import { Search } from 'lucide-react';
 

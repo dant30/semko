@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { forwardRef } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/shared/utils/classnames';
 
 type CardVariant = "default" | "elevated" | "outlined" | "filled";
 type CardPadding = "none" | "sm" | "md" | "lg" | "xl";

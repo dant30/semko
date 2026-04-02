@@ -1,5 +1,6 @@
+// frontend/src/shared/components/ui/Alert.tsx
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/classnames';
 import { AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
 interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {

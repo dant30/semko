@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/classnames';
 import { Surface } from './Surface';
 
 interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {

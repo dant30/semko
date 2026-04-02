@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/classnames';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps extends React.HTMLAttributes<HTMLDivElement> {

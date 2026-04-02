@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/classnames';
 
 interface MenuListProps extends React.HTMLAttributes<HTMLUListElement> {
   items: Array<{ label: string; onClick?: () => void; icon?: React.ReactNode }>;

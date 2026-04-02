@@ -1,3 +1,4 @@
+// frontend/src/shared/utils/number.ts
 /**
  * Format number for display with locale-specific formatting.
  * Provides safe fallback for undefined or null values.
@@ -77,22 +78,22 @@ export function formatAbbreviatedNumber(
 }
 
 /**
- * Format currency values with symbol.
+ * Format currency with optional currency code (default: KES).
  *
  * @param value - The numeric currency value
- * @param currencyCode - ISO currency code (default: "USD")
- * @param locale - Locale string (default: browser locale)
+ * @param currencyCode - ISO currency code (default: "KES")
+ * @param locale - Locale string (default: "en-KE")
  * @returns Formatted currency string
  */
 export function formatCurrency(
   value: unknown,
-  currencyCode: string = "USD",
-  locale?: string
+  currencyCode: string = "KES",
+  locale: string = "en-KE"
 ): string {
   const numValue = typeof value === "number" ? value : parseFloat(String(value)) || 0;
 
   if (!isFinite(numValue)) {
-    return "0";
+    return `${currencyCode} 0`;
   }
 
   try {
@@ -101,8 +102,18 @@ export function formatCurrency(
       currency: currencyCode,
     }).format(numValue);
   } catch {
-    return formatNumber(numValue);
+    return `${currencyCode} ${formatNumber(numValue)}`;
   }
+}
+
+/**
+ * Format currency values specifically in Kenyan Shillings.
+ *
+ * @param value - The numeric currency value
+ * @returns Formatted KES string
+ */
+export function formatKES(value: unknown): string {
+  return formatCurrency(value, "KES", "en-KE");
 }
 
 /**

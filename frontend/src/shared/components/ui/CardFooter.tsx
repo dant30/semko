@@ -1,16 +1,11 @@
-import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
-import { forwardRef } from "react";
+import * as React from 'react';
+import { cn } from '@/shared/utils/classnames';
 
-import { cn } from "@/lib/utils";
+export const CardFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn('card-footer', className)} {...props} />
+));
 
-export const CardFooter = forwardRef<HTMLDivElement, PropsWithChildren<{
-  className?: string;
-}> & ComponentPropsWithoutRef<"div">>(
-  ({ children, className, ...props }, ref) => (
-    <div ref={ref} className={cn("ui-card__footer", className)} {...props}>
-      {children}
-    </div>
-  )
-);
-
-CardFooter.displayName = "CardFooter";
+CardFooter.displayName = 'CardFooter';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Input } from './Input';
 import { Calendar } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/classnames';
 
 export const DatePicker = React.forwardRef<HTMLInputElement, React.ComponentProps<typeof Input>>(
   ({ className, ...props }, ref) => {

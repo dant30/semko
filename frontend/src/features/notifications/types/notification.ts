@@ -1,3 +1,4 @@
+// frontend/src/features/notifications/types/notification.ts
 /**
  * Notification types and interfaces.
  *
@@ -191,8 +192,7 @@ export interface NotificationFilterFormValues {
   search: string;
   status: NotificationStatus | "";
   channel: NotificationChannel | "";
-  eventCode: NotificationEventCode | "";
-}
+  eventCode: NotificationEventCode | "";  activeOnly: boolean;}
 
 export type NotificationViewType = "inbox" | "archived" | "preferences";
 

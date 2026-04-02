@@ -8,7 +8,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 import { Button } from "./Button";
-import { cn } from "@/lib/utils";
+import { cn } from '@/shared/utils/classnames';
 
 export interface ModalProps {
   children: ReactNode;

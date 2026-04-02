@@ -1,3 +1,4 @@
+// frontend/src/features/notifications/hooks/useNotificationsWorkspace.ts
 import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
 import { useAuthContext } from "@/features/auth/store/auth-context";

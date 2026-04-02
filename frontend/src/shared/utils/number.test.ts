@@ -1,3 +1,4 @@
+// frontend/src/shared/utils/number.test.ts
 import { describe, it, expect } from "vitest";
 import { formatNumber, formatAbbreviatedNumber, formatCurrency, formatPercentage } from "./number";
 
