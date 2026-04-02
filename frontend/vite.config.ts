@@ -139,12 +139,11 @@ export default defineConfig(({ mode }) => {
 
     build: {
       sourcemap: !isProd,
-      minify: "terser",
-      terserOptions: {
-        compress: {
-          drop_console: isProd,
-          drop_debugger: isProd,
-        },
+      // Use esbuild for production minification to avoid Terser mangling collisions
+      // in feature-based chunks that can break runtime code.
+      minify: "esbuild",
+      esbuild: {
+        drop: isProd ? ["console", "debugger"] : [],
       },
       rollupOptions: {
         output: {
