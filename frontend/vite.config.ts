@@ -207,8 +207,12 @@ export default defineConfig(({ mode }) => {
             if (normalizedId.includes("/src/features/fuel/")) return "feature-fuel";
             if (normalizedId.includes("/src/features/maintenance/")) return "feature-maintenance";
             if (normalizedId.includes("/src/features/payroll/")) return "feature-payroll";
-            if (normalizedId.includes("/src/features/notifications/")) return "feature-notifications";
-            if (normalizedId.includes("/src/features/auth/")) return "feature-auth";
+            if (
+              normalizedId.includes("/src/features/notifications/") ||
+              normalizedId.includes("/src/features/auth/")
+            ) {
+              return "feature-auth-notifications";
+            }
 
             // Additional splits from second example
             if (
