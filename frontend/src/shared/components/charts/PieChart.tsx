@@ -1,3 +1,8 @@
+interface PieChartDataItem {
+  label?: string | number;
+  value?: number;
+}
+
 const PALETTE = [
   "#2563eb",
   "#1d4ed8",
@@ -7,7 +12,7 @@ const PALETTE = [
   "#b91c1c",
 ];
 
-function polarToCartesian(cx, cy, radius, angleDeg) {
+function polarToCartesian(cx: number, cy: number, radius: number, angleDeg: number) {
   const angle = ((angleDeg - 90) * Math.PI) / 180;
   return {
     x: cx + radius * Math.cos(angle),
@@ -15,14 +20,20 @@ function polarToCartesian(cx, cy, radius, angleDeg) {
   };
 }
 
-function buildArc(cx, cy, radius, startAngle, endAngle) {
+function buildArc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number) {
   const start = polarToCartesian(cx, cy, radius, endAngle);
   const end = polarToCartesian(cx, cy, radius, startAngle);
   const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
   return `M ${cx} ${cy} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y} Z`;
 }
 
-export default function PieChart({ data = [], title = "Share", className = "" }) {
+interface PieChartProps {
+  data?: PieChartDataItem[];
+  title?: string;
+  className?: string;
+}
+
+export default function PieChart({ data = [], title = "Share", className = "" }: PieChartProps) {
   const normalizedData = data.map((item, index) => ({
     label: String(item?.label ?? `Segment ${index + 1}`),
     value: Number(item?.value ?? 0),

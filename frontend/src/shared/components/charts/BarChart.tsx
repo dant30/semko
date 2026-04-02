@@ -1,9 +1,21 @@
+interface BarChartDataItem {
+  label?: string | number;
+  value?: number;
+}
+
+interface BarChartProps {
+  data?: BarChartDataItem[];
+  height?: number;
+  title?: string;
+  className?: string;
+}
+
 export default function BarChart({
   data = [],
   height = 220,
   title = "Distribution",
   className = "",
-}) {
+}: BarChartProps) {
   const normalizedData = data.map((item, index) => ({
     label: String(item?.label ?? `Item ${index + 1}`),
     value: Number(item?.value ?? 0),

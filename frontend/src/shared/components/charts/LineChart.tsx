@@ -1,4 +1,16 @@
-function buildLinePath(points, width, height, padding) {
+interface LineChartPoint {
+  label?: string | number;
+  value?: number;
+}
+
+interface LineChartProps {
+  data?: LineChartPoint[];
+  height?: number;
+  title?: string;
+  className?: string;
+}
+
+function buildLinePath(points: LineChartPoint[], width: number, height: number, padding: number): string {
   if (!points.length) return "";
   const values = points.map((p) => p.value);
   const min = Math.min(...values);
@@ -20,7 +32,7 @@ export default function LineChart({
   height = 220,
   title = "Trend",
   className = "",
-}) {
+}: LineChartProps) {
   const normalizedData = data.map((point, index) => ({
     label: String(point?.label ?? `Point ${index + 1}`),
     value: Number(point?.value ?? 0),

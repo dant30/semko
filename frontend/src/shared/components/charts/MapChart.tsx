@@ -1,22 +1,35 @@
-const DEFAULT_POINTS = [
+interface MapChartPoint {
+  x?: number;
+  y?: number;
+  label?: string | number;
+  intensity?: number;
+}
+
+const DEFAULT_POINTS: MapChartPoint[] = [
   { x: 24, y: 48, label: "A", intensity: 0.2 },
   { x: 42, y: 30, label: "B", intensity: 0.45 },
   { x: 57, y: 44, label: "C", intensity: 0.7 },
   { x: 72, y: 26, label: "D", intensity: 0.9 },
 ];
 
-function intensityColor(intensity) {
+function intensityColor(intensity: number): string {
   if (intensity >= 0.8) return "#be123c";
   if (intensity >= 0.6) return "#b45309";
   if (intensity >= 0.35) return "#1d4ed8";
   return "#059669";
 }
 
+interface MapChartProps {
+  points?: MapChartPoint[];
+  title?: string;
+  className?: string;
+}
+
 export default function MapChart({
   points = DEFAULT_POINTS,
   title = "Map Heat Layer",
   className = "",
-}) {
+}: MapChartProps) {
   const normalizedPoints = points.map((point, index) => ({
     x: Number(point?.x ?? 0),
     y: Number(point?.y ?? 0),

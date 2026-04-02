@@ -1,7 +1,7 @@
 import { Lock, Play, ShieldCheck } from "lucide-react";
 import type { FC } from "react";
 
-import { formatDate } from "@/core/utils/dates";
+import { formatDate } from "@/shared/utils/dates";
 import type { PayrollPeriodRecord } from "@/features/payroll/types/payroll";
 import { Button } from "@/shared/components/ui/Button";
 import { Card } from "@/shared/components/ui/Card";

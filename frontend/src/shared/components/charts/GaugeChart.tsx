@@ -1,5 +1,20 @@
-function clamp(value, min, max) {
+function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
+}
+
+interface GaugeChartThresholds {
+  warning?: number;
+  danger?: number;
+}
+
+interface GaugeChartProps {
+  value?: number;
+  min?: number;
+  max?: number;
+  title?: string;
+  unit?: string;
+  thresholds?: GaugeChartThresholds;
+  className?: string;
 }
 
 export default function GaugeChart({
@@ -10,7 +25,7 @@ export default function GaugeChart({
   unit = "%",
   thresholds = { warning: 60, danger: 80 },
   className = "",
-}) {
+}: GaugeChartProps) {
   const numericValue = Number(value ?? 0);
   const numericMin = Number(min ?? 0);
   const numericMax = Number(max ?? 100);

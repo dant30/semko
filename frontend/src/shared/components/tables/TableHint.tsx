@@ -2,15 +2,16 @@
 import * as React from 'react';
 import { cn } from '@/shared/utils/classnames';
 
-interface TableHintProps extends React.HTMLAttributes<HTMLDivElement> {
-  as?: keyof JSX.IntrinsicElements;
+interface TableHintProps extends React.HTMLAttributes<HTMLElement> {
+  as?: React.ElementType;
 }
 
 export const TableHint = React.forwardRef<HTMLElement, TableHintProps>(
   ({ className, as: Component = 'div', ...props }, ref) => {
+    const Element = Component as React.ElementType;
     return (
-      <Component
-        ref={ref as any}
+      <Element
+        ref={ref as React.LegacyRef<HTMLElement>}
         className={cn('mt-2 text-sm text-text-muted', className)}
         {...props}
       />
