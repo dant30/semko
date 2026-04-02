@@ -1,4 +1,5 @@
-import { EmptyBlock, Skeleton } from "@/shared/components/ui";
+import { Skeleton } from "@/shared/components/ui";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 
 interface Column<T> {
   key: string;
@@ -36,7 +37,7 @@ export function StoreTransactionsTable<T extends { id: number }>({
   if (rows.length === 0) {
     return (
       <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-soft backdrop-blur dark:border-slate-800 dark:bg-slate-950/65">
-        <EmptyBlock description={emptyDescription} title={emptyTitle} />
+        <EmptyState description={emptyDescription} title={emptyTitle} />
       </div>
     );
   }

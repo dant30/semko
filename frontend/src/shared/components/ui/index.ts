@@ -17,7 +17,6 @@ export * from "./DescriptionList";
 export * from "./Divider";
 export * from "./Drawer";
 export * from "./Dropdown";
-export * from "./EmptyBlock";
 export * from "./FieldHint";
 export * from "./FieldMessage";
 export * from "./FilterPill";

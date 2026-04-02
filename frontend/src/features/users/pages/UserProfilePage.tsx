@@ -1,3 +1,4 @@
+// frontend/src/features/users/pages/UserProfilePage.tsx
 import { useState, type FormEvent } from "react";
 import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
 import { authApi } from "@/features/auth/services/auth.api";

@@ -1,3 +1,4 @@
+// frontend/src/core/contexts/ThemeProvider.tsx
 import {
   createContext,
   useEffect,

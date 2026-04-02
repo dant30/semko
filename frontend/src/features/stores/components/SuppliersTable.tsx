@@ -1,7 +1,8 @@
 import { MoreVertical, Trash2 } from "lucide-react";
 import { Fragment, useState } from "react";
 import type { SupplierRecord } from "@/features/stores/types/store";
-import { EmptyBlock, Skeleton } from "@/shared/components/ui";
+import { Skeleton } from "@/shared/components/ui";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 
 export function SuppliersTable({
   isLoading = false,
@@ -30,7 +31,7 @@ export function SuppliersTable({
   if (suppliers.length === 0) {
     return (
       <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-soft backdrop-blur dark:border-slate-800 dark:bg-slate-950/65">
-        <EmptyBlock description="Create your first supplier to use with purchase orders and receivings." title="No suppliers available" />
+        <EmptyState description="Create your first supplier to use with purchase orders and receivings." title="No suppliers available" />
       </div>
     );
   }

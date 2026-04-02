@@ -2,7 +2,8 @@ import { AlertTriangle, Edit, MoreVertical, PackageCheck, Trash2 } from "lucide-
 import { useState } from "react";
 
 import type { StoreItemRecord } from "@/features/stores/types/store";
-import { EmptyBlock, Skeleton } from "@/shared/components/ui";
+import { Skeleton } from "@/shared/components/ui";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 
 export function StoreItemsTable({
   isLoading = false,
@@ -53,7 +54,7 @@ export function StoreItemsTable({
   if (items.length === 0) {
     return (
       <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-soft backdrop-blur dark:border-slate-800 dark:bg-slate-950/65">
-        <EmptyBlock
+        <EmptyState
           description="Create your first store item or widen the current search filter."
           title="No store items available"
         />

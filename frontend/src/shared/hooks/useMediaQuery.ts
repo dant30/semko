@@ -1,9 +1,20 @@
+// frontend/src/shared/hooks/useMediaQuery.ts
 import { useEffect, useState } from "react";
 
 export function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia(query).matches;
+  });
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const mediaQuery = window.matchMedia(query);
     const handleChange = (event: MediaQueryListEvent) => {
       setMatches(event.matches);
