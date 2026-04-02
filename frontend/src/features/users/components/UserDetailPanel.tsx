@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { appRoutes } from "@/core/constants/routes";
 import type { UserRecord } from "@/features/users/types/user";
-import { Badge, Button, Card, EmptyBlock, Skeleton } from "@/shared/components/ui";
+import { Badge, Button, Card, Skeleton } from "@/shared/components/ui";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 
 interface UserDetailPanelProps {
   canManageUsers?: boolean;
@@ -39,7 +40,7 @@ export function UserDetailPanel({
   if (!selectedUser) {
     return (
       <Card className="rounded-[2rem] p-6">
-        <EmptyBlock
+        <EmptyState
           title="No user selected"
           description="Select a user from the table to view user summary and workflow actions."
         />

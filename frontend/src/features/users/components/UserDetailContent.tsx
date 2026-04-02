@@ -8,7 +8,8 @@ import {
 } from "lucide-react";
 
 import type { UserRecord } from "@/features/users/types/user";
-import { Badge, Button, EmptyBlock, Skeleton } from "@/shared/components/ui";
+import { Badge, Button, Skeleton } from "@/shared/components/ui";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 
 interface UserDetailContentProps {
   canManageUsers?: boolean;
@@ -38,7 +39,7 @@ export function UserDetailContent({
 
   if (error) {
     return (
-      <EmptyBlock
+      <EmptyState
         description={error}
         title="Error loading user"
       />
@@ -47,7 +48,7 @@ export function UserDetailContent({
 
   if (!user) {
     return (
-      <EmptyBlock
+      <EmptyState
         description="Select a user in the register to load their detail view."
         title="No user detail available"
       />

@@ -1,7 +1,8 @@
 import { CheckCheck, FileCheck2, FileWarning, Send, Truck, TruckIcon } from "lucide-react";
 
 import type { TripRecord, TripWorkflowAction } from "@/features/trips/types/trip";
-import { Badge, Button, EmptyBlock, Skeleton } from "@/shared/components/ui";
+import { Badge, Button, Skeleton } from "@/shared/components/ui";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 import { cn } from "@/shared/utils/classnames";
 
 interface TripsTableProps {
@@ -59,7 +60,7 @@ export function TripsTable({
   if (trips.length === 0) {
     return (
       <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-soft backdrop-blur dark:border-slate-800 dark:bg-slate-950/65">
-        <EmptyBlock
+        <EmptyState
           description="Try widening the filters or search by trip number, delivery note, or destination."
           title="No trips match the current filters"
         />

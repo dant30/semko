@@ -14,7 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { appRoutes } from "@/core/constants/routes";
 import { TripWorkflowActions } from "@/features/trips/components/TripWorkflowActions";
 import type { TripRecord, TripSummaryRecord, TripWorkflowAction } from "@/features/trips/types/trip";
-import { Badge, Button, Card, EmptyBlock, Skeleton } from "@/shared/components/ui";
+import { Badge, Button, Card, Skeleton } from "@/shared/components/ui";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 
 interface TripDetailContentProps {
   actionInFlight?: TripWorkflowAction | null;
@@ -61,7 +62,7 @@ export function TripDetailContent({
 
   if (!trip || !tripSummary) {
     return (
-      <EmptyBlock
+      <EmptyState
         description="Select a trip in the register to load its detail view."
         title="No trip detail available"
       />
