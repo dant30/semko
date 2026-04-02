@@ -11,8 +11,8 @@ interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
   ({ className, title, value, change, icon, ...props }, ref) => {
-    const isPositive = change && change > 0;
-    const isNegative = change && change < 0;
+    const isPositive = change !== undefined && change > 0;
+    const isNegative = change !== undefined && change < 0;
     return (
       <Card ref={ref} className={cn('p-4', className)} {...props}>
         <div className="flex items-start justify-between">
