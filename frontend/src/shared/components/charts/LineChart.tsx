@@ -1,10 +1,15 @@
-interface LineChartPoint {
+interface LineChartDataItem {
   label?: string | number;
   value?: number;
 }
 
+interface LineChartPoint {
+  label: string;
+  value: number;
+}
+
 interface LineChartProps {
-  data?: LineChartPoint[];
+  data?: LineChartDataItem[];
   height?: number;
   title?: string;
   className?: string;
@@ -33,7 +38,7 @@ export default function LineChart({
   title = "Trend",
   className = "",
 }: LineChartProps) {
-  const normalizedData = data.map((point, index) => ({
+  const normalizedData: LineChartPoint[] = data.map((point, index) => ({
     label: String(point?.label ?? `Point ${index + 1}`),
     value: Number(point?.value ?? 0),
   }));

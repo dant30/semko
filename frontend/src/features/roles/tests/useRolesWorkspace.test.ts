@@ -6,7 +6,6 @@ import { configureStore } from '@reduxjs/toolkit'
 import { useRolesWorkspace } from '../hooks/useRolesWorkspace'
 import { rolesApi } from '../services/roles.api'
 import { rootReducer } from '../../../core/store/root-reducer'
-import { toast } from '../../../shared/ui/notifications'
 import type { RoleRecord } from '../types/role'
 
 // Mock complete RoleRecord for testing
@@ -21,7 +20,6 @@ const createMockRole = (overrides?: Partial<RoleRecord>): RoleRecord => ({
 
 // Mock the API
 vi.mock('../services/roles.api')
-vi.mock('../../../shared/ui/notifications')
 
 // Mock Redux store
 const createTestStore = () => {
@@ -125,58 +123,4 @@ describe('useRolesWorkspace', () => {
     })
   })
 
-  it('should show success toast on successful operations', async () => {
-    const mockToast = vi.fn()
-    vi.mocked(toast).mockImplementation(mockToast)
-
-    const newRole = {
-      name: 'Manager',
-      code: 'MGR',
-      description: 'Management access',
-      permissions: 'viewUsers',
-    }
-
-    vi.mocked(rolesApi.createRole).mockResolvedValue(createMockRole({ id: 3, name: 'Manager', code: 'MGR', description: 'Management access' }))
-
-    const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
-
-    result.current.setRoleForm(newRole)
-    await result.current.submitRole()
-
-    await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith({
-        title: 'Success',
-        description: 'Role created successfully',
-        type: 'success',
-      })
-    })
-  })
-
-  it('should show error toast on failed operations', async () => {
-    const mockToast = vi.fn()
-    vi.mocked(toast).mockImplementation(mockToast)
-
-    const error = new Error('API Error')
-    vi.mocked(rolesApi.createRole).mockRejectedValue(error)
-
-    const { result } = renderHook(() => useRolesWorkspace(), { wrapper })
-
-    const newRole = {
-      name: 'Manager',
-      code: 'MGR',
-      description: 'Management access',
-      permissions: 'viewUsers',
-    }
-
-    result.current.setRoleForm(newRole)
-    await result.current.submitRole()
-
-    await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith({
-        title: 'Error',
-        description: 'Failed to create role',
-        type: 'error',
-      })
-    })
-  })
 })

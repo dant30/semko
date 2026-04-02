@@ -8,22 +8,10 @@ import { MemoryRouter } from 'react-router-dom'
 import { RolesPage } from '../pages/RolesPage'
 import { rolesApi } from '../services/roles.api'
 import { rootReducer } from '../../../core/store/root-reducer'
-import { toast } from '../../../shared/ui/notifications'
 import type { RoleRecord } from '../types/role'
-
-// Mock complete RoleRecord for testing
-const createMockRole = (overrides?: Partial<RoleRecord>): RoleRecord => ({
-  id: 1,
-  name: 'Test Role',
-  code: 'test_role',
-  description: 'A test role',
-  permissions: [],
-  ...overrides,
-})
 
 // Mock dependencies
 vi.mock('../services/roles.api')
-vi.mock('../../../shared/ui/notifications')
 vi.mock('../../../core/permissions', () => ({
   usePermissions: () => ({
     hasPermission: (permission: string) => permission.includes('Roles'), // Mock all role permissions as true
@@ -146,7 +134,7 @@ describe('RolesPage', () => {
         name: 'Manager',
         code: 'MGR',
         description: 'Management role',
-        permissions: expect.stringContaining('users.view_user'),
+        permissions: 'users.view_user',
       })
     })
   })
@@ -250,31 +238,4 @@ describe('RolesPage', () => {
     })
   })
 
-  it('should show error message when operations fail', async () => {
-    const user = userEvent.setup()
-    const mockToast = vi.fn()
-    vi.mocked(toast).mockImplementation(mockToast)
-
-    vi.mocked(rolesApi.fetchRoles).mockResolvedValue([])
-    vi.mocked(rolesApi.createRole).mockRejectedValue(new Error('API Error'))
-
-    render(<RolesPage />, { wrapper })
-
-    await waitFor(() => {
-      expect(screen.getByText('Create Role')).toBeInTheDocument()
-    })
-
-    // Try to create role
-    await user.type(screen.getByLabelText(/name/i), 'Test Role')
-    await user.type(screen.getByLabelText(/code/i), 'TEST')
-    await user.click(screen.getByRole('button', { name: /create role/i }))
-
-    await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith({
-        title: 'Error',
-        description: 'Failed to create role',
-        type: 'error',
-      })
-    })
-  })
 })

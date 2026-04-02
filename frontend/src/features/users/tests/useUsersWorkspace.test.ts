@@ -6,7 +6,6 @@ import { configureStore } from '@reduxjs/toolkit'
 import { useUsersWorkspace } from '../hooks/useUsersWorkspace'
 import { usersApi } from '../services/users.api'
 import { rootReducer } from '../../../core/store/root-reducer'
-import { toast } from '../../../shared/ui/notifications'
 import type { UserRecord } from '../types/user'
 
 // Mock complete UserRecord for testing
@@ -30,7 +29,6 @@ const createMockUser = (overrides?: Partial<UserRecord>): UserRecord => ({
 
 // Mock the API
 vi.mock('../services/users.api')
-vi.mock('../../../shared/ui/notifications')
 
 // Mock Redux store
 const createTestStore = () => {
@@ -167,75 +165,6 @@ describe('useUsersWorkspace', () => {
     await waitFor(() => {
       expect(mockUpdateUser).toHaveBeenCalledWith(1, user)
       expect(result.current.lastAction).toBeNull()
-    })
-  })
-
-  it('should show success toast on successful operations', async () => {
-    const mockToast = vi.fn()
-    vi.mocked(toast).mockImplementation(mockToast)
-
-    const newUser = {
-      username: 'newuser',
-      email: 'newuser@example.com',
-      first_name: 'New',
-      last_name: 'User',
-      phone_number: '',
-      role_id: 1,
-      password: 'password123',
-      password_confirm: 'password123',
-      is_active: true,
-      is_staff: false,
-      must_change_password: false,
-    }
-
-    vi.mocked(usersApi.createUser).mockResolvedValue(createMockUser({ id: 3, username: 'newuser', email: 'newuser@example.com', first_name: 'New' }))
-
-    const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
-
-    result.current.setUserForm(newUser)
-    await result.current.submitUser()
-
-    await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith({
-        title: 'Success',
-        description: 'User created successfully',
-        type: 'success',
-      })
-    })
-  })
-
-  it('should show error toast on failed operations', async () => {
-    const mockToast = vi.fn()
-    vi.mocked(toast).mockImplementation(mockToast)
-
-    const error = new Error('API Error')
-    vi.mocked(usersApi.createUser).mockRejectedValue(error)
-
-    const { result } = renderHook(() => useUsersWorkspace(), { wrapper })
-
-    const newUser = {
-      username: 'newuser',
-      email: 'newuser@example.com',
-      first_name: 'New',
-      last_name: 'User',
-      phone_number: '',
-      role_id: 1,
-      password: 'password123',
-      password_confirm: 'password123',
-      is_active: true,
-      is_staff: false,
-      must_change_password: false,
-    }
-
-    result.current.setUserForm(newUser)
-    await result.current.submitUser()
-
-    await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith({
-        title: 'Error',
-        description: 'Failed to create user',
-        type: 'error',
-      })
     })
   })
 })

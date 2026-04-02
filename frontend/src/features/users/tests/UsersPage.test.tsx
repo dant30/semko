@@ -31,7 +31,6 @@ const createMockUser = (overrides?: Partial<UserRecord>): UserRecord => ({
 
 // Mock dependencies
 vi.mock('../services/users.api')
-vi.mock('../../../shared/ui/notifications')
 vi.mock('../../../core/permissions', () => ({
   usePermissions: () => ({
     hasPermission: (permission: string) => permission.includes('Users'), // Mock all user permissions as true
