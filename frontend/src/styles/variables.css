@@ -40,6 +40,17 @@
     --warning: #c98318;
     --danger: #c24141;
 
+    /* Chart Colors */
+    --chart-primary: #235ad6;
+    --chart-secondary: #1d48ad;
+    --chart-success: #15803d;
+    --chart-warning: #c98318;
+    --chart-danger: #c24141;
+    --chart-grid: #d1ddd9;
+    --chart-grid-dark: #334155;
+    --chart-text: #10281d;
+    --chart-muted: #647a72;
+
     /* Layout & Motion */
     --radius-sm: 0.5rem;
     --radius-md: 0.875rem;

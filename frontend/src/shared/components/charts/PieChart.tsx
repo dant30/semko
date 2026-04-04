@@ -1,16 +1,18 @@
 // frontend/src/shared/components/charts/PieChart.tsx
+import { cn } from '@/shared/utils/classnames';
+
 interface PieChartDataItem {
   label?: string | number;
   value?: number;
 }
 
 const PALETTE = [
-  "#2563eb",
-  "#1d4ed8",
-  "#0891b2",
-  "#15803d",
-  "#b45309",
-  "#b91c1c",
+  "var(--chart-primary)",
+  "var(--chart-secondary)",
+  "var(--chart-success)",
+  "var(--chart-warning)",
+  "var(--chart-danger)",
+  "var(--accent-300)",
 ];
 
 function polarToCartesian(cx: number, cy: number, radius: number, angleDeg: number) {
@@ -60,7 +62,7 @@ export default function PieChart({ data = [], title = "Share", className = "" }:
   });
 
   return (
-    <section className={`ui-chart-shell ${className}`}>
+    <section className={cn('ui-chart-shell', className)}>
       <header className="mb-3 flex items-center justify-between">
         <h3 className="ui-chart-title">{title}</h3>
         <span className="ui-chart-meta">{segments.length} segments</span>
@@ -91,11 +93,11 @@ export default function PieChart({ data = [], title = "Share", className = "" }:
           <ul className="grid content-start gap-2" aria-label={`${title} legend`}>
             {segments.map((segment, index) => (
               <li key={`${segment.label}-legend-${index}`} className="flex items-center justify-between gap-3 text-sm">
-                <span className="inline-flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                <span className="inline-flex items-center gap-2 text-text-secondary">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.color }} />
                   {segment.label}
                 </span>
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
+                <span className="font-semibold text-text-primary">
                   {((segment.value / total) * 100).toFixed(1)}%
                 </span>
               </li>

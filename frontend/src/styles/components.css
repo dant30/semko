@@ -411,11 +411,11 @@
   }
 
   .ui-chart-grid {
-    stroke: #cbd5e1;
+    stroke: var(--chart-grid);
     stroke-width: 1;
   }
   .dark .ui-chart-grid {
-    stroke: #334155;
+    stroke: var(--chart-grid-dark);
   }
 
   .ui-form-section {

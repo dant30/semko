@@ -1,4 +1,6 @@
 // frontend/src/shared/components/charts/LineChart.tsx
+import { cn } from '@/shared/utils/classnames';
+
 interface LineChartDataItem {
   label?: string | number;
   value?: number;
@@ -54,7 +56,7 @@ export default function LineChart({
   const latestPoint = normalizedData[normalizedData.length - 1];
 
   return (
-    <section className={`ui-chart-shell ${className}`}>
+    <section className={cn('ui-chart-shell', className)}>
       <header className="mb-3 flex items-center justify-between">
         <h3 className="ui-chart-title">{title}</h3>
         <span className="ui-chart-meta">{normalizedData.length} points</span>
@@ -74,27 +76,27 @@ export default function LineChart({
           >
             <line className="ui-chart-grid" x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} />
             <line className="ui-chart-grid" x1={padding} y1={padding} x2={padding} y2={height - padding} />
-            <path d={path} fill="none" stroke="#1d4ed8" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+            <path d={path} fill="none" stroke="var(--chart-primary)" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
             {normalizedData.map((point, index) => {
               const x = padding + index * stepX;
               const y = height - padding - ((point.value - min) / span) * (height - padding * 2);
               return (
                 <g key={`${point.label}-${index}`}>
-                  <circle cx={x} cy={y} r="3.5" fill="#1d4ed8" />
+                  <circle cx={x} cy={y} r="3.5" fill="var(--chart-primary)" />
                   <title>{`${point.label}: ${point.value}`}</title>
                 </g>
               );
             })}
           </svg>
           <div className="grid grid-cols-3 gap-2 text-xs">
-            <div className="rounded-md bg-gray-50 px-2 py-1.5 text-gray-600 dark:bg-slate-700/60 dark:text-gray-300">
-              Min: <span className="font-semibold text-gray-900 dark:text-gray-100">{min}</span>
+            <div className="rounded-md bg-surface-subtle px-2 py-1.5 text-text-secondary">
+              Min: <span className="font-semibold text-text-primary">{min}</span>
             </div>
-            <div className="rounded-md bg-gray-50 px-2 py-1.5 text-gray-600 dark:bg-slate-700/60 dark:text-gray-300">
-              Max: <span className="font-semibold text-gray-900 dark:text-gray-100">{max}</span>
+            <div className="rounded-md bg-surface-subtle px-2 py-1.5 text-text-secondary">
+              Max: <span className="font-semibold text-text-primary">{max}</span>
             </div>
-            <div className="rounded-md bg-gray-50 px-2 py-1.5 text-gray-600 dark:bg-slate-700/60 dark:text-gray-300">
-              Latest: <span className="font-semibold text-gray-900 dark:text-gray-100">{latestPoint?.value ?? 0}</span>
+            <div className="rounded-md bg-surface-subtle px-2 py-1.5 text-text-secondary">
+              Latest: <span className="font-semibold text-text-primary">{latestPoint?.value ?? 0}</span>
             </div>
           </div>
         </div>

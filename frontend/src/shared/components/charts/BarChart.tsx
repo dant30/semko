@@ -1,4 +1,6 @@
 // frontend/src/shared/components/charts/BarChart.tsx
+import { cn } from '@/shared/utils/classnames';
+
 interface BarChartDataItem {
   label?: string | number;
   value?: number;
@@ -37,7 +39,7 @@ export default function BarChart({
   const hasData = normalizedData.length > 0;
 
   return (
-    <section className={`ui-chart-shell ${className}`}>
+    <section className={cn('ui-chart-shell', className)}>
       <header className="mb-3 flex items-center justify-between">
         <h3 className="ui-chart-title">{title}</h3>
         <span className="ui-chart-meta">{normalizedData.length} categories</span>
@@ -62,20 +64,20 @@ export default function BarChart({
               const y = height - padding - barHeight;
               return (
                 <g key={`${item.label}-${index}`}>
-                  <rect x={x} y={y} width={barWidth} height={barHeight} rx="4" fill="#2563eb" />
+                  <rect x={x} y={y} width={barWidth} height={barHeight} rx="4" fill="var(--chart-primary)" />
                   <title>{`${item.label}: ${item.value}`}</title>
-                  <text x={x + barWidth / 2} y={height - 8} textAnchor="middle" fontSize="10" fill="#64748b">
+                  <text x={x + barWidth / 2} y={height - 8} textAnchor="middle" fontSize="10" fill="var(--chart-muted)">
                     {item.label}
                   </text>
                 </g>
               );
             })}
           </svg>
-          <ul className="grid gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+          <ul className="grid gap-1.5 text-xs text-text-secondary dark:text-text-secondary">
             {normalizedData.map((item, index) => (
               <li key={`${item.label}-summary-${index}`} className="flex items-center justify-between">
                 <span>{item.label}</span>
-                <span className="font-medium text-gray-800 dark:text-gray-100">{item.value.toLocaleString()}</span>
+                <span className="font-medium text-text-primary">{item.value.toLocaleString()}</span>
               </li>
             ))}
           </ul>

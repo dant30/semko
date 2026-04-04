@@ -1,4 +1,6 @@
 // frontend/src/shared/components/charts/GaugeChart.tsx
+import { cn } from '@/shared/utils/classnames';
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
@@ -18,6 +20,12 @@ interface GaugeChartProps {
   className?: string;
 }
 
+function getThresholdColor(normalized: number, warningThreshold: number, dangerThreshold: number): string {
+  if (normalized >= dangerThreshold) return "var(--chart-danger)";
+  if (normalized >= warningThreshold) return "var(--chart-warning)";
+  return "var(--chart-success)";
+}
+
 export default function GaugeChart({
   value = 0,
   min = 0,
@@ -34,12 +42,7 @@ export default function GaugeChart({
   const angle = -90 + (normalized / 100) * 180;
   const warningThreshold = Number(thresholds?.warning ?? 60);
   const dangerThreshold = Number(thresholds?.danger ?? 80);
-  const color =
-    normalized >= dangerThreshold
-      ? "#dc2626"
-      : normalized >= warningThreshold
-      ? "#d97706"
-      : "#059669";
+  const color = getThresholdColor(normalized, warningThreshold, dangerThreshold);
 
   const radius = 90;
   const circumference = Math.PI * radius;
@@ -48,7 +51,7 @@ export default function GaugeChart({
     normalized >= dangerThreshold ? "Critical" : normalized >= warningThreshold ? "Warning" : "Healthy";
 
   return (
-    <section className={`ui-chart-shell ${className}`}>
+    <section className={cn('ui-chart-shell', className)}>
       <header className="mb-3 flex items-center justify-between">
         <h3 className="ui-chart-title">{title}</h3>
         <span className="ui-chart-meta">{normalized.toFixed(0)}%</span>
@@ -71,7 +74,7 @@ export default function GaugeChart({
           role="img"
           aria-label={`${title} gauge`}
         >
-          <path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="#cbd5e1" strokeWidth="14" />
+          <path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="var(--chart-grid)" strokeWidth="14" />
           <path
             d="M 20 120 A 100 100 0 0 1 220 120"
             fill="none"
@@ -82,20 +85,20 @@ export default function GaugeChart({
             strokeLinecap="round"
           />
           <g transform={`rotate(${angle}, 120, 120)`}>
-            <line x1="120" y1="120" x2="120" y2="36" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
+            <line x1="120" y1="120" x2="120" y2="36" stroke="var(--chart-text)" strokeWidth="3" strokeLinecap="round" />
           </g>
-          <circle cx="120" cy="120" r="6" fill="#0f172a" />
-          <text x="120" y="95" textAnchor="middle" fontSize="24" fontWeight="700" fill="#0f172a">
+          <circle cx="120" cy="120" r="6" fill="var(--chart-text)" />
+          <text x="120" y="95" textAnchor="middle" fontSize="24" fontWeight="700" fill="var(--chart-text)">
             {numericValue}
           </text>
-          <text x="120" y="114" textAnchor="middle" fontSize="12" fill="#64748b">
+          <text x="120" y="114" textAnchor="middle" fontSize="12" fill="var(--chart-muted)">
             {unit}
           </text>
         </svg>
       </div>
       </div>
-      <div className="mt-2 text-center text-xs text-gray-600 dark:text-gray-300">
-        Status: <span className="font-semibold text-gray-900 dark:text-gray-100">{statusLabel}</span>
+      <div className="mt-2 text-center text-xs text-text-secondary">
+        Status: <span className="font-semibold text-text-primary">{statusLabel}</span>
       </div>
     </section>
   );
