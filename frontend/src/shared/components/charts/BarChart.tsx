@@ -1,3 +1,4 @@
+// frontend/src/shared/components/charts/BarChart.tsx
 interface BarChartDataItem {
   label?: string | number;
   value?: number;

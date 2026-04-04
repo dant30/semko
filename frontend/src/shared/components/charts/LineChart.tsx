@@ -1,3 +1,4 @@
+// frontend/src/shared/components/charts/LineChart.tsx
 interface LineChartDataItem {
   label?: string | number;
   value?: number;

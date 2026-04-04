@@ -1,3 +1,4 @@
+// frontend/src/shared/components/charts/PieChart.tsx
 interface PieChartDataItem {
   label?: string | number;
   value?: number;

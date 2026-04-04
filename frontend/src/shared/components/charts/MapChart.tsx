@@ -1,3 +1,4 @@
+// frontend/src/shared/components/charts/MapChart.tsx
 interface MapChartPoint {
   x?: number;
   y?: number;
