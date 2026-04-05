@@ -4,7 +4,6 @@ import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import svgr from "vite-plugin-svgr";
 
 const BACKEND_TARGET = process.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
 
@@ -17,11 +16,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react({
         jsxRuntime: "automatic",
-      }),
-      svgr({
-        svgrOptions: {
-          icon: true,
-        },
       }),
       VitePWA({
         registerType: "autoUpdate",
