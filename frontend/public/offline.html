@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline – SEMKO IMS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #0e2230, #050b11 100%);
+      color: #e8f2ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .offline-card {
+      width: min(100%, 520px);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+    }
+
+    .offline-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    p {
+      color: #bfd1ca;
+      margin-bottom: 1.75rem;
+      line-height: 1.6;
+    }
+
+    button {
+      background: #235ad6;
+      border: none;
+      color: white;
+      padding: 0.85rem 1.8rem;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover {
+      background: #1d48ad;
+      transform: translateY(-2px);
+    }
+
+    .status {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #89a29b;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-card">
+    <div class="offline-icon">📡</div>
+    <h1>No Internet Connection</h1>
+    <p>You are offline. Check your network or try again later. When connection returns, the app will reload.</p>
+    <button id="retryBtn">Retry</button>
+    <div class="status" id="statusMsg">Waiting for connection...</div>
+  </div>
+
+  <script>
+    const retryBtn = document.getElementById('retryBtn');
+    const statusMsg = document.getElementById('statusMsg');
+
+    function checkAndReload() {
+      if (navigator.onLine) {
+        statusMsg.textContent = 'Connection restored! Redirecting…';
+        window.location.href = '/';
+      } else {
+        statusMsg.textContent = 'Still offline. Please check your connection.';
+      }
+    }
+
+    retryBtn.addEventListener('click', () => {
+      statusMsg.textContent = 'Checking connection...';
+      checkAndReload();
+    });
+
+    window.addEventListener('online', () => {
+      statusMsg.textContent = 'You are back online! Redirecting…';
+      window.location.href = '/';
+    });
+  </script>
+</body>
+</html>
