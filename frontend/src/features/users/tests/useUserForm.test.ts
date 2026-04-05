@@ -21,7 +21,17 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => navigateMock,
 }));
 
-vi.mock('../services/users.api');
+const mockFetchRoles = vi.fn();
+const mockFetchUser = vi.fn();
+const mockCreateUser = vi.fn();
+
+vi.mock('../services/users.api', () => ({
+  usersApi: {
+    fetchRoles: mockFetchRoles,
+    fetchUser: mockFetchUser,
+    createUser: mockCreateUser,
+  },
+}));
 
 const createTestStore = () =>
   configureStore({
@@ -35,8 +45,8 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('useUserForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(usersApi.fetchRoles).mockResolvedValue([]);
-    vi.mocked(usersApi.fetchUser).mockResolvedValue(null as any);
+    mockFetchRoles.mockResolvedValue([]);
+    mockFetchUser.mockResolvedValue(null);
   });
 
   it('should validate required fields before submit', async () => {
@@ -80,13 +90,13 @@ describe('useUserForm', () => {
       await result.current.submit();
     });
 
-    expect(usersApi.createUser).not.toHaveBeenCalled();
+    expect(mockCreateUser).not.toHaveBeenCalled();
     expect(result.current.fieldErrors.password_confirm).toBe('Passwords must match.');
     expect(result.current.error).toBe('Please correct the highlighted fields.');
   });
 
   it('should submit successfully when form is valid', async () => {
-    vi.mocked(usersApi.createUser).mockResolvedValue({ id: 1 } as any);
+    mockCreateUser.mockResolvedValue({ id: 1 });
 
     const { result } = renderHook(() => useUserForm(), { wrapper });
 
@@ -107,7 +117,7 @@ describe('useUserForm', () => {
       await result.current.submit();
     });
 
-    expect(usersApi.createUser).toHaveBeenCalled();
+    expect(mockCreateUser).toHaveBeenCalled();
     expect(showToastMock).toHaveBeenCalledWith(
       expect.objectContaining({ title: 'User created' })
     );
