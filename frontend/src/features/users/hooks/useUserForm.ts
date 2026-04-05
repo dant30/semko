@@ -1,3 +1,4 @@
+// frontend/src/features/users/hooks/useUserForm.ts
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -5,6 +6,62 @@ import { useNotifications } from "@/core/contexts/useNotifications";
 import { appRoutes } from "@/core/constants/routes";
 import { usersApi, createInitialUserFormValues } from "@/features/users/services/users.api";
 import type { RoleRecord, UserFormValues } from "@/features/users/types/user";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateUserForm(values: UserFormValues, mode: "create" | "edit") {
+  const errors: Partial<Record<keyof UserFormValues, string>> = {};
+
+  if (!values.username.trim()) {
+    errors.username = "Username is required.";
+  }
+
+  if (!values.email.trim()) {
+    errors.email = "Email is required.";
+  } else if (!EMAIL_REGEX.test(values.email.trim())) {
+    errors.email = "Enter a valid email address.";
+  }
+
+  if (!values.first_name.trim()) {
+    errors.first_name = "First name is required.";
+  }
+
+  if (!values.last_name.trim()) {
+    errors.last_name = "Last name is required.";
+  }
+
+  if (mode === "create" || values.password || values.password_confirm) {
+    if (!values.password) {
+      errors.password = "Password is required.";
+    } else if (values.password.length < 8) {
+      errors.password = "Password must be at least 8 characters.";
+    }
+
+    if (!values.password_confirm) {
+      errors.password_confirm = "Please confirm the password.";
+    } else if (values.password !== values.password_confirm) {
+      errors.password_confirm = "Passwords must match.";
+    }
+  }
+
+  return errors;
+}
+
+function hasFormChanged(current: UserFormValues, initial: UserFormValues) {
+  return (
+    current.username.trim() !== initial.username.trim() ||
+    current.email.trim() !== initial.email.trim() ||
+    current.first_name.trim() !== initial.first_name.trim() ||
+    current.last_name.trim() !== initial.last_name.trim() ||
+    current.phone_number.trim() !== initial.phone_number.trim() ||
+    current.role_id !== initial.role_id ||
+    current.password !== initial.password ||
+    current.password_confirm !== initial.password_confirm ||
+    current.is_active !== initial.is_active ||
+    current.is_staff !== initial.is_staff ||
+    current.must_change_password !== initial.must_change_password
+  );
+}
 
 export function useUserForm(userId?: number) {
   const navigate = useNavigate();
@@ -76,8 +133,7 @@ export function useUserForm(userId?: number) {
   }
 
   function confirmDiscardChanges() {
-    const hasChanges = JSON.stringify(formValues) !== JSON.stringify(initialValues);
-    if (!hasChanges) return true;
+    if (!hasFormChanged(formValues, initialValues)) return true;
 
     return window.confirm("You have unsaved changes. Are you sure you want to leave?");
   }
@@ -86,6 +142,16 @@ export function useUserForm(userId?: number) {
     setIsSubmitting(true);
     setError("");
     setFieldErrors({});
+
+    const mode = userId ? "edit" : "create";
+    const validationErrors = validateUserForm(formValues, mode);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
+      setError("Please correct the highlighted fields.");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       if (userId) {

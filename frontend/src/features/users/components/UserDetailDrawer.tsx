@@ -1,3 +1,4 @@
+// frontend/src/features/users/components/UserDetailDrawer.tsx
 import type { UserRecord } from "@/features/users/types/user";
 import { Badge, Button, Card, Drawer, Skeleton } from "@/shared/components/ui";
 
@@ -16,6 +17,7 @@ export function UserDetailDrawer({
   isLoading = false,
   onClose,
   onEdit,
+  onView,
 
   open,
   selectedUser,
@@ -70,6 +72,11 @@ export function UserDetailDrawer({
               {canManageUsers ? (
                 <Button type="button" variant="secondary" onClick={onEdit}>
                   Edit user
+                </Button>
+              ) : null}
+              {onView ? (
+                <Button type="button" variant="outline" onClick={onView}>
+                  View full profile
                 </Button>
               ) : null}
               <Button type="button" variant="ghost" onClick={onClose}>

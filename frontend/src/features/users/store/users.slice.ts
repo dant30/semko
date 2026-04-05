@@ -1,3 +1,4 @@
+// frontend/src/features/users/store/users.slice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { UserFilters } from "@/features/users/types/user";
 

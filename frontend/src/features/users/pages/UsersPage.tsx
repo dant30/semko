@@ -1,5 +1,5 @@
+// frontend/src/features/users/pages/UsersPage.tsx
 import { Eye, Edit, MoreVertical, UserMinus, UserPlus, Plus, RefreshCw } from "lucide-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppSelector } from "@/core/store/hooks";
@@ -14,7 +14,7 @@ import {
 } from "@/features/users/components";
 import { useUsersWorkspace } from "@/features/users/hooks";
 import type { UserRecord } from "@/features/users/types/user";
-import { Button } from "@/shared/components/ui/Button";
+import { Button, Dropdown, DropdownItem } from "@/shared/components/ui";
 import { Card } from "@/shared/components/ui/Card";
 
 export function UsersPage() {
@@ -23,13 +23,6 @@ export function UsersPage() {
   const canManageUsers = hasAnyPermission(getUserPermissions(user), [
     permissions.manageUsers,
   ]);
-  const [actionMenuUserId, setActionMenuUserId] = useState<number | null>(null);
-
-  const toggleActionMenu = (userId: number) => {
-    setActionMenuUserId((current) => (current === userId ? null : userId));
-  };
-
-  const closeActionMenu = () => setActionMenuUserId(null);
 
   const {
     users,
@@ -92,6 +85,7 @@ export function UsersPage() {
       <section className="grid gap-6">
         <div className="space-y-4">
           <UsersTable<UserRecord>
+            rowKey={(row) => row.id}
             columns={[
               { key: "username", label: "Username", render: (row) => row.username },
               { key: "name", label: "Name", render: (row) => `${row.first_name} ${row.last_name}`.trim() || "-" },
@@ -105,70 +99,55 @@ export function UsersPage() {
                 label: "Actions",
                 render: (row) =>
                   canManageUsers ? (
-                    <div className="relative">
-                      <Button
-                        aria-label="Open actions menu"
-                        size="sm"
+                    <Dropdown
+                      align="right"
+                      trigger={
+                        <Button aria-label="Open actions menu" size="sm" type="button" variant="ghost">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      }
+                    >
+                      <DropdownItem
                         type="button"
-                        variant="ghost"
-                        onClick={() => toggleActionMenu(row.id)}
+                        onClick={() => {
+                          selectUser(row.id);
+                        }}
                       >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-
-                      {actionMenuUserId === row.id ? (
-                        <div className="dropdown right-0 mt-1 w-44">
-                          <button
-                            className="dropdown-item"
-                            type="button"
-                            onClick={() => {
-                              selectUser(row.id);
-                              closeActionMenu();
-                            }}
-                          >
-                            <UserPlus className="mr-2 inline h-4 w-4" /> Select
-                          </button>
-                          <button
-                            className="dropdown-item"
-                            type="button"
-                            onClick={() => {
-                              navigate(appRoutes.userDetail(row.id));
-                              closeActionMenu();
-                            }}
-                          >
-                            <Eye className="mr-2 inline h-4 w-4" /> View
-                          </button>
-                          <button
-                            className="dropdown-item"
-                            type="button"
-                            onClick={() => {
-                              startEditUser(row);
-                              closeActionMenu();
-                            }}
-                          >
-                            <Edit className="mr-2 inline h-4 w-4" /> Edit
-                          </button>
-                          <button
-                            className="dropdown-item"
-                            type="button"
-                            onClick={() => {
-                              if (row.is_active) {
-                                deactivateUser(row.id);
-                              } else {
-                                activateUser(row.id);
-                              }
-                              closeActionMenu();
-                            }}
-                          >
-                            {row.is_active ? (
-                              <><UserMinus className="mr-2 inline h-4 w-4" /> Deactivate</>
-                            ) : (
-                              <><UserPlus className="mr-2 inline h-4 w-4" /> Activate</>
-                            )}
-                          </button>
-                        </div>
-                      ) : null}
-                    </div>
+                        <UserPlus className="mr-2 inline h-4 w-4" /> Select
+                      </DropdownItem>
+                      <DropdownItem
+                        type="button"
+                        onClick={() => {
+                          navigate(appRoutes.userDetail(row.id));
+                        }}
+                      >
+                        <Eye className="mr-2 inline h-4 w-4" /> View
+                      </DropdownItem>
+                      <DropdownItem
+                        type="button"
+                        onClick={() => {
+                          startEditUser(row);
+                        }}
+                      >
+                        <Edit className="mr-2 inline h-4 w-4" /> Edit
+                      </DropdownItem>
+                      <DropdownItem
+                        type="button"
+                        onClick={() => {
+                          if (row.is_active) {
+                            deactivateUser(row.id);
+                          } else {
+                            activateUser(row.id);
+                          }
+                        }}
+                      >
+                        {row.is_active ? (
+                          <><UserMinus className="mr-2 inline h-4 w-4" /> Deactivate</>
+                        ) : (
+                          <><UserPlus className="mr-2 inline h-4 w-4" /> Activate</>
+                        )}
+                      </DropdownItem>
+                    </Dropdown>
                   ) : (
                     "-"
                   ),

@@ -1,3 +1,4 @@
+// frontend/src/features/users/components/UserDetailContent.tsx
 import {
   Mail,
   Phone,
@@ -10,6 +11,7 @@ import {
 import type { UserRecord } from "@/features/users/types/user";
 import { Badge, Button, Skeleton } from "@/shared/components/ui";
 import { EmptyState } from "@/shared/components/feedback/EmptyState";
+import { formatDate } from "@/shared/utils/dates";
 
 interface UserDetailContentProps {
   canManageUsers?: boolean;
@@ -179,10 +181,20 @@ export function UserDetailContent({
             <span className="text-app-secondary">User ID:</span> {user.id}
           </div>
           <div>
-            <span className="text-app-secondary">Created:</span> {new Date(user.date_joined).toLocaleDateString()}
+            <span className="text-app-secondary">Created:</span>{' '}
+            {(() => {
+              const primaryCreatedDate = formatDate(user.date_joined);
+              if (primaryCreatedDate !== 'Invalid date') {
+                return primaryCreatedDate;
+              }
+
+              const fallbackCreatedDate = formatDate(user.created_at);
+              return fallbackCreatedDate === 'Invalid date' ? 'Unknown' : fallbackCreatedDate;
+            })()}
           </div>
           <div>
-            <span className="text-app-secondary">Last login:</span> {user.last_login ? new Date(user.last_login).toLocaleDateString() : "Never"}
+            <span className="text-app-secondary">Last login:</span>{' '}
+            {user.last_login ? formatDate(user.last_login) : 'Never'}
           </div>
         </div>
       </div>

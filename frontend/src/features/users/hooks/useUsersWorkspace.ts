@@ -1,3 +1,4 @@
+// frontend/src/features/users/hooks/useUsersWorkspace.ts
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useNotifications } from "@/core/contexts/useNotifications";
@@ -30,35 +31,56 @@ export function useUsersWorkspace() {
 
   const summary = useMemo<UserSummaryMetrics>(() => buildUserSummaryMetrics(users), [users]);
 
-  const loadUsersAndRoles = useCallback(async () => {
+  const loadRoles = useCallback(async () => {
+    try {
+      const rolesData = await usersApi.fetchRoles();
+      setRoles(rolesData);
+    } catch (err) {
+      console.error("Failed to load user roles", err);
+    }
+  }, []);
+
+  const loadUsers = useCallback(async () => {
     setIsLoading(true);
     setError("");
 
     try {
-      const [usersData, rolesData] = await Promise.all([usersApi.fetchUsers(filters), usersApi.fetchRoles()]);
+      const usersData = await usersApi.fetchUsers(filters);
       setUsers(usersData);
-      setRoles(rolesData);
-      if (!selectedUserId && usersData.length > 0) {
-        setSelectedUserId(usersData[0].id);
-      }
-    } catch {
+      setSelectedUserId((current) => (current ?? (usersData.length > 0 ? usersData[0].id : null)));
+    } catch (err) {
+      console.error("Failed to load users", err);
       setError("We could not load users at this time.");
     } finally {
       setIsLoading(false);
     }
-  }, [filters, selectedUserId]);
+  }, [filters]);
 
   useEffect(() => {
     let active = true;
+
     (async () => {
       if (!active) return;
-      await loadUsersAndRoles();
+      await loadRoles();
     })();
 
     return () => {
       active = false;
     };
-  }, [loadUsersAndRoles]);
+  }, [loadRoles]);
+
+  useEffect(() => {
+    let active = true;
+
+    (async () => {
+      if (!active) return;
+      await loadUsers();
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [loadUsers]);
 
   useEffect(() => {
     if (!selectedUserId) {
@@ -75,7 +97,8 @@ export function useUsersWorkspace() {
         if (!active) return;
         setSelectedUserDetail(userDetail);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Failed to load selected user detail", err);
         if (active) {
           setSelectedUserDetail(null);
         }
@@ -92,7 +115,7 @@ export function useUsersWorkspace() {
   }, [selectedUserId]);
 
   async function refreshAll() {
-    await loadUsersAndRoles();
+    await loadUsers();
   }
 
   function startEditUser(user: UserRecord) {

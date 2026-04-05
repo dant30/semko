@@ -1,3 +1,4 @@
+// frontend/src/features/users/components/UserStatusActions.tsx
 import { UserCheck, UserX } from "lucide-react";
 
 import type { UserRecord } from "@/features/users/types/user";

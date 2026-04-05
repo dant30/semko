@@ -1,3 +1,4 @@
+// frontend/src/features/users/components/UsersFilters.tsx
 import { RotateCcw, Search } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/Button";

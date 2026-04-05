@@ -1,3 +1,4 @@
+// frontend/src/features/users/types/user.ts
 export interface RoleRecord {
   id: number;
   name: string;

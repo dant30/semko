@@ -1,3 +1,4 @@
+// frontend/src/users/components/ UsersTable.tsx
 import type { ReactNode } from "react";
 
 import { Card } from "@/shared/components/ui/Card";
@@ -8,19 +9,23 @@ interface Column<T> {
   render: (row: T) => ReactNode;
 }
 
+interface UsersTableProps<T> {
+  columns: Array<Column<T>>;
+  emptyDescription: string;
+  emptyTitle: string;
+  isLoading: boolean;
+  rows: T[];
+  rowKey?: (row: T) => string | number;
+}
+
 export function UsersTable<T>({
   columns,
   emptyDescription,
   emptyTitle,
   isLoading,
   rows,
-}: {
-  columns: Array<Column<T>>;
-  emptyDescription: string;
-  emptyTitle: string;
-  isLoading: boolean;
-  rows: T[];
-}) {
+  rowKey,
+}: UsersTableProps<T>) {
   return (
     <Card className="overflow-hidden rounded-[2rem]">
       <div className="table-container rounded-none border-none shadow-none">
@@ -45,7 +50,7 @@ export function UsersTable<T>({
               ))
             ) : rows.length > 0 ? (
               rows.map((row, rowIndex) => (
-                <tr key={rowIndex}>
+                <tr key={rowKey ? rowKey(row) : rowIndex}>
                   {columns.map((column) => (
                     <td key={column.key}>{column.render(row)}</td>
                   ))}

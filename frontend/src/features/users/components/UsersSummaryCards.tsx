@@ -1,3 +1,4 @@
+// frontend/src/features/users/components/UsersSummaryCards.tsx
 import { Users2, CheckCircle2, MinusCircle, ShieldCheck } from "lucide-react";
 
 import type { UserSummaryMetrics } from "@/features/users/types/user";

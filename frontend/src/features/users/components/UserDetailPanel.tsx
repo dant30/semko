@@ -1,3 +1,4 @@
+// frontend/src/features/users/components/UserDetailPanel.tsx
 import { ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
