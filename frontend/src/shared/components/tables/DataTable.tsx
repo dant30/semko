@@ -34,7 +34,7 @@ export interface DataTableProps<T> {
   onPageChange?: (page: number) => void;
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends object>({
   data,
   columns,
   keyPrefix,
@@ -89,7 +89,6 @@ export function DataTable<T extends Record<string, any>>({
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  style={col.width ? { width: col.width } : undefined}
                   className={cn(
                     col.sortable && 'cursor-pointer select-none hover:bg-surface-subtle',
                     col.className
@@ -113,7 +112,9 @@ export function DataTable<T extends Record<string, any>>({
               </tr>
             ) : (
               data.map((row, idx) => {
-                const candidateKey = rowKey ? rowKey(row, idx) : row.id ?? idx;
+                const candidateKey = rowKey
+                  ? rowKey(row, idx)
+                  : (((row as Record<string, unknown>).id as string | number) ?? idx);
                 const rowKeyValue = createRowKey(keyPrefix, candidateKey);
                 return (
                   <tr
@@ -123,7 +124,7 @@ export function DataTable<T extends Record<string, any>>({
                   >
                     {columns.map((col) => (
                       <td key={col.key} className={col.className}>
-                        {col.accessor ? col.accessor(row) : row[col.key] ?? '—'}
+                        {col.accessor ? col.accessor(row) : ((row as Record<string, unknown>)[col.key] as React.ReactNode) ?? '—'}
                       </td>
                     ))}
                   </tr>

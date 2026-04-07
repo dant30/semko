@@ -11,7 +11,7 @@ interface Column<T> {
   render: (row: T) => ReactNode;
 }
 
-interface UsersTableProps<T extends Record<string, unknown>> {
+interface UsersTableProps<T extends object> {
   columns: Array<Column<T>>;
   emptyDescription: string;
   emptyTitle: string;
@@ -20,7 +20,7 @@ interface UsersTableProps<T extends Record<string, unknown>> {
   rowKey?: (row: T) => string | number;
 }
 
-export function UsersTable<T extends Record<string, unknown>>({
+export function UsersTable<T extends object>({
   columns,
   emptyDescription,
   emptyTitle,
