@@ -3,8 +3,25 @@ import { DashboardAlertsPanel, DashboardCharts, DashboardSummaryCards } from "@/
 import { useDashboardWorkspace } from "@/features/dashboard/hooks";
 
 export function DashboardPage() {
+  const user = useAppSelector((state) => state.auth.user);
   const metrics = useAppSelector((state) => state.dashboard.metrics);
   const { isLoading, error, alerts, summary, lastUpdated, refresh } = useDashboardWorkspace();
+
+  const userName = user
+    ? user.first_name
+      ? `${user.first_name}${user.last_name ? ` ${user.last_name}` : ""}`
+      : user.username
+    : "there";
+
+  const greeting = (() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  })();
+
+  const headerTitle = `${greeting}, ${userName}`;
+
   const lastUpdatedLabel = lastUpdated
     ? `Last updated: ${new Intl.DateTimeFormat(undefined, {
         dateStyle: "medium",
@@ -15,7 +32,7 @@ export function DashboardPage() {
   const header = (
     <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl font-semibold text-app-primary">Dashboard</h1>
+        <h1 className="text-2xl font-semibold text-app-primary">{headerTitle}</h1>
         <p className="text-sm text-app-muted">{lastUpdatedLabel}</p>
       </div>
       <button
