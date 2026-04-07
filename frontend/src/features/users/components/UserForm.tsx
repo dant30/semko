@@ -1,8 +1,10 @@
 // frontend/src/features/users/components/UserForm.tsx
 import { Save } from "lucide-react";
+import type { FormEvent } from "react";
 
 import type { UserFormValues, RoleRecord } from "@/features/users/types/user";
-import { Button, Card, Skeleton } from "@/shared/components/ui";
+import { Card, Checkbox, Input, Select, Skeleton } from "@/shared/components/ui";
+import { FormActions, FormField, FormSection } from "@/shared/components/forms";
 
 interface UserFormProps {
   error?: string;
@@ -12,17 +14,9 @@ interface UserFormProps {
   isSubmitting?: boolean;
   mode: "create" | "edit";
   onCancel: () => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   roles: RoleRecord[];
   updateField: <K extends keyof UserFormValues>(field: K, value: UserFormValues[K]) => void;
-}
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) {
-    return null;
-  }
-
-  return <p className="form-error">{message}</p>;
 }
 
 function getRoleCardDescription(role: RoleRecord) {
@@ -41,45 +35,6 @@ function getRoleCardDescription(role: RoleRecord) {
   return roleDescriptions[role.code?.toUpperCase()] || "Standard role permissions for business users.";
 }
 
-function RoleSelect({
-  error,
-  label,
-  onChange,
-  options,
-  placeholder,
-  value,
-}: {
-  error?: string;
-  label: string;
-  onChange: (value: number | "") => void;
-  options: RoleRecord[];
-  placeholder: string;
-  value: string;
-}) {
-  return (
-    <label className="form-group">
-      <span className="form-label">{label}</span>
-      <select
-        className="form-select"
-        onChange={(event) => {
-          const selected = event.target.value;
-          onChange(selected === "" ? "" : Number(selected));
-        }}
-        value={value}
-        aria-label="Role assignment"
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.id} value={String(option.id)}>
-            {option.name} - {getRoleCardDescription(option)}
-          </option>
-        ))}
-      </select>
-      <FieldError message={error} />
-    </label>
-  );
-}
-
 export function UserForm({
   error,
   fieldErrors,
@@ -92,6 +47,11 @@ export function UserForm({
   roles,
   updateField,
 }: UserFormProps) {
+  const roleOptions = [
+    { value: "", label: "Select role" },
+    ...roles.map((role) => ({ value: String(role.id), label: role.name })),
+  ];
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -106,174 +66,158 @@ export function UserForm({
   return (
     <form className="space-y-6" onSubmit={onSubmit}>
       <Card className="rounded-[2rem] p-6">
-        <div className="mb-6">
-          <h3>User account details</h3>
-          <p className="mt-2 text-sm">
-            Create and manage user accounts with role-based access and authentication settings.
-          </p>
-        </div>
+        <FormSection
+          title="User account details"
+          description="Create and manage user accounts with role-based access and authentication settings."
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField id="username" label="Username" required errors={fieldErrors.username}>
+              <Input
+                id="username"
+                value={formValues.username}
+                onChange={(event) => updateField("username", event.target.value)}
+                required
+              />
+            </FormField>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="form-group">
-            <span className="form-label">Username</span>
-            <input
-              className="form-input"
-              onChange={(event) => updateField("username", event.target.value)}
-              required
-              value={formValues.username}
-            />
-            <FieldError message={fieldErrors.username} />
-          </label>
+            <FormField id="email" label="Email" required errors={fieldErrors.email}>
+              <Input
+                id="email"
+                type="email"
+                value={formValues.email}
+                onChange={(event) => updateField("email", event.target.value)}
+                required
+              />
+            </FormField>
 
-          <label className="form-group">
-            <span className="form-label">Email</span>
-            <input
-              className="form-input"
-              onChange={(event) => updateField("email", event.target.value)}
-              required
-              type="email"
-              value={formValues.email}
-            />
-            <FieldError message={fieldErrors.email} />
-          </label>
+            <FormField id="first_name" label="First name" required errors={fieldErrors.first_name}>
+              <Input
+                id="first_name"
+                value={formValues.first_name}
+                onChange={(event) => updateField("first_name", event.target.value)}
+                required
+              />
+            </FormField>
 
-          <label className="form-group">
-            <span className="form-label">First name</span>
-            <input
-              className="form-input"
-              onChange={(event) => updateField("first_name", event.target.value)}
-              required
-              value={formValues.first_name}
-            />
-            <FieldError message={fieldErrors.first_name} />
-          </label>
+            <FormField id="last_name" label="Last name" required errors={fieldErrors.last_name}>
+              <Input
+                id="last_name"
+                value={formValues.last_name}
+                onChange={(event) => updateField("last_name", event.target.value)}
+                required
+              />
+            </FormField>
 
-          <label className="form-group">
-            <span className="form-label">Last name</span>
-            <input
-              className="form-input"
-              onChange={(event) => updateField("last_name", event.target.value)}
-              required
-              value={formValues.last_name}
-            />
-            <FieldError message={fieldErrors.last_name} />
-          </label>
+            <FormField id="phone_number" label="Phone number" errors={fieldErrors.phone_number}>
+              <Input
+                id="phone_number"
+                value={formValues.phone_number}
+                onChange={(event) => updateField("phone_number", event.target.value)}
+              />
+            </FormField>
 
-          <label className="form-group">
-            <span className="form-label">Phone number</span>
-            <input
-              className="form-input"
-              onChange={(event) => updateField("phone_number", event.target.value)}
-              value={formValues.phone_number}
-            />
-            <FieldError message={fieldErrors.phone_number} />
-          </label>
-
-          <RoleSelect
-            error={fieldErrors.role_id}
-            label="Role"
-            onChange={(value) => updateField("role_id", value)}
-            options={roles}
-            placeholder="Select role"
-            value={String(formValues.role_id)}
-          />
-        </div>
-
-        <div className="mt-4 space-y-3">
-          <p className="text-sm text-app-secondary">
-            Pick the role that most closely matches the user's responsibilities. Role definitions are shown below for easier decision-making.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {roles.map((role) => {
-              const selected = String(formValues.role_id) === String(role.id);
-              return (
-                <button
-                  key={role.id}
-                  type="button"
-                  onClick={() => updateField("role_id", role.id)}
-                  className={`rounded-2xl border p-4 text-left transition hover:border-brand-500 hover:bg-brand-50 ${
-                    selected ? "border-brand-600 bg-brand-100" : "border-surface-border bg-white"
-                  }`}
-                >
-                  <div className="text-sm font-semibold">{role.name}</div>
-                  <div className="mt-1 text-xs text-app-secondary">{getRoleCardDescription(role)}</div>
-                  {role.permissions?.length ? (
-                    <div className="mt-2 text-xs opacity-80">
-                      <strong>Permissions:</strong> {role.permissions.join(", ")}
-                    </div>
-                  ) : null}
-                </button>
-              );
-            })}
+            <FormField
+              id="role_id"
+              label="Role"
+              errors={fieldErrors.role_id}
+              hint="Pick the role that most closely matches the user's responsibilities."
+            >
+              <Select
+                id="role_id"
+                value={String(formValues.role_id)}
+                options={roleOptions}
+                onChange={(event) => {
+                  const selected = event.target.value;
+                  updateField("role_id", selected === "" ? "" : Number(selected));
+                }}
+              />
+            </FormField>
           </div>
-        </div>
+
+          <div className="mt-4 space-y-3">
+            <p className="text-sm text-app-secondary">
+              Pick the role that most closely matches the user's responsibilities. Role definitions are shown below for easier decision-making.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {roles.map((role) => {
+                const selected = String(formValues.role_id) === String(role.id);
+                return (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => updateField("role_id", role.id)}
+                    className={`rounded-2xl border p-4 text-left transition hover:border-brand-500 hover:bg-brand-50 ${
+                      selected ? "border-brand-600 bg-brand-100" : "border-surface-border bg-white"
+                    }`}
+                  >
+                    <div className="text-sm font-semibold">{role.name}</div>
+                    <div className="mt-1 text-xs text-app-secondary">{getRoleCardDescription(role)}</div>
+                    {role.permissions?.length ? (
+                      <div className="mt-2 text-xs opacity-80">
+                        <strong>Permissions:</strong> {role.permissions.join(", ")}
+                      </div>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </FormSection>
       </Card>
 
       <Card className="rounded-[2rem] p-6">
-        <div className="mb-6">
-          <h3>Authentication and access</h3>
-          <p className="mt-2 text-sm">
-            Set password requirements and account status for secure user management.
-          </p>
-        </div>
+        <FormSection
+          title="Authentication and access"
+          description="Set password requirements and account status for secure user management."
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField id="password" label="Password" required={mode === "create"} errors={fieldErrors.password}>
+              <Input
+                id="password"
+                type="password"
+                value={formValues.password}
+                onChange={(event) => updateField("password", event.target.value)}
+                required={mode === "create"}
+              />
+            </FormField>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="form-group">
-            <span className="form-label">Password</span>
-            <input
-              className="form-input"
-              onChange={(event) => updateField("password", event.target.value)}
+            <FormField
+              id="password_confirm"
+              label="Confirm password"
               required={mode === "create"}
-              type="password"
-              value={formValues.password}
-            />
-            <FieldError message={fieldErrors.password} />
-          </label>
+              errors={fieldErrors.password_confirm}
+            >
+              <Input
+                id="password_confirm"
+                type="password"
+                value={formValues.password_confirm}
+                onChange={(event) => updateField("password_confirm", event.target.value)}
+                required={mode === "create"}
+              />
+            </FormField>
+          </div>
 
-          <label className="form-group">
-            <span className="form-label">Confirm password</span>
-            <input
-              className="form-input"
-              onChange={(event) => updateField("password_confirm", event.target.value)}
-              required={mode === "create"}
-              type="password"
-              value={formValues.password_confirm}
-            />
-            <FieldError message={fieldErrors.password_confirm} />
-          </label>
-        </div>
-
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <label className="inline-flex items-center gap-3 rounded-2xl border border-surface-border bg-white/70 p-4 text-sm font-medium text-app-secondary dark:bg-slate-900/70">
-            <input
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <Checkbox
+              id="is_active"
               checked={formValues.is_active}
-              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
               onChange={(event) => updateField("is_active", event.target.checked)}
-              type="checkbox"
+              label="Active account"
             />
-            Active account
-          </label>
-
-          <label className="inline-flex items-center gap-3 rounded-2xl border border-surface-border bg-white/70 p-4 text-sm font-medium text-app-secondary dark:bg-slate-900/70">
-            <input
+            <Checkbox
+              id="is_staff"
               checked={formValues.is_staff}
-              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
               onChange={(event) => updateField("is_staff", event.target.checked)}
-              type="checkbox"
+              label="Admin (staff)"
             />
-            Admin (staff)
-          </label>
-
-          <label className="inline-flex items-center gap-3 rounded-2xl border border-surface-border bg-white/70 p-4 text-sm font-medium text-app-secondary dark:bg-slate-900/70">
-            <input
+            <Checkbox
+              id="must_change_password"
               checked={formValues.must_change_password}
-              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
               onChange={(event) => updateField("must_change_password", event.target.checked)}
-              type="checkbox"
+              label="Must change password"
             />
-            Must change password
-          </label>
-        </div>
+          </div>
+        </FormSection>
       </Card>
 
       {error ? (
@@ -282,21 +226,13 @@ export function UserForm({
         </Card>
       ) : null}
 
-      <div className="flex flex-wrap justify-end gap-3">
-        <Button onClick={onCancel} type="button" variant="ghost">
-          Cancel
-        </Button>
-        <Button disabled={isSubmitting} type="submit" variant="primary">
-          <Save className="h-4 w-4" />
-          {isSubmitting
-            ? mode === "create"
-              ? "Creating..."
-              : "Saving..."
-            : mode === "create"
-              ? "Create user"
-              : "Save changes"}
-        </Button>
-      </div>
+      <FormActions
+        primaryLabel={isSubmitting ? (mode === "create" ? "Creating user..." : "Saving changes...") : mode === "create" ? "Create user" : "Save changes"}
+        primaryProps={{ type: "submit", leftIcon: <Save className="h-4 w-4" /> }}
+        secondaryLabel="Cancel"
+        secondaryProps={{ type: "button", onClick: onCancel }}
+        loading={isSubmitting}
+      />
     </form>
   );
 }

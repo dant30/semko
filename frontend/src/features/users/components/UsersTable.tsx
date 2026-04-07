@@ -1,7 +1,9 @@
-// frontend/src/users/components/ UsersTable.tsx
+// frontend/src/features/users/components/UsersTable.tsx
 import type { ReactNode } from "react";
 
 import { Card } from "@/shared/components/ui/Card";
+import { DataTable, type Column as DataColumn } from "@/shared/components/tables";
+import { EmptyState } from "@/shared/components/feedback/EmptyState";
 
 interface Column<T> {
   key: string;
@@ -26,47 +28,34 @@ export function UsersTable<T>({
   rows,
   rowKey,
 }: UsersTableProps<T>) {
+  const tableColumns: DataColumn<T>[] = columns.map((column) => ({
+    key: column.key,
+    header: column.label,
+    accessor: column.render,
+  }));
+
+  if (!isLoading && rows.length === 0) {
+    return (
+      <Card className="overflow-hidden rounded-[2rem]">
+        <EmptyState
+          title={emptyTitle}
+          description={emptyDescription}
+          className="min-h-[240px]"
+        />
+      </Card>
+    );
+  }
+
   return (
     <Card className="overflow-hidden rounded-[2rem]">
-      <div className="table-container rounded-none border-none shadow-none">
-        <table className="table">
-          <thead>
-            <tr>
-              {columns.map((column) => (
-                <th key={column.key}>{column.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <tr key={`loading-${index}`}>
-                  {columns.map((column) => (
-                    <td key={`${column.key}-${index}`}>
-                      <div className="skeleton h-4 w-24" />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : rows.length > 0 ? (
-              rows.map((row, rowIndex) => (
-                <tr key={rowKey ? rowKey(row) : rowIndex}>
-                  {columns.map((column) => (
-                    <td key={column.key}>{column.render(row)}</td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="px-6 py-12 text-center" colSpan={columns.length}>
-                  <h3 className="text-lg">{emptyTitle}</h3>
-                  <p className="mt-2 text-sm text-app-secondary">{emptyDescription}</p>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        data={rows}
+        columns={tableColumns}
+        keyPrefix="users"
+        isLoading={isLoading}
+        className="rounded-none border-none shadow-none"
+        rowKey={rowKey ? (row, index) => rowKey(row) : undefined}
+      />
     </Card>
   );
 }

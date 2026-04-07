@@ -23,6 +23,7 @@ export interface DataTableProps<T> {
   hint?: string;
   onRowClick?: (row: T) => void;
   className?: string;
+  rowKey?: (row: T, index: number) => string | number;
   // Sorting (controlled)
   sortColumn?: string;
   sortDirection?: 'asc' | 'desc';
@@ -42,6 +43,7 @@ export function DataTable<T extends Record<string, any>>({
   hint,
   onRowClick,
   className,
+  rowKey,
   sortColumn,
   sortDirection,
   onSort,
@@ -111,11 +113,11 @@ export function DataTable<T extends Record<string, any>>({
               </tr>
             ) : (
               data.map((row, idx) => {
-                const rowId = row.id ?? idx;
-                const rowKey = createRowKey(keyPrefix, rowId);
+                const candidateKey = rowKey ? rowKey(row, idx) : row.id ?? idx;
+                const rowKeyValue = createRowKey(keyPrefix, candidateKey);
                 return (
                   <tr
-                    key={rowKey}
+                    key={rowKeyValue}
                     onClick={() => onRowClick?.(row)}
                     className={cn(onRowClick && 'cursor-pointer hover:bg-surface-subtle')}
                   >

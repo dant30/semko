@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonProps } from "@/shared/components/ui/Button";
 
 import { Button } from "@/shared/components/ui/Button";
 import { cn } from "@/shared/utils/classnames";
@@ -6,8 +6,8 @@ import { cn } from "@/shared/utils/classnames";
 interface FormActionsProps {
   primaryLabel?: string;
   secondaryLabel?: string;
-  primaryProps?: ButtonHTMLAttributes<HTMLButtonElement>;
-  secondaryProps?: ButtonHTMLAttributes<HTMLButtonElement>;
+  primaryProps?: ButtonProps;
+  secondaryProps?: ButtonProps;
   align?: "left" | "center" | "right";
   loading?: boolean;
   className?: string;
