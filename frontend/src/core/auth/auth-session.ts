@@ -49,8 +49,10 @@ export function persistSession(access: string, refresh: string, user?: AuthUser 
     setLocalValue(USER_KEY, JSON.stringify(user));
   }
 
-  // Calculate and store session expiry (15 min from now for access token)
-  // In a real app, extract from JWT payload
+  refreshSessionExpiry();
+}
+
+export function refreshSessionExpiry() {
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
   setLocalValue(SESSION_EXPIRES_KEY, expiresAt.toISOString());
 }

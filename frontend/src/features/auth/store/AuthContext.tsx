@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useAppDispatch } from "@/core/store/hooks";
 import {
   clearSession,
@@ -6,6 +6,8 @@ import {
   getRefreshToken,
   getStoredUser,
   persistSession,
+  refreshSessionExpiry,
+  isSessionExpired,
 } from "@/core/auth/auth-session";
 import { authApi } from "@/features/auth/services/auth.api";
 import { setSession, clearAuth } from "@/features/auth/store/auth.slice";
@@ -17,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const inactivityTimeoutRef = useRef<number | null>(null);
   const dispatch = useAppDispatch();
 
   // Initialize from stored session
@@ -131,11 +134,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Logout handler
   const logout = useCallback(() => {
+    if (inactivityTimeoutRef.current !== null) {
+      window.clearTimeout(inactivityTimeoutRef.current);
+      inactivityTimeoutRef.current = null;
+    }
+
     clearSession();
     dispatch(clearAuth());
     setUser(null);
     setIsAuthenticated(false);
   }, [dispatch]);
+
+  // Inactivity tracking: log out after 15 minutes without user activity.
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const EVENTS = [
+      "mousemove",
+      "mousedown",
+      "keydown",
+      "touchstart",
+      "scroll",
+      "wheel",
+    ] as const;
+
+    const resetTimer = () => {
+      if (isSessionExpired()) {
+        logout();
+        return;
+      }
+
+      refreshSessionExpiry();
+      if (inactivityTimeoutRef.current !== null) {
+        window.clearTimeout(inactivityTimeoutRef.current);
+      }
+
+      inactivityTimeoutRef.current = window.setTimeout(() => {
+        logout();
+      }, 15 * 60 * 1000);
+    };
+
+    const handleActivity = () => resetTimer();
+
+    EVENTS.forEach((eventName) => window.addEventListener(eventName, handleActivity, { passive: true }));
+
+    resetTimer();
+
+    const expiryCheck = window.setInterval(() => {
+      if (isSessionExpired()) {
+        logout();
+      }
+    }, 60 * 1000);
+
+    return () => {
+      if (inactivityTimeoutRef.current !== null) {
+        window.clearTimeout(inactivityTimeoutRef.current);
+        inactivityTimeoutRef.current = null;
+      }
+      window.clearInterval(expiryCheck);
+      EVENTS.forEach((eventName) => window.removeEventListener(eventName, handleActivity));
+    };
+  }, [isAuthenticated, logout]);
 
   const value: AuthContextType = {
     user,
