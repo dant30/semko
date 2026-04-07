@@ -11,7 +11,7 @@ interface Column<T> {
   render: (row: T) => ReactNode;
 }
 
-interface UsersTableProps<T> {
+interface UsersTableProps<T extends Record<string, unknown>> {
   columns: Array<Column<T>>;
   emptyDescription: string;
   emptyTitle: string;
@@ -20,7 +20,7 @@ interface UsersTableProps<T> {
   rowKey?: (row: T) => string | number;
 }
 
-export function UsersTable<T>({
+export function UsersTable<T extends Record<string, unknown>>({
   columns,
   emptyDescription,
   emptyTitle,
@@ -54,7 +54,7 @@ export function UsersTable<T>({
         keyPrefix="users"
         isLoading={isLoading}
         className="rounded-none border-none shadow-none"
-        rowKey={rowKey ? (row, index) => rowKey(row) : undefined}
+        rowKey={rowKey ? (row) => rowKey(row) : undefined}
       />
     </Card>
   );
