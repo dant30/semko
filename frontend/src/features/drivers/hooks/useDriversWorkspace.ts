@@ -7,7 +7,11 @@ import {
   createInitialDriverFormValues,
   driversApi,
 } from "@/features/drivers/services/drivers.api";
-import { setDriversFilters, setDriversView } from "@/features/drivers/store/drivers.slice";
+import {
+  resetDriversFilters,
+  setDriversFilters,
+  setDriversView,
+} from "@/features/drivers/store/drivers.slice";
 import type {
   DriverFormValues,
   DriverRecord,
@@ -114,6 +118,7 @@ export function useDriversWorkspace() {
     refreshAll,
     setDriverForm,
     setFilters: (payload: Partial<typeof filters>) => dispatch(setDriversFilters(payload)),
+    resetFilters: () => dispatch(resetDriversFilters()),
     setView: (view: DriverView) => dispatch(setDriversView(view)),
     submitDriver,
     summary,

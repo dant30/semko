@@ -179,6 +179,11 @@ export const masterDataNavigation: NavItem[] = [
         requiredPermissions: [permissions.viewDrivers],
       },
       {
+        label: "New driver",
+        path: appRoutes.driverCreate,
+        requiredPermissions: [permissions.manageDrivers],
+      },
+      {
         label: "License watch",
         path: appRoutes.driverLicenses,
         requiredPermissions: [permissions.viewDrivers],
@@ -247,6 +252,7 @@ export const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   "/app/audit": () => import("@/features/audit"),
   "/app/vehicles": () => import("@/features/vehicles"),
   "/app/drivers": () => import("@/features/drivers"),
+  "/app/drivers/new": () => import("@/features/drivers"),
   "/app/clients": () => import("@/features/clients"),
   "/app/materials": () => import("@/features/materials"),
   "/app/materials/new": () => import("@/features/materials"),

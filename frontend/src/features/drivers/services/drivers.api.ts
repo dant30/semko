@@ -43,6 +43,16 @@ export const driversApi = {
     const response = await apiClient.post<DriverRecord>("/drivers/", values);
     return response.data;
   },
+
+  async fetchDriver(driverId: number) {
+    const response = await apiClient.get<DriverRecord>(`/drivers/${driverId}/`);
+    return response.data;
+  },
+
+  async updateDriver(driverId: number, values: Partial<DriverFormValues>) {
+    const response = await apiClient.patch<DriverRecord>(`/drivers/${driverId}/`, values);
+    return response.data;
+  },
 };
 
 export function createInitialDriverFormValues(): DriverFormValues {

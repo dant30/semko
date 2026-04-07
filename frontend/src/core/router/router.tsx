@@ -22,6 +22,9 @@ const RolesPage = lazy(() => import("@/features/roles").then((m) => ({ default: 
 const AuditPage = lazy(() => import("@/features/audit").then((m) => ({ default: m.AuditPage })));
 const VehiclesPage = lazy(() => import("@/features/vehicles").then((m) => ({ default: m.VehiclesPage })));
 const DriversPage = lazy(() => import("@/features/drivers").then((m) => ({ default: m.DriversPage })));
+const DriverCreatePage = lazy(() => import("@/features/drivers").then((m) => ({ default: m.DriverCreatePage })));
+const DriverDetailPage = lazy(() => import("@/features/drivers").then((m) => ({ default: m.DriverDetailPage })));
+const DriverEditPage = lazy(() => import("@/features/drivers").then((m) => ({ default: m.DriverEditPage })));
 const ClientsPage = lazy(() => import("@/features/clients").then((m) => ({ default: m.ClientsPage })));
 const ClientCreatePage = lazy(() => import("@/features/clients").then((m) => ({ default: m.ClientCreatePage })));
 const ClientDetailPage = lazy(() => import("@/features/clients").then((m) => ({ default: m.ClientDetailPage })));
@@ -180,6 +183,30 @@ export const router = createBrowserRouter([
         element: (
           <PermissionGuard requiredPermissions={[permissions.viewDrivers]}>
             <DriversPage />
+          </PermissionGuard>
+        ),
+      },
+      {
+        path: "drivers/new",
+        element: (
+          <PermissionGuard requiredPermissions={[permissions.manageDrivers]}>
+            <DriverCreatePage />
+          </PermissionGuard>
+        ),
+      },
+      {
+        path: "drivers/:driverId",
+        element: (
+          <PermissionGuard requiredPermissions={[permissions.viewDrivers]}>
+            <DriverDetailPage />
+          </PermissionGuard>
+        ),
+      },
+      {
+        path: "drivers/:driverId/edit",
+        element: (
+          <PermissionGuard requiredPermissions={[permissions.manageDrivers]}>
+            <DriverEditPage />
           </PermissionGuard>
         ),
       },
