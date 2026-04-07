@@ -1,3 +1,4 @@
+// frontend/src/features/dashboard/components/DashboardSummaryCards.tsx
 import { Card } from "@/shared/components/ui/Card";
 import type { DashboardMetric } from "@/features/dashboard/types/dashboard";
 
@@ -6,25 +7,33 @@ type DashboardSummaryCardsProps = {
 };
 
 const toneClasses: Record<NonNullable<DashboardMetric["tone"]>, string> = {
-  default: "text-app-primary",
-  success: "text-emerald-600",
-  warning: "text-amber-600",
-  danger: "text-rose-600",
+  default: "text-text-primary",
+  success: "text-success-600 dark:text-success-400",
+  warning: "text-warning-600 dark:text-warning-400",
+  danger: "text-danger-600 dark:text-danger-400",
 };
 
 const trendClasses: Record<NonNullable<DashboardMetric["trend"]>["direction"], string> = {
-  up: "text-emerald-600",
-  down: "text-rose-600",
-  flat: "text-app-muted",
+  up: "text-success-600 dark:text-success-400",
+  down: "text-danger-600 dark:text-danger-400",
+  flat: "text-text-muted",
 };
 
 export function DashboardSummaryCards({ metrics }: DashboardSummaryCardsProps) {
+  if (!metrics.length) {
+    return (
+      <div className="text-center py-8 text-text-muted">
+        No metrics available
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {metrics.map((metric) => (
-        <Card className="hover-lift rounded-3xl border-white/70 p-5" key={metric.label}>
+        <Card className="hover-lift rounded-3xl border-surface-border p-5 transition-all duration-200" key={metric.label}>
           <div className="flex items-center justify-between gap-3">
-            <span className="text-xs uppercase tracking-[0.25em] text-app-muted">
+            <span className="text-xs uppercase tracking-wide text-text-muted font-medium">
               {metric.label}
             </span>
             <span className={`text-xs font-semibold ${toneClasses[metric.tone ?? "default"]}`}>
@@ -43,7 +52,7 @@ export function DashboardSummaryCards({ metrics }: DashboardSummaryCardsProps) {
           ) : null}
 
           {metric.details?.length ? (
-            <div className="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm text-app-muted">
+            <div className="mt-5 space-y-3 border-t border-surface-border pt-4 text-sm text-text-muted">
               {metric.details.map((detail) => (
                 <div key={detail.label} className="flex items-center justify-between gap-3">
                   <span>{detail.label}</span>

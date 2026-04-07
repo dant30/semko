@@ -1,3 +1,4 @@
+// frontend/src/features/dashboard/types/dashboard.ts
 export interface DashboardAlert {
   type: "info" | "success" | "warning" | "danger";
   title: string;

@@ -1,3 +1,4 @@
+// frontend/src/features/dashboard/store/dashboard.slice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { DashboardMetric } from "@/features/dashboard/types/dashboard";
 

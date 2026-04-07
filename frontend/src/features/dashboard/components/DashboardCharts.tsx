@@ -1,3 +1,4 @@
+// frontend/src/features/dashboard/components/DashboardCharts.tsx
 import { BarChart, ChartCard, GaugeChart } from "@/shared/components/charts";
 import { Card } from "@/shared/components/ui/Card";
 import { formatNumber } from "@/shared/utils/number";
@@ -25,11 +26,11 @@ export function DashboardCharts({ summary }: DashboardChartsProps) {
     : 0;
 
   return (
-    <Card className="rounded-3xl border border-app-border p-6">
+    <Card className="rounded-3xl border border-surface-border p-6">
       <div className="flex flex-col gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-app-muted">Live analytics</p>
-          <h3 className="mt-2 text-xl font-semibold text-app-primary">Operations overview</h3>
+          <p className="text-xs uppercase tracking-wide text-text-muted font-medium">Live analytics</p>
+          <h3 className="mt-2 text-xl font-semibold text-text-primary">Operations overview</h3>
         </div>
 
         <div className="space-y-6">
