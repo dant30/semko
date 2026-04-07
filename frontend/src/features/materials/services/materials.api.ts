@@ -31,7 +31,7 @@ export const materialsApi = {
     return normalizeMaterialArray(response.data);
   },
 
-  async getMaterial(id: number) {
+  async fetchMaterial(id: number) {
     const response = await apiClient.get<MaterialRecord>(`/materials/${id}/`);
     return response.data;
   },
@@ -59,3 +59,15 @@ export const materialsApi = {
     return response.data;
   },
 };
+
+export function createInitialMaterialFormValues(): MaterialFormValues {
+  return {
+    name: "",
+    code: "",
+    category: "other",
+    unit_of_measure: "tonne",
+    description: "",
+    density_factor: "",
+    is_active: true,
+  };
+}

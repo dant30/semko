@@ -23,7 +23,13 @@ const AuditPage = lazy(() => import("@/features/audit").then((m) => ({ default: 
 const VehiclesPage = lazy(() => import("@/features/vehicles").then((m) => ({ default: m.VehiclesPage })));
 const DriversPage = lazy(() => import("@/features/drivers").then((m) => ({ default: m.DriversPage })));
 const ClientsPage = lazy(() => import("@/features/clients").then((m) => ({ default: m.ClientsPage })));
+const ClientCreatePage = lazy(() => import("@/features/clients").then((m) => ({ default: m.ClientCreatePage })));
+const ClientDetailPage = lazy(() => import("@/features/clients").then((m) => ({ default: m.ClientDetailPage })));
+const ClientEditPage = lazy(() => import("@/features/clients").then((m) => ({ default: m.ClientEditPage })));
 const MaterialsPage = lazy(() => import("@/features/materials").then((m) => ({ default: m.MaterialsPage })));
+const MaterialCreatePage = lazy(() => import("@/features/materials").then((m) => ({ default: m.MaterialCreatePage })));
+const MaterialDetailPage = lazy(() => import("@/features/materials").then((m) => ({ default: m.MaterialDetailPage })));
+const MaterialEditPage = lazy(() => import("@/features/materials").then((m) => ({ default: m.MaterialEditPage })));
 const TripsPage = lazy(() => import("@/features/trips").then((m) => ({ default: m.TripsPage })));
 const TripCreatePage = lazy(() => import("@/features/trips").then((m) => ({ default: m.TripCreatePage })));
 const TripDetailPage = lazy(() => import("@/features/trips").then((m) => ({ default: m.TripDetailPage })));
@@ -177,8 +183,51 @@ export const router = createBrowserRouter([
           </PermissionGuard>
         ),
       },
-      { path: "clients", element: <ClientsPage /> },
+      {
+        path: "clients",
+        element: (
+          <PermissionGuard requiredPermissions={[permissions.viewClients]}>
+            <ClientsPage />
+          </PermissionGuard>
+        ),
+      },
+      {
+        path: "clients/new",
+        element: (
+          <PermissionGuard requiredPermissions={[permissions.manageClients]}>
+            <ClientCreatePage />
+          </PermissionGuard>
+        ),
+      },
+      {
+        path: "clients/:clientId",
+        element: (
+          <PermissionGuard requiredPermissions={[permissions.viewClients]}>
+            <ClientDetailPage />
+          </PermissionGuard>
+        ),
+      },
+      {
+        path: "clients/:clientId/edit",
+        element: (
+          <PermissionGuard requiredPermissions={[permissions.manageClients]}>
+            <ClientEditPage />
+          </PermissionGuard>
+        ),
+      },
       { path: "materials", element: <MaterialsPage /> },
+      {
+        path: "materials/new",
+        element: <MaterialCreatePage />,
+      },
+      {
+        path: "materials/:materialId",
+        element: <MaterialDetailPage />,
+      },
+      {
+        path: "materials/:materialId/edit",
+        element: <MaterialEditPage />,
+      },
       {
         path: "trips",
         element: (

@@ -8,6 +8,8 @@ export const permissions = {
   manageVehicles: "vehicles.manage_vehicle",
   viewDrivers: "drivers.view_driver",
   manageDrivers: "drivers.manage_driver",
+  viewClients: "clients.view_client",
+  manageClients: "clients.manage_client",
   viewTrips: "trips.view_trip",
   manageTrips: "trips.manage_trip",
   viewStores: "stores.view_store",

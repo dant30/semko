@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import type { MaterialRecord } from "@/features/materials/types/material";
 import { Button } from "@/shared/components/ui/Button";
 import { Card } from "@/shared/components/ui/Card";
@@ -6,11 +6,12 @@ import { Card } from "@/shared/components/ui/Card";
 interface MaterialsTableProps {
   materials: MaterialRecord[];
   isLoading: boolean;
+  onView: (material: MaterialRecord) => void;
   onEdit: (material: MaterialRecord) => void;
   onDelete: (material: MaterialRecord) => void;
 }
 
-export function MaterialsTable({ materials, isLoading, onEdit, onDelete }: MaterialsTableProps) {
+export function MaterialsTable({ materials, isLoading, onView, onEdit, onDelete }: MaterialsTableProps) {
   if (isLoading) {
     return (
       <Card className="h-64 rounded-3xl p-5">
@@ -43,10 +44,7 @@ export function MaterialsTable({ materials, isLoading, onEdit, onDelete }: Mater
         </thead>
         <tbody>
           {materials.map((material) => (
-            <tr
-              key={material.id}
-              className="border-t border-slate-200 dark:border-slate-800"
-            >
+            <tr key={material.id} className="border-t border-slate-200 dark:border-slate-800">
               <td className="px-4 py-3">{material.name}</td>
               <td className="px-4 py-3">{material.code}</td>
               <td className="px-4 py-3">{material.category}</td>
@@ -58,7 +56,11 @@ export function MaterialsTable({ materials, isLoading, onEdit, onDelete }: Mater
                   <span className="rounded-full bg-rose-100 px-2 py-1 text-xs text-rose-800 dark:bg-rose-900/30 dark:text-rose-300">Inactive</span>
                 )}
               </td>
-              <td className="px-4 py-3 flex gap-2">
+              <td className="px-4 py-3 flex flex-wrap gap-2">
+                <Button type="button" onClick={() => onView(material)} variant="secondary" className="gap-2">
+                  <Eye className="h-3.5 w-3.5" />
+                  View
+                </Button>
                 <Button type="button" onClick={() => onEdit(material)} variant="secondary" className="gap-2">
                   <Pencil className="h-3.5 w-3.5" />
                   Edit

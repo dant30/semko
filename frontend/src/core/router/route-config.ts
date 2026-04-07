@@ -185,8 +185,37 @@ export const masterDataNavigation: NavItem[] = [
       },
     ],
   },
-  { label: "Clients", path: appRoutes.clients },
-  { label: "Materials", path: appRoutes.materials },
+  {
+    label: "Clients",
+    path: appRoutes.clients,
+    icon: "users",
+    requiredPermissions: [permissions.viewClients],
+    children: [
+      {
+        label: "Client register",
+        path: appRoutes.clients,
+      },
+      {
+        label: "New client",
+        path: appRoutes.clientCreate,
+        requiredPermissions: [permissions.manageClients],
+      },
+    ],
+  },
+  {
+    label: "Materials",
+    path: appRoutes.materials,
+    children: [
+      {
+        label: "Materials register",
+        path: appRoutes.materials,
+      },
+      {
+        label: "New material",
+        path: appRoutes.materialCreate,
+      },
+    ],
+  },
 ];
 
 export const governanceNavigation: NavItem[] = [
@@ -220,6 +249,7 @@ export const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   "/app/drivers": () => import("@/features/drivers"),
   "/app/clients": () => import("@/features/clients"),
   "/app/materials": () => import("@/features/materials"),
+  "/app/materials/new": () => import("@/features/materials"),
   "/app/trips": () => import("@/features/trips"),
   "/app/rules": () => import("@/features/rules"),
   "/app/cess": () => import("@/features/cess"),
