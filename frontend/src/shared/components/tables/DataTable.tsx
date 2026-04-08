@@ -11,6 +11,7 @@ export interface Column<T> {
   accessor?: (row: T) => React.ReactNode;
   sortable?: boolean;
   className?: string;
+  width?: string | number;
 }
 
 export interface DataTableProps<T> {
@@ -67,6 +68,11 @@ export function DataTable<T extends object>({
     );
   };
 
+  const getWidthClass = (width?: string | number) => {
+    if (!width) return undefined;
+    return typeof width === 'number' ? `w-[${width}px]` : `w-[${width}]`;
+  };
+
   if (isLoading) {
     return (
       <div className="table-container">
@@ -85,21 +91,26 @@ export function DataTable<T extends object>({
         <table className="table">
           <thead>
             <tr>
-              {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className={cn(
-                    col.sortable && 'cursor-pointer select-none hover:bg-surface-subtle',
-                    col.className
-                  )}
-                  onClick={() => handleSort(col)}
-                >
-                  <div className="flex items-center gap-1">
-                    {col.header}
-                    {renderSortIcon(col)}
-                  </div>
-                </th>
-              ))}
+              {columns.map((col) => {
+                const widthClass = getWidthClass(col.width);
+
+                return (
+                  <th
+                    key={col.key}
+                    className={cn(
+                      col.sortable && 'cursor-pointer select-none hover:bg-surface-subtle',
+                      widthClass,
+                      col.className
+                    )}
+                    onClick={() => handleSort(col)}
+                  >
+                    <div className="flex items-center gap-1">
+                      {col.header}
+                      {renderSortIcon(col)}
+                    </div>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
@@ -121,14 +132,18 @@ export function DataTable<T extends object>({
                     onClick={() => onRowClick?.(row)}
                     className={cn(onRowClick && 'cursor-pointer hover:bg-surface-subtle')}
                   >
-                    {columns.map((col) => (
-                      <td
-                        key={col.key}
-                        className={col.className}
-                      >
-                      {col.accessor ? col.accessor(row) : ((row as Record<string, unknown>)[col.key] as React.ReactNode) ?? '—'}
-                    </td>
-                    ))}
+                    {columns.map((col) => {
+                      const widthClass = getWidthClass(col.width);
+
+                      return (
+                        <td
+                          key={col.key}
+                          className={cn(widthClass, col.className)}
+                        >
+                          {col.accessor ? col.accessor(row) : ((row as Record<string, unknown>)[col.key] as React.ReactNode) ?? '—'}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })

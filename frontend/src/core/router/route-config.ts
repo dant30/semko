@@ -141,6 +141,7 @@ export const mainNavigation: NavItem[] = [
   },
   { label: "Reports", path: appRoutes.reports, icon: "chart" },
   { label: "Notifications", path: appRoutes.notifications, icon: "bell" },
+  { label: "Support", path: appRoutes.support, icon: "help" },
 ];
 
 export const masterDataNavigation: NavItem[] = [
