@@ -12,7 +12,8 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
-  self.skipWaiting();
+  // Don't immediately skip waiting - let activation be controlled by parent
+  // self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -25,6 +26,7 @@ self.addEventListener("activate", (event) => {
       )
     )
   );
+  // Only claim clients when truly necessary for critical updates
   self.clients.claim();
 });
 

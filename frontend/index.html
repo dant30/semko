@@ -130,17 +130,8 @@
     <!-- VITE ENTRY -->
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- SERVICE WORKER (optional) -->
+    <!-- Hide loader once JS boots -->
     <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("/service-worker.js")
-            .catch(() => {});
-        });
-      }
-
-      // Hide loader once JS boots
       window.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("app-loader");
         if (loader) loader.classList.add("hidden");
