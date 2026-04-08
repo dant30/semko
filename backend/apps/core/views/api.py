@@ -2,10 +2,12 @@ from datetime import date, timedelta
 from decimal import Decimal
 
 from django.db.models import Sum
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
+from apps.core.constants import RolePermissionCodes
 from apps.core.mixins.api_mixins import StandardizedSuccessResponseMixin
+from apps.core.permissions import HasRolePermissions
 from apps.core.serializers.dashboard import DashboardSummarySerializer
 from apps.maintenance.models import MaintenanceSchedule
 from apps.stores.models import Item, Requisition
@@ -28,7 +30,10 @@ class HealthCheckAPIView(StandardizedSuccessResponseMixin, APIView):
 
 
 class DashboardSummaryAPIView(StandardizedSuccessResponseMixin, APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasRolePermissions]
+    required_permissions_by_method = {
+        "GET": [RolePermissionCodes.VIEW_DASHBOARD],
+    }
 
     def get(self, request):
         today = date.today()

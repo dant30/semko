@@ -80,13 +80,6 @@ class UserReadSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
-    role_id = serializers.PrimaryKeyRelatedField(
-        source="role",
-        queryset=Role.objects.all(),
-        write_only=True,
-        required=False,
-        allow_null=True,
-    )
 
     class Meta:
         model = User
@@ -96,7 +89,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "phone_number",
-            "role_id",
             "password",
             "password_confirm",
         ]
@@ -226,6 +218,11 @@ class UserSelfUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "phone_number"]
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
 
 
 class ChangePasswordSerializer(serializers.Serializer):

@@ -3,7 +3,11 @@ from .base import *
 
 # Production environment hardening
 DEBUG = False
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'www.semko.co.ke,semko.co.ke').split(',')
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'www.semko.co.ke,semko.co.ke').split(',')
+    if host.strip()
+]
 
 # Render injects the active hostname in RENDER_EXTERNAL_HOSTNAME; allow it for health checks
 RENDER_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -48,10 +52,14 @@ SECURE_CONTENT_SECURITY_POLICY = {
 # CORS: Production-safe configuration
 # ============================================================================
 # Allow only frontend origin(s) in production
-CORS_ALLOWED_ORIGINS = os.environ.get(
-    'CORS_ALLOWED_ORIGINS',
-    'https://www.semko.co.ke,https://semko.co.ke'
-).split(',')
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        'CORS_ALLOWED_ORIGINS',
+        'https://www.semko.co.ke,https://semko.co.ke',
+    ).split(',')
+    if origin.strip()
+]
 
 FRONTEND_URL = os.environ.get('FRONTEND_URL') or os.environ.get('VITE_API_URL')
 if FRONTEND_URL and FRONTEND_URL not in CORS_ALLOWED_ORIGINS:

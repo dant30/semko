@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Q
+import logging
+
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils import timezone
@@ -11,8 +12,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import timedelta
 
 from apps.audit.models import AuditLog
@@ -34,6 +35,7 @@ from apps.users.models import Role, TokenBlacklist
 
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -76,8 +78,6 @@ class ChangePasswordAPIView(APIView):
             auth_header = request.META.get('HTTP_AUTHORIZATION', '')
             if auth_header.startswith('Bearer '):
                 token = auth_header.split(' ', 1)[1]
-                # Get token expiration from the token itself
-                from rest_framework_simplejwt.tokens import AccessToken
                 try:
                     access_token = AccessToken(token)
                     expires_at = timezone.datetime.fromtimestamp(access_token['exp'], tz=timezone.utc)
@@ -88,10 +88,10 @@ class ChangePasswordAPIView(APIView):
                         expires_at=expires_at,
                         reason="password_change",
                     )
-                except:
-                    pass
-        except:
-            pass
+                except Exception:
+                    logger.warning("Failed to blacklist access token after password change.")
+        except Exception:
+            logger.warning("Could not parse Authorization header for password change token blacklist.")
 
         AuditLog.objects.create(
             actor=user,
@@ -128,7 +128,6 @@ class LogoutAPIView(APIView):
             # Blacklist access token
             if access_token_str:
                 try:
-                    from rest_framework_simplejwt.tokens import AccessToken
                     access_token = AccessToken(access_token_str)
                     expires_at = timezone.datetime.fromtimestamp(
                         access_token["exp"], tz=timezone.utc
@@ -140,8 +139,8 @@ class LogoutAPIView(APIView):
                         expires_at=expires_at,
                         reason="logout",
                     )
-                except Exception as e:
-                    pass
+                except Exception:
+                    logger.warning("Failed to blacklist access token during logout.")
 
             # Blacklist refresh token
             if refresh_token:
@@ -157,8 +156,8 @@ class LogoutAPIView(APIView):
                         expires_at=expires_at,
                         reason="logout",
                     )
-                except Exception as e:
-                    pass
+                except Exception:
+                    logger.warning("Failed to blacklist refresh token during logout.")
 
             AuditLog.objects.create(
                 actor=request.user,
@@ -232,7 +231,6 @@ class ResetPasswordAPIView(APIView):
 
         # Blacklist all existing tokens for security
         # (password reset implies compromise or account recovery)
-        far_future = timezone.now() + timedelta(days=365)
         TokenBlacklist.objects.filter(user=user, expires_at__gt=timezone.now()).delete()
 
         AuditLog.objects.create(
@@ -304,12 +302,26 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         if self.request.user.pk == instance.pk:
             raise PermissionDenied("You cannot deactivate your own account.")
+        if instance.is_superuser:
+            raise PermissionDenied("Superuser accounts cannot be deactivated through this endpoint.")
+
         instance.is_active = False
         instance.save(update_fields=["is_active", "updated_at"])
 
         AuditLog.objects.create(
             actor=self.request.user,
             action=AuditLog.Action.DELETE,
+            method=self.request.method,
+            path=self.request.path,
+            status_code=200,
+            metadata={"target_user_id": instance.pk},
+        )
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        AuditLog.objects.create(
+            actor=self.request.user,
+            action=AuditLog.Action.UPDATE,
             method=self.request.method,
             path=self.request.path,
             status_code=200,

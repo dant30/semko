@@ -32,3 +32,4 @@ class RolePermissionCodes:
     MANAGE_FUEL = "fuel.manage_fuel"
     VIEW_MAINTENANCE = "maintenance.view_maintenance"
     MANAGE_MAINTENANCE = "maintenance.manage_maintenance"
+    VIEW_DASHBOARD = "core.view_dashboard"

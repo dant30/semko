@@ -4,8 +4,12 @@ semko/
 │   ├── pyproject.toml
 │   ├── Dockerfile
 │   ├── docker-compose.yml
+│   ├── .env
 │   ├── .env.example
+│   ├── build.sh
+│   ├── PRODUCTION_SETUP.md
 │   ├── README.md
+│   ├── test_db.sqlite3
 │   ├── requirements/
 │   │   ├── base.txt
 │   │   ├── dev.txt
@@ -402,6 +406,12 @@ semko/
 │   │   └── core/
 │   │       ├── __init__.py
 │   │       ├── apps.py
+│   │       ├── admin.py
+│   │       ├── urls.py
+│   │       ├── migrations/
+│   │       │   └── __init__.py
+│   │       ├── tests/
+│   │       │   └── __init__.py
 │   │       ├── models/
 │   │       │   ├── __init__.py
 │   │       │   └── base.py
@@ -438,6 +448,7 @@ semko/
 │   │       ├── development.py
 │   │       ├── production.py
 │   │       └── testing.py
+│   ├── logs/
 │   ├── media/
 │   │   ├── delivery_notes/
 │   │   ├── cess_receipts/
@@ -451,6 +462,3 @@ semko/
 │   │   └── setup_dev.sh
 │   └── nginx/
 │       └── nginx.conf
-├── frontend/             # (structure not detailed here)
-├── docker-compose.yml    # Full stack
-└── README.md

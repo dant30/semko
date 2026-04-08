@@ -1,3 +1,4 @@
+# backend/apps/core/serializers/dashboard.py
 from rest_framework import serializers
 
 
