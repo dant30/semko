@@ -1,3 +1,4 @@
+// frontend/src/features/auth/components/ProfileDropdown.tsx
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, LogOut, Settings, Shield, User } from "lucide-react";

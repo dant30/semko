@@ -9,6 +9,8 @@ interface Column<T> {
   key: string;
   label: string;
   render: (row: T) => ReactNode;
+  className?: string;
+  width?: string | number;
 }
 
 interface UsersTableProps<T extends object> {
@@ -32,11 +34,13 @@ export function UsersTable<T extends object>({
     key: column.key,
     header: column.label,
     accessor: column.render,
+    className: column.className,
+    width: column.width,
   }));
 
   if (!isLoading && rows.length === 0) {
     return (
-      <Card className="overflow-hidden rounded-[2rem]">
+      <Card className="rounded-[2rem]">
         <EmptyState
           title={emptyTitle}
           description={emptyDescription}
@@ -47,7 +51,7 @@ export function UsersTable<T extends object>({
   }
 
   return (
-    <Card className="overflow-hidden rounded-[2rem]">
+    <Card className="rounded-[2rem]">
       <DataTable
         data={rows}
         columns={tableColumns}

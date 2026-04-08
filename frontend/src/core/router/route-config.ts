@@ -227,7 +227,20 @@ export const governanceNavigation: NavItem[] = [
   {
     label: "Users",
     path: appRoutes.users,
+    icon: "users",
     requiredPermissions: [permissions.viewUsers],
+    children: [
+      {
+        label: "User register",
+        path: appRoutes.users,
+        requiredPermissions: [permissions.viewUsers],
+      },
+      {
+        label: "New user",
+        path: appRoutes.userCreate,
+        requiredPermissions: [permissions.manageUsers],
+      },
+    ],
   },
   {
     label: "Roles",

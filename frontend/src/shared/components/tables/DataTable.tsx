@@ -11,7 +11,6 @@ export interface Column<T> {
   accessor?: (row: T) => React.ReactNode;
   sortable?: boolean;
   className?: string;
-  width?: string | number;
 }
 
 export interface DataTableProps<T> {
@@ -123,9 +122,12 @@ export function DataTable<T extends object>({
                     className={cn(onRowClick && 'cursor-pointer hover:bg-surface-subtle')}
                   >
                     {columns.map((col) => (
-                      <td key={col.key} className={col.className}>
-                        {col.accessor ? col.accessor(row) : ((row as Record<string, unknown>)[col.key] as React.ReactNode) ?? '—'}
-                      </td>
+                      <td
+                        key={col.key}
+                        className={col.className}
+                      >
+                      {col.accessor ? col.accessor(row) : ((row as Record<string, unknown>)[col.key] as React.ReactNode) ?? '—'}
+                    </td>
                     ))}
                   </tr>
                 );

@@ -1,3 +1,4 @@
+// frontend/src/features/auth/store/AuthContext.tsx
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useAppDispatch } from "@/core/store/hooks";
 import {

@@ -83,7 +83,7 @@ export function UsersPage() {
       ) : null}
 
       <section className="grid gap-6">
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-x-auto">
           <UsersTable<UserRecord>
             rowKey={(row) => row.id}
             columns={[
@@ -97,6 +97,7 @@ export function UsersPage() {
               {
                 key: "actions",
                 label: "Actions",
+                className: "whitespace-nowrap text-right w-[140px]",
                 render: (row) =>
                   canManageUsers ? (
                     <Dropdown

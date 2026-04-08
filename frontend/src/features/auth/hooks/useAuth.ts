@@ -1,3 +1,4 @@
+// frontend/src/features/auth/hooks/useAuth.ts
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearSession, getAccessToken, getStoredUser } from "@/core/auth/auth-session";
