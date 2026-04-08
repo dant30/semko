@@ -101,6 +101,7 @@ A role is attached to the user and grants permission codes.
 ### Permission codes
 Key codes from `apps.core.constants.RolePermissionCodes`:
 
+- `core.view_dashboard`
 - `users.view_user`
 - `users.manage_user`
 - `users.view_role`
@@ -146,26 +147,110 @@ Configured in `backend/semko/urls.py`:
 
 ### Health Check
 - `/api/v1/core/health/`
-- Returns a simple service status
-- No authentication required
+- Method: `GET`
+- Permission: `AllowAny`
+- Description: Service health check endpoint
+- Response format:
+  ```json
+  { "success": true, "data": { "status": "ok", "service": "semko-backend", "app": "core" } }
+  ```
 
 ### Dashboard Summary
 - `/api/v1/core/dashboard/summary/`
-- Requires authentication
-- Returns KPI data and alert counts
-- Response includes:
-  - `total_inventory_items`
-  - `low_stock_items`
-  - `trips_today`
-  - `trips_this_week`
-  - `fuel_today_litres`
-  - `fuel_this_month_litres`
-  - `active_vehicles`
-  - `overdue_maintenance`
-  - `pending_requisitions`
-  - `alerts`
+- Method: `GET`
+- Permission: `core.view_dashboard`
+- Description: KPI summary for dashboard cards and alerts
+- Response format:
+  ```json
+  { "success": true, "data": { ... } }
+  ```
 
-## 8. User Management Endpoints
+### Dashboard Summary Response Fields
+- `total_inventory_items` — int — Total active items
+- `low_stock_items` — int — Items below reorder level
+- `trips_today` — int — Trips scheduled for today
+- `trips_this_week` — int — Trips this week (Monday–Sunday)
+- `fuel_today_litres` — decimal — Fuel litres consumed today
+- `fuel_this_month_litres` — decimal — Fuel litres consumed this month
+- `previous_total_inventory_items` — int — Currently same as current total inventory
+- `previous_low_stock_items` — int — Currently same as current low stock count
+- `previous_trips_today` — int — Trips yesterday
+- `previous_trips_this_week` — int — Trips previous week
+- `previous_fuel_today_litres` — decimal — Fuel litres yesterday
+- `previous_fuel_this_month_litres` — decimal — Fuel litres previous month
+- `active_vehicles` — int — Vehicles with `ACTIVE` status
+- `overdue_maintenance` — int — Maintenance schedules with `OVERDUE` status
+- `pending_requisitions` — int — Requisitions awaiting approval
+- `previous_active_vehicles` — int — Currently same as current value
+- `previous_overdue_maintenance` — int — Currently same as current value
+- `previous_pending_requisitions` — int — Currently same as current value
+- `alerts` — array — List of alert objects
+
+### Alert object
+- `type`: `info` | `success` | `warning` | `danger`
+- `title`: string
+- `count`: int
+- `url`: string
+
+Example:
+```json
+{
+  "type": "warning",
+  "title": "Low stock items",
+  "count": 3,
+  "url": "/stores?view=low-stock"
+}
+```
+
+> Note: several `previous_*` fields are currently duplicates of the current values. For now, use the `previous_*` fields as placeholders for week-over-week or month-over-month comparisons where they differ.
+
+## 8. Core Utility Helpers
+
+The backend exposes reusable utility helpers in `apps/core/utils/`. These are server-side helpers, but the frontend can mirror them for consistent behavior.
+
+### Date utilities (`apps/core/utils/date_utils.py`)
+- `today()` — current date in `Africa/Nairobi`
+- `now()` — current timezone-aware datetime
+- `start_of_day(date)`, `end_of_day(date)`
+- `start_of_week(date)`, `end_of_week(date)`
+- `start_of_month(date)`, `end_of_month(date)`
+- `days_between(start, end)`
+- `is_today(date)`
+
+Frontend equivalent using `date-fns` / `date-fns-tz`:
+```js
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, differenceInDays, isToday } from 'date-fns'
+import { utcToZonedTime } from 'date-fns-tz'
+const timeZone = 'Africa/Nairobi'
+const today = utcToZonedTime(new Date(), timeZone)
+```
+
+### Formatters (`apps/core/utils/formatters.py`)
+- `format_decimal(value, precision=2)` → `"1,234.56"`
+- `format_currency(value, symbol="$")` → `"$1,234.56"`
+- `format_percentage(value, precision=2)` → `"12.34%"`
+- `format_duration(seconds)` → `"2h 30m 15s"`
+- `format_date(date)` → `"2025-03-15"`
+- `format_datetime(datetime)` → `"2025-03-15 14:30:00"`
+
+Frontend can use `Intl.NumberFormat` and `Intl.DateTimeFormat` for these.
+
+### Helpers (`apps/core/utils/helpers.py`)
+- `compact_dict(obj)` — remove null/empty values
+- `chunked(array, size)` — split an array into chunks
+- `coerce_bool(value)` — convert `"true"/"1"/"yes"` to boolean
+- `ensure_list(value)` — wrap non-array values into an array
+
+### Validators (`apps/core/utils/validators.py`)
+- `validate_non_empty_string`
+- `validate_positive_int`
+- `validate_email`
+- `validate_date_string`
+- `validate_choice`
+
+Use these validator concepts in frontend form validation before making requests.
+
+## 9. User Management Endpoints
 
 Expected endpoints under `/api/v1/users/`:
 
@@ -189,7 +274,7 @@ Expected endpoints under `/api/v1/users/`:
 - Do not allow deletion of system roles (`is_system=True`)
 - Do not allow deletion of roles assigned to users
 
-## 9. Driver Management Endpoints
+## 10. Driver Management Endpoints
 
 Supported endpoints in `backend/apps/drivers/urls.py`:
 
@@ -213,7 +298,7 @@ Supported endpoints in `backend/apps/drivers/urls.py`:
 - `license_status=valid|expired|suspended|revoked`
 - `employment_status=active|on_leave|suspended|terminated`
 
-## 10. Module Patterns for CRUD Endpoints
+## 11. Module Patterns for CRUD Endpoints
 
 The backend uses consistent patterns across apps:
 - List endpoints support `?search=` and `?active_only=true`
@@ -237,7 +322,7 @@ The backend uses consistent patterns across apps:
 | Reports | `/api/v1/reports/` |
 | Notifications | `/api/v1/notifications/` |
 
-## 11. Data Model Summary
+## 12. Data Model Summary
 
 ### User
 Fields likely present:

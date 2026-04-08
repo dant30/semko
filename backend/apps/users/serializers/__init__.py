@@ -1,3 +1,4 @@
+# backend/apps/users/serializers/__init__.py
 from .user import (
     DEFAULT_ADMIN_ROLE_PERMISSIONS,
     RoleSerializer,

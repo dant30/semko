@@ -1,3 +1,4 @@
+# backend/apps/core/urls.py
 from django.urls import path
 
 from apps.core.views.api import DashboardSummaryAPIView, HealthCheckAPIView

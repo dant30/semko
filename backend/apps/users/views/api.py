@@ -1,8 +1,9 @@
+# backend/apps/users/views/api.py
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.db.models import Q
+from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Q, Prefetch
 import logging
 
 from django.utils.encoding import force_bytes, force_str
@@ -32,6 +33,8 @@ from apps.users.serializers import (
     UserUpdateSerializer,
 )
 from apps.users.models import Role, TokenBlacklist
+from apps.users.utils import rate_limit_by_ip
+from apps.users.tasks import send_password_reset_email
 
 
 User = get_user_model()
@@ -41,6 +44,10 @@ logger = logging.getLogger(__name__)
 class RegisterAPIView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
     permission_classes = [permissions.AllowAny, AllowPublicRegistration]
+
+    @rate_limit_by_ip(attempts=5, window_seconds=3600, endpoint='register')
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class MeAPIView(APIView):
@@ -182,9 +189,17 @@ class LogoutAPIView(APIView):
 class ForgotPasswordAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @rate_limit_by_ip(attempts=5, window_seconds=3600, endpoint='password_forgot')
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        # Validate FRONTEND_BASE_URL is configured in production
+        frontend_base_url = getattr(settings, 'FRONTEND_BASE_URL', None)
+        if not settings.DEBUG and not frontend_base_url:
+            raise ImproperlyConfigured(
+                "FRONTEND_BASE_URL must be set in production for password reset emails."
+            )
 
         email = serializer.validated_data["email"]
         users = User.objects.filter(email__iexact=email, is_active=True)
@@ -193,15 +208,11 @@ class ForgotPasswordAPIView(APIView):
             user = users.first()
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            reset_link = f"{getattr(settings, 'FRONTEND_BASE_URL', 'http://localhost:3000').rstrip('/')}/reset-password?uid={uid}&token={token}"
+            base_url = frontend_base_url or 'http://localhost:3000'
+            reset_link = f"{base_url.rstrip('/')}/reset-password?uid={uid}&token={token}"
 
-            send_mail(
-                subject="Password reset request",
-                message=f"To reset your password, click the link: {reset_link}",
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@semko.local'),
-                recipient_list=[user.email],
-                fail_silently=True,
-            )
+            # Send password reset email asynchronously via Celery
+            send_password_reset_email.delay(user.id, user.email, reset_link)
 
         return Response(
             {"detail": "If an active account with that email exists, a password reset email has been sent."},
@@ -212,6 +223,7 @@ class ForgotPasswordAPIView(APIView):
 class ResetPasswordAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @rate_limit_by_ip(attempts=5, window_seconds=3600, endpoint='password_reset')
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -246,10 +258,7 @@ class ResetPasswordAPIView(APIView):
 
 
 class UserListCreateAPIView(generics.ListCreateAPIView):
-    queryset = User.objects.select_related("role").prefetch_related(
-        "user_permissions__content_type",
-        "groups__permissions__content_type",
-    ).order_by("username")
+    queryset = User.objects.select_related("role").order_by("username")
     permission_classes = [HasRolePermissions]
     required_permissions_by_method = {
         "GET": [RolePermissionCodes.VIEW_USERS],
@@ -366,3 +375,7 @@ class RoleDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class LoginAPIView(TokenObtainPairView):
     permission_classes = [permissions.AllowAny]
+
+    @rate_limit_by_ip(attempts=5, window_seconds=900, endpoint='login')
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)

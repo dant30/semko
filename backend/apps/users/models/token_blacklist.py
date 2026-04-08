@@ -1,9 +1,12 @@
+# backend/apps/users/models/token_blacklist.py
 """
 Token Blacklist Model
 
 Tracks revoked JWT tokens to prevent their reuse after logout or password change.
 Tokens are automatically cleaned up after expiration via a management command.
 """
+
+import hashlib
 
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -18,6 +21,9 @@ class TokenBlacklist(models.Model):
     
     When a user logs out or changes their password, their tokens are added here.
     Authentication backends check this table to reject revoked tokens.
+    
+    Tokens are stored as SHA-256 hashes for security: if the database is compromised,
+    tokens cannot be replayed.
     """
 
     user = models.ForeignKey(
@@ -26,9 +32,10 @@ class TokenBlacklist(models.Model):
         related_name="blacklisted_tokens",
         help_text="User who owns the blacklisted token",
     )
-    token = models.TextField(
+    token_hash = models.CharField(
+        max_length=64,
         db_index=True,
-        help_text="The JWT token string (hashed or plaintext)",
+        help_text="SHA-256 hash of the JWT token",
     )
     token_type = models.CharField(
         max_length=10,
@@ -58,7 +65,7 @@ class TokenBlacklist(models.Model):
     class Meta:
         ordering = ["-blacklisted_at"]
         indexes = [
-            models.Index(fields=["token", "user"]),
+            models.Index(fields=["token_hash", "user"]),
             models.Index(fields=["expires_at"]),
             models.Index(fields=["user", "token_type"]),
         ]
@@ -66,10 +73,16 @@ class TokenBlacklist(models.Model):
     def __str__(self) -> str:
         return f"Blacklist: {self.user.username} ({self.token_type}) - {self.reason}"
 
+    @staticmethod
+    def _hash_token(token: str) -> str:
+        """Hash a JWT token using SHA-256."""
+        return hashlib.sha256(token.encode()).hexdigest()
+
     @classmethod
     def is_blacklisted(cls, token: str, user=None) -> bool:
         """Check if a token is blacklisted."""
-        query = cls.objects.filter(token=token)
+        token_hash = cls._hash_token(token)
+        query = cls.objects.filter(token_hash=token_hash)
         if user:
             query = query.filter(user=user)
         return query.exists()
@@ -86,8 +99,9 @@ class TokenBlacklist(models.Model):
         """Add a token to the blacklist."""
         if expires_at is None:
             expires_at = timezone.now()
+        token_hash = cls._hash_token(token)
         return cls.objects.create(
-            token=token,
+            token_hash=token_hash,
             user=user,
             token_type=token_type,
             expires_at=expires_at,

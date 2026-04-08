@@ -1,3 +1,4 @@
+# backend/apps/users/admin.py 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
@@ -15,6 +16,7 @@ class RoleAdmin(admin.ModelAdmin):
 class UserAdmin(DjangoUserAdmin):
     list_display = ("username", "email", "first_name", "last_name", "role", "is_staff")
     list_filter = ("is_staff", "is_superuser", "is_active", "role")
+    list_select_related = ("role",)
     readonly_fields = ("created_at", "updated_at")
     fieldsets = DjangoUserAdmin.fieldsets + (
         (
@@ -39,8 +41,8 @@ class UserAdmin(DjangoUserAdmin):
 class TokenBlacklistAdmin(admin.ModelAdmin):
     list_display = ("user", "token_type", "reason", "blacklisted_at", "expires_at")
     list_filter = ("token_type", "reason", "blacklisted_at")
-    search_fields = ("user__username", "token")
-    readonly_fields = ("token", "blacklisted_at")
+    search_fields = ("user__username",)
+    readonly_fields = ("token_hash", "blacklisted_at")
     date_hierarchy = "blacklisted_at"
 
     def has_add_permission(self, request):

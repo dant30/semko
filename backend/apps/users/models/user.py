@@ -1,3 +1,4 @@
+# backend/apps/users/models/user.py
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 
@@ -42,6 +43,11 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ["username"]
+        indexes = [
+            models.Index(fields=['email']),
+            models.Index(fields=['is_active', 'role']),
+            models.Index(fields=['role']),
+        ]
 
     def __str__(self) -> str:
         return self.get_full_name() or self.username

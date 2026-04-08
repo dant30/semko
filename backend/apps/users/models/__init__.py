@@ -1,3 +1,4 @@
+# backend/apps/users/models/__init__.py
 from .role import Role
 from .user import User
 from .token_blacklist import TokenBlacklist

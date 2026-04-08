@@ -1,3 +1,4 @@
+# backend/apps/users/serializers/user.py
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -6,6 +7,32 @@ from apps.core.constants import RolePermissionCodes
 from apps.users.models import Role
 
 User = get_user_model()
+
+
+class PasswordConfirmSerializerMixin:
+    """
+    Mixin for serializers that need password confirmation validation.
+    
+    Validates that 'password' and 'password_confirm' fields match.
+    Subclasses should define these fields before using this mixin.
+    """
+    password_confirm_field = 'password_confirm'
+    password_field = 'password'
+    
+    def validate(self, attrs):
+        # Call parent validate first
+        attrs = super().validate(attrs)
+        
+        # Check password confirmation
+        password = attrs.get(self.password_field)
+        password_confirm = attrs.get(self.password_confirm_field)
+        
+        if password and password_confirm and password != password_confirm:
+            raise serializers.ValidationError({
+                self.password_confirm_field: 'Passwords do not match.'
+            })
+        
+        return attrs
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -77,7 +104,7 @@ class UserReadSerializer(serializers.ModelSerializer):
         return sorted(permissions)
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class UserRegistrationSerializer(PasswordConfirmSerializerMixin, serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
 
@@ -103,20 +130,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A user with this username already exists.")
         return value
 
-    def validate(self, attrs):
-        if attrs["password"] != attrs.pop("password_confirm"):
-            raise serializers.ValidationError(
-                {"password_confirm": "Passwords do not match."}
-            )
-        return attrs
-
     def create(self, validated_data):
         password = validated_data.pop("password")
         user = User.objects.create_user(password=password, **validated_data)
         return user
 
 
-class UserCreateSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(PasswordConfirmSerializerMixin, serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
     role_id = serializers.PrimaryKeyRelatedField(
@@ -153,13 +173,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if User.objects.filter(username__iexact=value).exists():
             raise serializers.ValidationError("A user with this username already exists.")
         return value
-
-    def validate(self, attrs):
-        if attrs["password"] != attrs.pop("password_confirm"):
-            raise serializers.ValidationError(
-                {"password_confirm": "Passwords do not match."}
-            )
-        return attrs
 
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -225,15 +238,13 @@ class UserSelfUpdateSerializer(serializers.ModelSerializer):
         return value
 
 
-class ChangePasswordSerializer(serializers.Serializer):
+class ChangePasswordSerializer(PasswordConfirmSerializerMixin, serializers.Serializer):
     old_password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True, validators=[validate_password])
     new_password_confirm = serializers.CharField(write_only=True)
-
-    def validate(self, attrs):
-        if attrs["new_password"] != attrs["new_password_confirm"]:
-            raise serializers.ValidationError({"new_password_confirm": "Passwords do not match."})
-        return attrs
+    
+    password_field = 'new_password'
+    password_confirm_field = 'new_password_confirm'
 
     def validate_old_password(self, value):
         user = self.context["request"].user
@@ -246,16 +257,14 @@ class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 
-class ResetPasswordSerializer(serializers.Serializer):
+class ResetPasswordSerializer(PasswordConfirmSerializerMixin, serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
     new_password = serializers.CharField(write_only=True, validators=[validate_password])
     new_password_confirm = serializers.CharField(write_only=True)
-
-    def validate(self, attrs):
-        if attrs["new_password"] != attrs["new_password_confirm"]:
-            raise serializers.ValidationError({"new_password_confirm": "Passwords do not match."})
-        return attrs
+    
+    password_field = 'new_password'
+    password_confirm_field = 'new_password_confirm'
 
 
 DEFAULT_ADMIN_ROLE_PERMISSIONS = sorted(
