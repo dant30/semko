@@ -1,3 +1,4 @@
+# backend/apps/users/utils.py
 """
 Rate limiting utilities for authentication endpoints.
 

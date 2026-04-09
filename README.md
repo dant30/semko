@@ -3,6 +3,7 @@
 Inventory & stores management system built with Django.
 
 ## Features
+
 - Item stock tracking
 - Purchase orders
 - Stock receivings & issues
@@ -10,6 +11,7 @@ Inventory & stores management system built with Django.
 - Role-based permissions
 
 ## Setup
+
 ```bash
 pip install -r requirements.txt
 python manage.py migrate

@@ -1,3 +1,4 @@
+# backend/apps/users/authentication.py
 """
 Custom JWT Authentication with Blacklist Support
 

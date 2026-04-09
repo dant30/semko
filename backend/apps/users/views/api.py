@@ -34,7 +34,7 @@ from apps.users.serializers import (
 )
 from apps.users.models import Role, TokenBlacklist
 from apps.users.utils import rate_limit_by_ip
-from apps.users.tasks import send_password_reset_email
+from apps.users.tasks import send_password_reset_email, send_user_welcome_email
 
 
 User = get_user_model()
@@ -48,6 +48,10 @@ class RegisterAPIView(generics.CreateAPIView):
     @rate_limit_by_ip(attempts=5, window_seconds=3600, endpoint='register')
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        send_user_welcome_email.delay(user.id, user.email, user.username)
 
 
 class MeAPIView(APIView):
@@ -81,6 +85,8 @@ class ChangePasswordAPIView(APIView):
         user.save(update_fields=["password", "must_change_password", "updated_at"])
 
         # Blacklist current token to force re-authentication
+        refresh_token = request.data.get('refresh')
+
         try:
             auth_header = request.META.get('HTTP_AUTHORIZATION', '')
             if auth_header.startswith('Bearer '):
@@ -95,10 +101,24 @@ class ChangePasswordAPIView(APIView):
                         expires_at=expires_at,
                         reason="password_change",
                     )
-                except Exception:
-                    logger.warning("Failed to blacklist access token after password change.")
-        except Exception:
-            logger.warning("Could not parse Authorization header for password change token blacklist.")
+                except Exception as exc:
+                    logger.warning("Failed to blacklist access token after password change: %s", exc)
+        except Exception as exc:
+            logger.warning("Could not parse Authorization header for password change token blacklist: %s", exc)
+
+        if refresh_token:
+            try:
+                refresh = RefreshToken(refresh_token)
+                expires_at = timezone.datetime.fromtimestamp(refresh["exp"], tz=timezone.utc)
+                TokenBlacklist.blacklist_token(
+                    refresh_token,
+                    user,
+                    token_type="refresh",
+                    expires_at=expires_at,
+                    reason="password_change",
+                )
+            except Exception as exc:
+                logger.warning("Failed to blacklist refresh token after password change: %s", exc)
 
         AuditLog.objects.create(
             actor=user,
@@ -241,9 +261,20 @@ class ResetPasswordAPIView(APIView):
         user.must_change_password = False
         user.save(update_fields=["password", "must_change_password", "updated_at"])
 
-        # Blacklist all existing tokens for security
-        # (password reset implies compromise or account recovery)
-        TokenBlacklist.objects.filter(user=user, expires_at__gt=timezone.now()).delete()
+        refresh_token = request.data.get('refresh')
+        if refresh_token:
+            try:
+                refresh = RefreshToken(refresh_token)
+                expires_at = timezone.datetime.fromtimestamp(refresh["exp"], tz=timezone.utc)
+                TokenBlacklist.blacklist_token(
+                    refresh_token,
+                    user,
+                    token_type="refresh",
+                    expires_at=expires_at,
+                    reason="password_reset",
+                )
+            except Exception as exc:
+                logger.warning("Failed to blacklist refresh token during password reset: %s", exc)
 
         AuditLog.objects.create(
             actor=user,
@@ -258,7 +289,10 @@ class ResetPasswordAPIView(APIView):
 
 
 class UserListCreateAPIView(generics.ListCreateAPIView):
-    queryset = User.objects.select_related("role").order_by("username")
+    queryset = User.objects.select_related("role").prefetch_related(
+        "user_permissions__content_type",
+        "groups__permissions__content_type",
+    ).order_by("username")
     permission_classes = [HasRolePermissions]
     required_permissions_by_method = {
         "GET": [RolePermissionCodes.VIEW_USERS],
