@@ -1,3 +1,4 @@
+# backend/apps/vehicles/models/ownership.py
 from django.db import models
 
 from apps.core.models import TimeStampedModel
@@ -33,6 +34,10 @@ class VehicleOwnership(TimeStampedModel):
     class Meta:
         verbose_name = "Vehicle Ownership"
         verbose_name_plural = "Vehicle Ownerships"
+        indexes = [
+            models.Index(fields=["ownership_type"]),
+            models.Index(fields=["insurance_expiry_date"]),
+        ]
 
     def __str__(self) -> str:
         return f"{self.vehicle.registration_number} - {self.get_ownership_type_display()}"

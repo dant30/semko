@@ -1,3 +1,4 @@
+# backend/apps/vehicles/models/vehicle_type.py
 from django.db import models
 
 from apps.core.models import TimeStampedModel

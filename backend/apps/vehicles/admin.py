@@ -1,3 +1,4 @@
+# backend/apps/vehicles/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 
@@ -24,6 +25,7 @@ class VehicleAdmin(admin.ModelAdmin):
         "current_mileage_km", "is_active", "is_available_badge"
     )
     list_filter = ("status", "fuel_type", "vehicle_type", "is_active", "year")
+    list_editable = ("status", "is_active")
     search_fields = (
         "registration_number", "vin", "make", "model", "engine_number", "notes"
     )
@@ -55,6 +57,7 @@ class VehicleAdmin(admin.ModelAdmin):
 @admin.register(VehicleType)
 class VehicleTypeAdmin(admin.ModelAdmin):
     list_display = ("name", "code", "max_load_tonnes", "typical_fuel_consumption_l_per_100km", "is_active")
+    list_editable = ("is_active",)
     search_fields = ("name", "code")
     list_filter = ("is_active",)
 

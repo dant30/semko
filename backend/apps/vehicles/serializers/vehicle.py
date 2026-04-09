@@ -1,6 +1,7 @@
+# backend/apps/vehicles/serializers/vehicle.py
 from rest_framework import serializers
 
-from apps.vehicles.constants import FuelType, VehicleStatus
+from apps.vehicles.constants import FuelType, OwnershipType, VehicleStatus
 from apps.vehicles.models.vehicle import Vehicle
 from apps.vehicles.models.vehicle_type import VehicleType
 from apps.vehicles.models.ownership import VehicleOwnership
@@ -23,7 +24,7 @@ class VehicleOwnershipSerializer(serializers.ModelSerializer):
         source="vehicle",
         queryset=Vehicle.objects.all(),
         write_only=True,
-        required=False,
+        required=True,
     )
     vehicle = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -37,6 +38,35 @@ class VehicleOwnershipSerializer(serializers.ModelSerializer):
             "created_at", "updated_at",
         ]
         read_only_fields = ["id", "vehicle", "created_at", "updated_at"]
+
+    def validate(self, attrs):
+        ownership_type = attrs.get("ownership_type")
+        lease_start = attrs.get("lease_start_date")
+        lease_end = attrs.get("lease_end_date")
+        monthly_cost = attrs.get("monthly_lease_cost")
+
+        if self.instance is not None:
+            ownership_type = ownership_type or self.instance.ownership_type
+            lease_start = lease_start or self.instance.lease_start_date
+            lease_end = lease_end or self.instance.lease_end_date
+            monthly_cost = monthly_cost if "monthly_lease_cost" in attrs else self.instance.monthly_lease_cost
+
+        if lease_start and lease_end and lease_end <= lease_start:
+            raise serializers.ValidationError(
+                {"lease_end_date": "Lease end date must be after lease start date."}
+            )
+
+        if ownership_type in {OwnershipType.LEASED, OwnershipType.CONTRACT_HIRE} and monthly_cost is None:
+            raise serializers.ValidationError(
+                {"monthly_lease_cost": "Monthly lease cost is required for leased or contract hire vehicles."}
+            )
+
+        if ownership_type == OwnershipType.COMPANY_OWNED and monthly_cost is not None:
+            raise serializers.ValidationError(
+                {"monthly_lease_cost": "Company owned vehicles should not have a monthly lease cost."}
+            )
+
+        return attrs
 
 
 class VehicleReadSerializer(serializers.ModelSerializer):

@@ -1,7 +1,10 @@
+# backend/apps/vehicles/views/api.py
 from django.db.models import Q
 from rest_framework import generics, status
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.core.constants import RolePermissionCodes
 from apps.core.permissions import HasRolePermissions
@@ -54,6 +57,14 @@ class VehicleListCreateAPIView(generics.ListCreateAPIView):
             queryset = queryset.filter(status=status_filter)
         if vehicle_type:
             queryset = queryset.filter(vehicle_type_id=vehicle_type)
+        if self.request.query_params.get("fuel_type"):
+            queryset = queryset.filter(fuel_type=self.request.query_params.get("fuel_type"))
+        if self.request.query_params.get("year_min"):
+            queryset = queryset.filter(year__gte=self.request.query_params.get("year_min"))
+        if self.request.query_params.get("year_max"):
+            queryset = queryset.filter(year__lte=self.request.query_params.get("year_max"))
+        if self.request.query_params.get("ownership_type"):
+            queryset = queryset.filter(ownership__ownership_type=self.request.query_params.get("ownership_type"))
         if active_only == "true":
             queryset = queryset.filter(is_active=True)
         if available_only == "true":
@@ -121,6 +132,38 @@ class VehicleOwnershipDetailAPIView(generics.RetrieveUpdateAPIView):
         return VehicleOwnershipSerializer
 
 
+class VehicleMileageUpdateAPIView(APIView):
+    permission_classes = [HasRolePermissions]
+    required_permissions_by_method = {
+        "PATCH": [RolePermissionCodes.MANAGE_VEHICLES],
+    }
+
+    def patch(self, request, pk):
+        vehicle = get_object_or_404(Vehicle, pk=pk)
+        new_mileage = request.data.get("current_mileage_km")
+
+        if new_mileage is None:
+            raise ValidationError({"current_mileage_km": "This field is required."})
+
+        try:
+            new_mileage = int(new_mileage)
+        except (TypeError, ValueError):
+            raise ValidationError({"current_mileage_km": "Must be an integer."})
+
+        if new_mileage <= vehicle.current_mileage_km:
+            raise ValidationError(
+                {"current_mileage_km": "New mileage must be greater than the current mileage."}
+            )
+
+        vehicle.current_mileage_km = new_mileage
+        vehicle.save(update_fields=["current_mileage_km", "updated_at"])
+
+        return Response(
+            {"detail": "Vehicle mileage updated successfully."},
+            status=status.HTTP_200_OK,
+        )
+
+
 class VehicleTypeListCreateAPIView(generics.ListCreateAPIView):
     queryset = VehicleType.objects.filter(is_active=True).order_by("name")
     serializer_class = VehicleTypeSerializer
@@ -143,6 +186,7 @@ class VehicleTypeDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     }
 
     def perform_destroy(self, instance):
-        if instance.vehicles.exists():
-            raise PermissionDenied("Cannot delete a vehicle type that has assigned vehicles.")
-        instance.delete()
+        if instance.vehicles.filter(is_active=True).exists():
+            raise PermissionDenied("Cannot deactivate a vehicle type with active vehicles.")
+        instance.is_active = False
+        instance.save(update_fields=["is_active", "updated_at"])

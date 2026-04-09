@@ -1,3 +1,4 @@
+# backend/apps/vehicles/signals.py
 import logging
 
 from django.db.models.signals import post_save, pre_save
@@ -20,6 +21,9 @@ def capture_vehicle_pre_save(sender, instance, **kwargs):
             "status": previous.status,
             "current_mileage_km": previous.current_mileage_km,
             "is_active": previous.is_active,
+            "vehicle_type_id": previous.vehicle_type_id,
+            "last_maintenance_date": previous.last_maintenance_date,
+            "next_maintenance_due_date": previous.next_maintenance_due_date,
         }
     except sender.DoesNotExist:
         instance._pre_save_data = {}
@@ -35,7 +39,10 @@ def log_vehicle_post_save(sender, instance, created, **kwargs):
     old_data = getattr(instance, "_pre_save_data", {})
     changes = []
     if not created:
-        for field in ["status", "current_mileage_km", "is_active"]:
+        for field in [
+            "status", "current_mileage_km", "is_active",
+            "vehicle_type_id", "last_maintenance_date", "next_maintenance_due_date",
+        ]:
             old_val = old_data.get(field)
             new_val = getattr(instance, field)
             if old_val != new_val:

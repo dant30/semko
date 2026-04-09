@@ -1,3 +1,4 @@
+# backend/apps/vehicles/models/vehicle.py
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -43,6 +44,7 @@ class Vehicle(TimeStampedModel):
         indexes = [
             models.Index(fields=["status", "is_active"]),
             models.Index(fields=["vehicle_type"]),
+            models.Index(fields=["fuel_type", "status"]),
         ]
 
     def __str__(self) -> str:
@@ -61,6 +63,35 @@ class Vehicle(TimeStampedModel):
             raise ValidationError(
                 {"next_maintenance_due_date": "Next maintenance due date must be in the future."}
             )
+
+        if self.status == VehicleStatus.RETIRED and (
+            self.next_maintenance_due_km is not None or self.next_maintenance_due_date is not None
+        ):
+            raise ValidationError(
+                {
+                    "status": "Retired vehicles should not have a pending maintenance due date or mileage."
+                }
+            )
+
+        if self.load_capacity_tonnes is not None and self.vehicle_type is not None:
+            if self.load_capacity_tonnes > self.vehicle_type.max_load_tonnes:
+                raise ValidationError(
+                    {
+                        "load_capacity_tonnes": (
+                            "Load capacity cannot exceed the vehicle type's maximum load capacity."
+                        )
+                    }
+                )
+
+        if self.last_maintenance_date and self.next_maintenance_due_date:
+            if self.next_maintenance_due_date <= self.last_maintenance_date:
+                raise ValidationError(
+                    {
+                        "next_maintenance_due_date": (
+                            "Next maintenance due date must be after last maintenance date."
+                        )
+                    }
+                )
 
     @property
     def is_available(self) -> bool:

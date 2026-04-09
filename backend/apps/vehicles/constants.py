@@ -1,45 +1,31 @@
-# Vehicle status choices (business state)
-class VehicleStatus:
-    ACTIVE = "active"
-    UNDER_MAINTENANCE = "under_maintenance"
-    RETIRED = "retired"
-    STANDBY = "standby"
+# backend/apps/vehicles/constants.py
+from django.db import models
 
-    CHOICES = [
-        (ACTIVE, "Active"),
-        (UNDER_MAINTENANCE, "Under Maintenance"),
-        (RETIRED, "Retired"),
-        (STANDBY, "Standby"),
-    ]
+
+class VehicleStatus(models.TextChoices):
+    ACTIVE = "active", "Active"
+    UNDER_MAINTENANCE = "under_maintenance", "Under Maintenance"
+    RETIRED = "retired", "Retired"
+    STANDBY = "standby", "Standby"
 
 
 # Fuel type choices
-class FuelType:
-    PETROL = "petrol"
-    DIESEL = "diesel"
-    ELECTRIC = "electric"
-    HYBRID = "hybrid"
-    CNG = "cng"
-
-    CHOICES = [
-        (PETROL, "Petrol"),
-        (DIESEL, "Diesel"),
-        (ELECTRIC, "Electric"),
-        (HYBRID, "Hybrid"),
-        (CNG, "Compressed Natural Gas"),
-    ]
+class FuelType(models.TextChoices):
+    PETROL = "petrol", "Petrol"
+    DIESEL = "diesel", "Diesel"
+    ELECTRIC = "electric", "Electric"
+    HYBRID = "hybrid", "Hybrid"
+    CNG = "cng", "Compressed Natural Gas"
 
 
 # Ownership type
-class OwnershipType:
-    COMPANY_OWNED = "company_owned"
-    LEASED = "leased"
-    CONTRACT_HIRE = "contract_hire"
-    OTHER = "other"
+class OwnershipType(models.TextChoices):
+    COMPANY_OWNED = "company_owned", "Company Owned"
+    LEASED = "leased", "Leased"
+    CONTRACT_HIRE = "contract_hire", "Contract Hire"
+    OTHER = "other", "Other"
 
-    CHOICES = [
-        (COMPANY_OWNED, "Company Owned"),
-        (LEASED, "Leased"),
-        (CONTRACT_HIRE, "Contract Hire"),
-        (OTHER, "Other"),
-    ]
+
+VehicleStatus.CHOICES = VehicleStatus.choices
+FuelType.CHOICES = FuelType.choices
+OwnershipType.CHOICES = OwnershipType.choices
