@@ -10,7 +10,9 @@ from apps.core.constants import RolePermissionCodes
 from apps.drivers.models import Driver
 from apps.fuel.models import FuelConsumption, FuelStation, FuelTransaction
 from apps.users.models import Role
-from apps.vehicles.models import Vehicle, VehicleOwnership, VehicleType
+from apps.vehicles.models.vehicle import Vehicle
+from apps.vehicles.models.ownership import VehicleOwnership
+from apps.vehicles.models.vehicle_type import VehicleType
 
 User = get_user_model()
 

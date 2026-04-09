@@ -4,7 +4,7 @@ from apps.drivers.models import Driver
 from apps.fuel.calculators.efficiency import calculate_efficiency_metrics
 from apps.fuel.models import FuelConsumption, FuelStation, FuelTransaction
 from apps.trips.models import Trip
-from apps.vehicles.models import Vehicle
+from apps.vehicles.models.vehicle import Vehicle
 
 
 class FuelStationSerializer(serializers.ModelSerializer):

@@ -9,7 +9,7 @@ from apps.maintenance.services.scheduling import (
 )
 from apps.stores.models import Item
 from apps.stores.services.stock_level import get_item_stock_on_hand
-from apps.vehicles.models import Vehicle
+from apps.vehicles.models.vehicle import Vehicle
 
 
 class MechanicSerializer(serializers.ModelSerializer):

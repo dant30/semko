@@ -11,7 +11,10 @@ from apps.materials.models import Material
 from apps.rules.models import PenaltyThresholdRule, TripClassificationRule
 from apps.trips.models import Trip
 from apps.users.models import Role
-from apps.vehicles.models import Vehicle, VehicleOwnership, VehicleType
+from apps.vehicles.models.vehicle import Vehicle
+from apps.vehicles.models.ownership import VehicleOwnership
+from apps.vehicles.models.vehicle_type import VehicleType
+from apps.vehicles.constants import VehicleStatus
 
 User = get_user_model()
 
@@ -64,7 +67,7 @@ class TripAPITests(APITestCase):
             year=2024,
             chassis_number="TRIP-CHASSIS-001",
             capacity_tonnes="28.00",
-            status=Vehicle.Status.ACTIVE,
+            status=VehicleStatus.ACTIVE,
             is_active=True,
         )
         self.driver = Driver.objects.create(

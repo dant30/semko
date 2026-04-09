@@ -11,7 +11,9 @@ from apps.drivers.models import Driver
 from apps.maintenance.models import MaintenanceSchedule, PartUsed, ServiceRecord
 from apps.stores.models import Item, StockReceiving
 from apps.users.models import Role
-from apps.vehicles.models import Vehicle, VehicleOwnership, VehicleType
+from apps.vehicles.models.vehicle import Vehicle
+from apps.vehicles.models.ownership import VehicleOwnership
+from apps.vehicles.models.vehicle_type import VehicleType
 
 User = get_user_model()
 

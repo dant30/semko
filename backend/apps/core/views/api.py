@@ -13,7 +13,8 @@ from apps.maintenance.models import MaintenanceSchedule
 from apps.stores.models import Item, Requisition
 from apps.trips.models import Trip
 from apps.fuel.models import FuelTransaction
-from apps.vehicles.models import Vehicle
+from apps.vehicles.models.vehicle import Vehicle
+from apps.vehicles.constants import VehicleStatus
 
 
 class HealthCheckAPIView(StandardizedSuccessResponseMixin, APIView):
@@ -101,7 +102,7 @@ class DashboardSummaryAPIView(StandardizedSuccessResponseMixin, APIView):
             or Decimal("0.00")
         )
 
-        active_vehicles = Vehicle.objects.filter(status=Vehicle.Status.ACTIVE, is_active=True).count()
+        active_vehicles = Vehicle.objects.filter(status=VehicleStatus.ACTIVE, is_active=True).count()
         previous_active_vehicles = active_vehicles
         overdue_maintenance = MaintenanceSchedule.objects.filter(
             status=MaintenanceSchedule.ScheduleStatus.OVERDUE,

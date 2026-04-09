@@ -1,11 +1,12 @@
 from rest_framework import serializers
 
 from apps.drivers.models import Driver
-from apps.vehicles.models import Vehicle
+from apps.vehicles.models.vehicle import Vehicle
+from apps.vehicles.constants import VehicleStatus
 
 
 def validate_trip_references(vehicle, driver):
-    if vehicle.status != Vehicle.Status.ACTIVE or not vehicle.is_active:
+    if vehicle.status != VehicleStatus.ACTIVE or not vehicle.is_active:
         raise serializers.ValidationError(
             {"vehicle_id": "Trip vehicle must be active and available."}
         )

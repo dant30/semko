@@ -20,7 +20,7 @@ from apps.trips.calculators.penalty import calculate_discrepancy, calculate_pena
 from apps.trips.models import Discrepancy, HiredTrip, Trip, WeighbridgeReading
 from apps.trips.serializers.weighbridge import WeighbridgeReadingSerializer
 from apps.trips.services.trip_validation import validate_trip_references
-from apps.vehicles.models import Vehicle
+from apps.vehicles.models.vehicle import Vehicle
 
 
 class DiscrepancySerializer(serializers.ModelSerializer):

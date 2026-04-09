@@ -8,7 +8,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.constants import RolePermissionCodes
 from apps.users.models import Role
-from apps.vehicles.models import Vehicle, VehicleOwnership, VehicleType
+from apps.vehicles.constants import OwnershipType, VehicleStatus
+from apps.vehicles.models.vehicle import Vehicle
+from apps.vehicles.models.vehicle_type import VehicleType
 
 User = get_user_model()
 
@@ -43,15 +45,10 @@ class VehicleAPITests(APITestCase):
         self.vehicle_type = VehicleType.objects.create(
             name="Tipper",
             code="tipper",
-            default_capacity_tonnes="28.00",
-            axle_count=4,
-        )
-        self.ownership = VehicleOwnership.objects.create(
-            name="SEMKO Fleet",
-            ownership_type=VehicleOwnership.OwnershipType.OWNED,
-            contact_person="Fleet Office",
-            phone_number="0700000000",
-            effective_from=date(2026, 1, 1),
+            max_load_tonnes="28.00",
+            max_volume_cubic_meters="40.00",
+            typical_fuel_consumption_l_per_100km="15.00",
+            is_active=True,
         )
 
     def authenticate(self, user):
@@ -65,18 +62,35 @@ class VehicleAPITests(APITestCase):
             reverse("vehicle-list-create"),
             {
                 "registration_number": "KDA123A",
-                "fleet_number": "FLT-001",
-                "vehicle_type_id": self.vehicle_type.id,
-                "ownership_id": self.ownership.id,
+                "vin": "VIN-001",
                 "make": "Isuzu",
                 "model": "FVZ",
                 "year": 2024,
-                "chassis_number": "CHASSIS-001",
-                "engine_number": "ENGINE-001",
+                "fuel_type": "diesel",
+                "status": VehicleStatus.ACTIVE,
+                "vehicle_type": self.vehicle_type.id,
+                "current_mileage_km": 1000,
+                "seating_capacity": 2,
+                "load_capacity_tonnes": "28.00",
                 "color": "White",
-                "capacity_tonnes": "28.00",
-                "status": "active",
+                "engine_number": "ENGINE-001",
+                "last_maintenance_date": "2026-01-15",
+                "next_maintenance_due_km": 20000,
+                "next_maintenance_due_date": "2026-06-01",
+                "notes": "New vehicle",
                 "is_active": True,
+                "ownership": {
+                    "ownership_type": OwnershipType.COMPANY_OWNED,
+                    "owner_name": "SEMKO Fleet",
+                    "lease_start_date": "2026-01-01",
+                    "lease_end_date": "2027-01-01",
+                    "monthly_lease_cost": "0.00",
+                    "registration_document_number": "REG-001",
+                    "insurance_provider": "SEMKO Insurance",
+                    "insurance_policy_number": "POL-001",
+                    "insurance_expiry_date": "2027-01-01",
+                    "notes": "Company owned",
+                },
             },
             format="json",
         )
@@ -93,11 +107,11 @@ class VehicleAPITests(APITestCase):
 
         update_response = self.client.patch(
             reverse("vehicle-detail", kwargs={"pk": vehicle_id}),
-            {"status": "maintenance", "notes": "Scheduled service"},
+            {"status": VehicleStatus.UNDER_MAINTENANCE, "notes": "Scheduled service"},
             format="json",
         )
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(update_response.data["status"], "maintenance")
+        self.assertEqual(update_response.data["status"], VehicleStatus.UNDER_MAINTENANCE)
 
         delete_response = self.client.delete(
             reverse("vehicle-detail", kwargs={"pk": vehicle_id})
@@ -105,7 +119,7 @@ class VehicleAPITests(APITestCase):
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
         vehicle = Vehicle.objects.get(pk=vehicle_id)
         self.assertFalse(vehicle.is_active)
-        self.assertEqual(vehicle.status, Vehicle.Status.INACTIVE)
+        self.assertEqual(vehicle.status, VehicleStatus.STANDBY)
 
     def test_viewer_can_list_but_cannot_create_vehicle(self):
         self.authenticate(self.viewer)
@@ -117,14 +131,18 @@ class VehicleAPITests(APITestCase):
             reverse("vehicle-list-create"),
             {
                 "registration_number": "KDA124A",
-                "fleet_number": "FLT-002",
-                "vehicle_type_id": self.vehicle_type.id,
-                "ownership_id": self.ownership.id,
+                "vin": "VIN-002",
                 "make": "Mercedes",
+                "model": "Actros",
                 "year": 2025,
-                "chassis_number": "CHASSIS-002",
-                "capacity_tonnes": "30.00",
-                "status": "active",
+                "fuel_type": "diesel",
+                "status": VehicleStatus.ACTIVE,
+                "vehicle_type": self.vehicle_type.id,
+                "current_mileage_km": 0,
+                "seating_capacity": 2,
+                "load_capacity_tonnes": "30.00",
+                "engine_number": "ENGINE-002",
+                "notes": "New fleet",
                 "is_active": True,
             },
             format="json",
@@ -140,63 +158,136 @@ class VehicleAPITests(APITestCase):
                 "name": "Trailer",
                 "code": "trailer",
                 "description": "Long-haul trailer",
-                "default_capacity_tonnes": "34.50",
-                "axle_count": 6,
+                "max_load_tonnes": "34.50",
+                "max_volume_cubic_meters": "60.00",
+                "typical_fuel_consumption_l_per_100km": "24.00",
                 "is_active": True,
             },
             format="json",
         )
         self.assertEqual(type_response.status_code, status.HTTP_201_CREATED)
 
+        vehicle_response = self.client.post(
+            reverse("vehicle-list-create"),
+            {
+                "registration_number": "KDA125A",
+                "vin": "VIN-003",
+                "make": "Volvo",
+                "model": "FMX",
+                "year": 2023,
+                "fuel_type": "diesel",
+                "status": VehicleStatus.ACTIVE,
+                "vehicle_type": self.vehicle_type.id,
+                "current_mileage_km": 0,
+                "seating_capacity": 2,
+                "load_capacity_tonnes": "30.00",
+                "color": "Yellow",
+                "engine_number": "ENGINE-003",
+                "notes": "Test asset",
+                "is_active": True,
+            },
+            format="json",
+        )
+        self.assertEqual(vehicle_response.status_code, status.HTTP_201_CREATED)
+        vehicle_id = vehicle_response.data["id"]
+
         ownership_response = self.client.post(
             reverse("vehicle-ownership-list-create"),
             {
-                "name": "Third Party Hauliers",
-                "ownership_type": "hired",
-                "contact_person": "Partner Desk",
-                "phone_number": "0712345678",
-                "effective_from": "2026-03-01",
-                "notes": "Approved transport partners",
-                "is_active": True,
+                "vehicle_id": vehicle_id,
+                "ownership_type": OwnershipType.OWNED,
+                "owner_name": "SEMKO Fleet",
+                "lease_start_date": "2026-01-01",
+                "lease_end_date": "2027-01-01",
+                "monthly_lease_cost": "0.00",
+                "registration_document_number": "REG-001",
+                "insurance_provider": "SEMKO Insurance",
+                "insurance_policy_number": "POL-001",
+                "insurance_expiry_date": "2027-01-01",
+                "notes": "Company owned",
             },
             format="json",
         )
         self.assertEqual(ownership_response.status_code, status.HTTP_201_CREATED)
 
     def test_vehicle_filters_work_for_status_and_ownership_type(self):
-        Vehicle.objects.create(
-            registration_number="KDA125A",
-            fleet_number="FLT-003",
-            vehicle_type=self.vehicle_type,
-            ownership=self.ownership,
+        vehicle_a = Vehicle.objects.create(
+            registration_number="KDA126A",
+            vin="VIN-004",
             make="Scania",
             model="P410",
             year=2023,
+            fuel_type="diesel",
+            status=VehicleStatus.ACTIVE,
+            vehicle_type=self.vehicle_type,
+            current_mileage_km=10000,
+            seating_capacity=2,
+            load_capacity_tonnes="32.00",
             chassis_number="CHASSIS-003",
-            capacity_tonnes="32.00",
-            status=Vehicle.Status.ACTIVE,
+            engine_number="ENGINE-003",
+            color="Blue",
             is_active=True,
         )
-        Vehicle.objects.create(
-            registration_number="KDA126A",
-            fleet_number="FLT-004",
-            vehicle_type=self.vehicle_type,
-            ownership=self.ownership,
+        vehicle_b = Vehicle.objects.create(
+            registration_number="KDA127A",
+            vin="VIN-005",
             make="Volvo",
             model="FMX",
             year=2022,
+            fuel_type="diesel",
+            status=VehicleStatus.UNDER_MAINTENANCE,
+            vehicle_type=self.vehicle_type,
+            current_mileage_km=15000,
+            seating_capacity=2,
+            load_capacity_tonnes="30.00",
             chassis_number="CHASSIS-004",
-            capacity_tonnes="30.00",
-            status=Vehicle.Status.MAINTENANCE,
+            engine_number="ENGINE-004",
+            color="Red",
             is_active=True,
         )
+
+        self.client.post(
+            reverse("vehicle-ownership-list-create"),
+            {
+                "vehicle_id": vehicle_a.id,
+                "ownership_type": OwnershipType.OWNED,
+                "owner_name": "SEMKO Fleet",
+                "lease_start_date": "2026-01-01",
+                "lease_end_date": "2027-01-01",
+                "monthly_lease_cost": "0.00",
+                "registration_document_number": "REG-003",
+                "insurance_provider": "SEMKO Insurance",
+                "insurance_policy_number": "POL-003",
+                "insurance_expiry_date": "2027-01-01",
+                "notes": "Company owned",
+            },
+            format="json",
+        )
+        self.client.post(
+            reverse("vehicle-ownership-list-create"),
+            {
+                "vehicle_id": vehicle_b.id,
+                "ownership_type": OwnershipType.LEASED,
+                "owner_name": "Partner Fleet",
+                "lease_start_date": "2026-01-01",
+                "lease_end_date": "2027-01-01",
+                "monthly_lease_cost": "1500.00",
+                "registration_document_number": "REG-004",
+                "insurance_provider": "Partner Insurance",
+                "insurance_policy_number": "POL-004",
+                "insurance_expiry_date": "2027-01-01",
+                "notes": "Leased vehicle",
+            },
+            format="json",
+        )
+
         self.authenticate(self.viewer)
 
         response = self.client.get(
             reverse("vehicle-list-create"),
-            {"status": Vehicle.Status.MAINTENANCE},
+            {"status": VehicleStatus.UNDER_MAINTENANCE},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["registration_number"], "KDA126A")
+        self.assertEqual(response.data[0]["registration_number"], "KDA127A")

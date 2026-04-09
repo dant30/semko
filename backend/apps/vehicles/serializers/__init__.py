@@ -1,15 +1,17 @@
 from .vehicle import (
     VehicleOwnershipSerializer,
+    VehicleOwnershipWriteSerializer,
     VehicleReadSerializer,
-    VehicleStatusSerializer,
     VehicleTypeSerializer,
+    VehicleWithOwnershipCreateSerializer,
     VehicleWriteSerializer,
 )
 
 __all__ = [
     "VehicleOwnershipSerializer",
+    "VehicleOwnershipWriteSerializer",
     "VehicleReadSerializer",
-    "VehicleStatusSerializer",
     "VehicleTypeSerializer",
+    "VehicleWithOwnershipCreateSerializer",
     "VehicleWriteSerializer",
 ]
