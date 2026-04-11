@@ -39,6 +39,7 @@ def get_vehicles_with_expiring_insurance(days_ahead=30):
     today = timezone.now().date()
     cutoff = today + timedelta(days=days_ahead)
     return Vehicle.objects.filter(
+        ownership__isnull=False,
         ownership__insurance_expiry_date__gte=today,
         ownership__insurance_expiry_date__lte=cutoff,
         is_active=True,

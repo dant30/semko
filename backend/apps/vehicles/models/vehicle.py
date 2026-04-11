@@ -73,15 +73,18 @@ class Vehicle(TimeStampedModel):
                 }
             )
 
-        if self.load_capacity_tonnes is not None and self.vehicle_type is not None:
-            if self.load_capacity_tonnes > self.vehicle_type.max_load_tonnes:
-                raise ValidationError(
-                    {
-                        "load_capacity_tonnes": (
-                            "Load capacity cannot exceed the vehicle type's maximum load capacity."
-                        )
-                    }
-                )
+        if self.load_capacity_tonnes is not None:
+            if self.load_capacity_tonnes <= 0:
+                raise ValidationError({"load_capacity_tonnes": "Load capacity must be positive."})
+            if self.vehicle_type is not None and self.vehicle_type.max_load_tonnes is not None:
+                if self.load_capacity_tonnes > self.vehicle_type.max_load_tonnes:
+                    raise ValidationError(
+                        {
+                            "load_capacity_tonnes": (
+                                "Load capacity cannot exceed the vehicle type's maximum load capacity."
+                            )
+                        }
+                    )
 
         if self.last_maintenance_date and self.next_maintenance_due_date:
             if self.next_maintenance_due_date <= self.last_maintenance_date:

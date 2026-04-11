@@ -195,7 +195,7 @@ class VehicleAPITests(APITestCase):
             reverse("vehicle-ownership-list-create"),
             {
                 "vehicle_id": vehicle_id,
-                "ownership_type": OwnershipType.OWNED,
+                "ownership_type": OwnershipType.COMPANY_OWNED,
                 "owner_name": "SEMKO Fleet",
                 "lease_start_date": "2026-01-01",
                 "lease_end_date": "2027-01-01",
@@ -209,6 +209,89 @@ class VehicleAPITests(APITestCase):
             format="json",
         )
         self.assertEqual(ownership_response.status_code, status.HTTP_201_CREATED)
+
+    def test_cannot_create_duplicate_vehicle_ownership(self):
+        self.authenticate(self.manager)
+
+        vehicle_response = self.client.post(
+            reverse("vehicle-list-create"),
+            {
+                "registration_number": "KDA128A",
+                "vin": "VIN-006",
+                "make": "MAN",
+                "model": "TGS",
+                "year": 2024,
+                "fuel_type": "diesel",
+                "status": VehicleStatus.ACTIVE,
+                "vehicle_type": self.vehicle_type.id,
+                "current_mileage_km": 0,
+                "seating_capacity": 2,
+                "load_capacity_tonnes": "28.00",
+                "color": "White",
+                "engine_number": "ENGINE-006",
+                "is_active": True,
+            },
+            format="json",
+        )
+        self.assertEqual(vehicle_response.status_code, status.HTTP_201_CREATED)
+        vehicle_id = vehicle_response.data["id"]
+
+        first_response = self.client.post(
+            reverse("vehicle-ownership-list-create"),
+            {
+                "vehicle_id": vehicle_id,
+                "ownership_type": OwnershipType.COMPANY_OWNED,
+                "owner_name": "SEMKO Fleet",
+                "registration_document_number": "REG-006",
+                "insurance_provider": "SEMKO Insurance",
+                "insurance_policy_number": "POL-006",
+                "insurance_expiry_date": "2027-01-01",
+            },
+            format="json",
+        )
+        self.assertEqual(first_response.status_code, status.HTTP_201_CREATED)
+
+        duplicate_response = self.client.post(
+            reverse("vehicle-ownership-list-create"),
+            {
+                "vehicle_id": vehicle_id,
+                "ownership_type": OwnershipType.COMPANY_OWNED,
+                "owner_name": "SEMKO Fleet",
+                "registration_document_number": "REG-007",
+                "insurance_provider": "SEMKO Insurance",
+                "insurance_policy_number": "POL-007",
+                "insurance_expiry_date": "2027-01-01",
+            },
+            format="json",
+        )
+        self.assertEqual(duplicate_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("vehicle_id", duplicate_response.data)
+
+    def test_vehicle_creation_rejects_non_positive_load_capacity(self):
+        self.authenticate(self.manager)
+
+        response = self.client.post(
+            reverse("vehicle-list-create"),
+            {
+                "registration_number": "KDA129A",
+                "vin": "VIN-007",
+                "make": "DAF",
+                "model": "LF",
+                "year": 2024,
+                "fuel_type": "diesel",
+                "status": VehicleStatus.ACTIVE,
+                "vehicle_type": self.vehicle_type.id,
+                "current_mileage_km": 0,
+                "seating_capacity": 2,
+                "load_capacity_tonnes": "0.00",
+                "color": "White",
+                "engine_number": "ENGINE-007",
+                "is_active": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("load_capacity_tonnes", response.data)
 
     def test_vehicle_filters_work_for_status_and_ownership_type(self):
         vehicle_a = Vehicle.objects.create(
@@ -250,7 +333,7 @@ class VehicleAPITests(APITestCase):
             reverse("vehicle-ownership-list-create"),
             {
                 "vehicle_id": vehicle_a.id,
-                "ownership_type": OwnershipType.OWNED,
+                "ownership_type": OwnershipType.COMPANY_OWNED,
                 "owner_name": "SEMKO Fleet",
                 "lease_start_date": "2026-01-01",
                 "lease_end_date": "2027-01-01",

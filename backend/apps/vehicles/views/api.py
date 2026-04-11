@@ -23,7 +23,7 @@ from apps.vehicles.serializers import (
 
 
 class VehicleListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Vehicle.objects.select_related("vehicle_type").prefetch_related("ownership").order_by(
+    queryset = Vehicle.objects.select_related("vehicle_type", "ownership").order_by(
         "registration_number"
     )
     permission_classes = [HasRolePermissions]
@@ -73,7 +73,7 @@ class VehicleListCreateAPIView(generics.ListCreateAPIView):
 
 
 class VehicleDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Vehicle.objects.select_related("vehicle_type").prefetch_related("ownership")
+    queryset = Vehicle.objects.select_related("vehicle_type", "ownership")
     permission_classes = [HasRolePermissions]
     required_permissions_by_method = {
         "GET": [RolePermissionCodes.VIEW_VEHICLES],

@@ -1,4 +1,5 @@
 # backend/apps/vehicles/serializers/vehicle.py
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
 from apps.vehicles.constants import FuelType, OwnershipType, VehicleStatus
@@ -40,6 +41,13 @@ class VehicleOwnershipSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "vehicle", "created_at", "updated_at"]
 
     def validate(self, attrs):
+        if self.instance is None:
+            vehicle = attrs.get("vehicle")
+            if vehicle and VehicleOwnership.objects.filter(vehicle=vehicle).exists():
+                raise serializers.ValidationError(
+                    {"vehicle_id": "This vehicle already has an ownership record."}
+                )
+
         ownership_type = attrs.get("ownership_type")
         lease_start = attrs.get("lease_start_date")
         lease_end = attrs.get("lease_end_date")
@@ -101,6 +109,16 @@ class VehicleWriteSerializer(serializers.ModelSerializer):
             "next_maintenance_due_date", "notes", "is_active",
         ]
 
+    def validate(self, attrs):
+        vehicle = self.instance or Vehicle()
+        for field, value in attrs.items():
+            setattr(vehicle, field, value)
+        try:
+            vehicle.full_clean()
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict)
+        return attrs
+
 
 class VehicleWithOwnershipCreateSerializer(serializers.ModelSerializer):
     ownership = VehicleOwnershipSerializer(write_only=True, required=False)
@@ -114,6 +132,17 @@ class VehicleWithOwnershipCreateSerializer(serializers.ModelSerializer):
             "last_maintenance_date", "next_maintenance_due_km",
             "next_maintenance_due_date", "notes", "is_active", "ownership",
         ]
+
+    def validate(self, attrs):
+        vehicle_attrs = {k: v for k, v in attrs.items() if k != "ownership"}
+        vehicle = self.instance or Vehicle()
+        for field, value in vehicle_attrs.items():
+            setattr(vehicle, field, value)
+        try:
+            vehicle.full_clean()
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict)
+        return attrs
 
     def create(self, validated_data):
         ownership_data = validated_data.pop("ownership", None)
